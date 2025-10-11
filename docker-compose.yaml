@@ -1,9 +1,11 @@
 services:
   postgres:
-    image: "postgres"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: user
-      POSTGRES_DB: yac
+      POSTGRES_DB: yay
       POSTGRES_PASSWORD: postgres
