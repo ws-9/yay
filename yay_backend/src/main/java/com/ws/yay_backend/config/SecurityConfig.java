@@ -20,6 +20,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/hello").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/restricted/user").hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.GET, "/api/restricted/mod").hasRole("MODERATOR")
+            .requestMatchers(HttpMethod.GET, "/api/communities").hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN")
     );
 
     http.httpBasic(Customizer.withDefaults());
