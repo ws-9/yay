@@ -15,7 +15,7 @@ public class Community {
   @Column(name = "name", length = 50, nullable = false)
   private String name;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "owner_id", nullable = false)
   private User owner;
 
