@@ -19,12 +19,9 @@ public class SecurityConfig {
     http.authorizeHttpRequests(configurer ->
         configurer
             .requestMatchers("/docs/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/hello").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/restricted/user").hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers(HttpMethod.GET, "/api/restricted/mod").hasRole("MODERATOR")
-            .requestMatchers(HttpMethod.GET, "/api/communities").hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers(HttpMethod.POST, "/api/communities").hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/api/communities/*").hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/communities").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/communities").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/communities/*").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
     );
 
     http.httpBasic(Customizer.withDefaults());
