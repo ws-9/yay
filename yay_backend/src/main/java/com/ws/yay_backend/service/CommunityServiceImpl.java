@@ -6,6 +6,7 @@ import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetCommunityResponse;
+import com.ws.yay_backend.response.GetMemberResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,5 +66,17 @@ public class CommunityServiceImpl implements CommunityService {
   @PreAuthorize("hasRole('ADMIN') or @communityRepository.existsByIdAndOwner_Id(#id, authentication.principal.id)")
   public void deleteCommunity(long id) {
     communityRepository.deleteById(id);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('ADMIN') or @communityRepository.existsByIdAndMembers_Id(#id, authentication.principal.id)")
+  public List<GetMemberResponse> getAllMembers(Long id) {
+    return communityRepository.findWithMembersById(id)
+        .map(c -> c.getMembers().stream()
+            .map(u -> new GetMemberResponse(u.getId(), u.getUsername()))
+            .collect(Collectors.toList())
+        )
+        .orElseThrow(() -> new IllegalStateException(("Community not found: " + id)));
   }
 }

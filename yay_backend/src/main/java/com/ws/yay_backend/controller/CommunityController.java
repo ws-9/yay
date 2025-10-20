@@ -2,6 +2,7 @@ package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetCommunityResponse;
+import com.ws.yay_backend.response.GetMemberResponse;
 import com.ws.yay_backend.service.CommunityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -34,5 +35,10 @@ public class CommunityController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCommunity(@PathVariable @Min(value = 1) Long id) {
     communityService.deleteCommunity(id);
+  }
+
+  @GetMapping("{id}/members")
+  List<GetMemberResponse> getAllMembers(@PathVariable @Min(value = 1) Long id) {
+    return communityService.getAllMembers(id);
   }
 }

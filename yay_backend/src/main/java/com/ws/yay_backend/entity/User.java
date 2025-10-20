@@ -34,6 +34,9 @@ public class User implements UserDetails {
   )
   private Set<Role> roles;
 
+  @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
+  private Set<Community> communities;
+
   public User() {}
 
   public User(String username, String password, Boolean enabled, Set<Role> roles) {

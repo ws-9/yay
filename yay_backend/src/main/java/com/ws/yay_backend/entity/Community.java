@@ -2,6 +2,8 @@ package com.ws.yay_backend.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "communities")
 public class Community {
@@ -17,11 +19,25 @@ public class Community {
   @JoinColumn(name = "owner_id", nullable = false)
   private User owner;
 
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "community_members",
+      joinColumns = @JoinColumn(name = "community_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id")
+  )
+  private Set<User> members;
+
   public Community() {}
 
   public Community(String name, User owner) {
     this.name = name;
     this.owner = owner;
+  }
+
+  public Community(String name, User owner, Set<User> members) {
+    this.name = name;
+    this.owner = owner;
+    this.members = members;
   }
 
   public Long getId() {
@@ -46,5 +62,13 @@ public class Community {
 
   public void setOwner(User owner) {
     this.owner = owner;
+  }
+
+  public Set<User> getMembers() {
+    return members;
+  }
+
+  public void setMembers(Set<User> members) {
+    this.members = members;
   }
 }
