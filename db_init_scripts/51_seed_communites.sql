@@ -24,3 +24,13 @@ JOIN communities c ON c.name = v.name
 JOIN users u ON u.username = v.owner_username
 WHERE c.owner_id = u.id
 ON CONFLICT (community_id, user_id) DO NOTHING;
+
+INSERT INTO banned_users (community_id, user_id)
+SELECT c.id, u.id
+FROM (
+  VALUES
+    ('community1', 'random_user')
+) AS v(name, username)
+JOIN communities c ON c.name = v.name
+JOIN users u ON u.username = v.username
+ON CONFLICT (community_id, user_id) DO NOTHING;

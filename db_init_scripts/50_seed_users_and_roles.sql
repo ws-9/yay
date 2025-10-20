@@ -4,7 +4,8 @@ VALUES
     ('mod', '{noop}password', true),
     ('admin', '{noop}password', true),
     ('super_admin', '{noop}password', true),
-    ('disabled_user', '{noop}password', false);
+    ('disabled_user', '{noop}password', false),
+    ('random_user', '{noop}password', true);
 
 INSERT INTO roles (name)
 VALUES
@@ -28,3 +29,6 @@ SELECT u.id, r.id FROM users u, roles r WHERE u.username = 'super_admin' AND r.n
 
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r WHERE u.username = 'disabled_user' AND r.name = 'ROLE_USER';
+
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id FROM users u, roles r WHERE u.username = 'random_user' AND r.name = 'ROLE_USER';
