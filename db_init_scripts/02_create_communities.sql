@@ -3,3 +3,9 @@ CREATE TABLE communities (
     name VARCHAR(50) NOT NULL,
     owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+CREATE TABLE community_members (
+    community_id BIGINT NOT NULL REFERENCES communities(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    PRIMARY KEY (community_id, user_id)
+)
