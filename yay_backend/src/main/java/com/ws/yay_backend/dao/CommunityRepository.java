@@ -11,4 +11,6 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
   @Override
   @EntityGraph(attributePaths = {"owner"})
   List<Community> findAll();
+
+  boolean existsByIdAndOwner_Id(Long id, Long ownerId);
 }

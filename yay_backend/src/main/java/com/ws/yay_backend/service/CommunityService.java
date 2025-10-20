@@ -9,4 +9,6 @@ public interface CommunityService {
   List<GetCommunityResponse> getAll();
 
   GetCommunityResponse createCommunity(CreateCommunityRequest request);
+
+  void deleteCommunity(long id);
 }

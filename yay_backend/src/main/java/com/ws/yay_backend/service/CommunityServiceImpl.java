@@ -6,6 +6,7 @@ import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetCommunityResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -57,5 +58,12 @@ public class CommunityServiceImpl implements CommunityService {
         saved.getOwner().getId(),
         saved.getOwner().getUsername()
     );
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN') or @communityRepository.existsByIdAndOwner_Id(#id, authentication.principal.id)")
+  public void deleteCommunity(long id) {
+    communityRepository.deleteById(id);
   }
 }
