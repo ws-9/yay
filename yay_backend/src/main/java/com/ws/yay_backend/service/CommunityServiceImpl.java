@@ -9,11 +9,13 @@ import com.ws.yay_backend.response.GetCommunityResponse;
 import com.ws.yay_backend.response.GetMemberResponse;
 import com.ws.yay_backend.response.JoinCommunityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
@@ -107,5 +109,32 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     return new JoinCommunityResponse(user.getId(), user.getUsername());
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("""
+      hasRole('ADMIN') or
+      @communityRepository.existsByIdAndOwner_Id(#communityId, authentication.principal.id) or
+      (@communityRepository.existsByIdAndMembers_Id(#communityId, authentication.principal.id) and
+      #userId == authentication.principal.id)
+      """)
+  public void deleteMember(Long communityId, Long userId) {
+    if (!userRepository.existsById(userId)) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id not found in database: " + userId);
+    }
+
+    long communityOwnerId = communityRepository.findById(communityId)
+        .map(c -> c.getOwner().getId())
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Community id not found in database: " + communityId
+        ));
+
+    if (communityOwnerId == userId) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
+    }
+
+    communityRepository.deleteMember(communityId, userId);
   }
 }

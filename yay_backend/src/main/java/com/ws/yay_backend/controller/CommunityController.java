@@ -50,4 +50,10 @@ public class CommunityController {
   public JoinCommunityResponse joinCommunity(@PathVariable @Min(value = 1) Long id) {
     return communityService.joinCommunity(id);
   }
+
+  @DeleteMapping("{id}/members/{userId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void removeMember(@PathVariable @Min(value = 1) Long id, @PathVariable @Min(value = 1) Long userId) {
+    communityService.deleteMember(id, userId);
+  }
 }

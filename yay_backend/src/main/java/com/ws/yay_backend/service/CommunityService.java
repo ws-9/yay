@@ -18,4 +18,6 @@ public interface CommunityService {
   List<GetMemberResponse> getAllMembers(Long id);
 
   JoinCommunityResponse joinCommunity(Long communityId);
+
+  void deleteMember(Long communityId, Long userId);
 }
