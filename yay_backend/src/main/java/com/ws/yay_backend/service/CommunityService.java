@@ -3,6 +3,7 @@ package com.ws.yay_backend.service;
 import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetCommunityResponse;
 import com.ws.yay_backend.response.GetMemberResponse;
+import com.ws.yay_backend.response.JoinCommunityResponse;
 import jakarta.validation.constraints.Min;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface CommunityService {
 
   void deleteCommunity(long id);
 
-  List<GetMemberResponse> getAllMembers(@Min(value = 1) Long id);
+  List<GetMemberResponse> getAllMembers(Long id);
+
+  JoinCommunityResponse joinCommunity(Long communityId);
 }
