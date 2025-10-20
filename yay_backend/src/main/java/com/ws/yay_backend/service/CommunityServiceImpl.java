@@ -21,6 +21,7 @@ public class CommunityServiceImpl implements CommunityService {
   private final CommunityRepository communityRepository;
   private final UserRepository userRepository;
 
+  @Autowired
   public CommunityServiceImpl(CommunityRepository communityRepository, UserRepository userRepository) {
     this.communityRepository = communityRepository;
     this.userRepository = userRepository;

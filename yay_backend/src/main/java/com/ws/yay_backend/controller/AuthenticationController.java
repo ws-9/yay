@@ -21,7 +21,7 @@ public class AuthenticationController {
 
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.CREATED)
-  void register(@RequestBody @Valid RegisterRequest request) throws Exception {
+  public void register(@RequestBody @Valid RegisterRequest request) throws Exception {
     authenticationService.register(request);
   }
 

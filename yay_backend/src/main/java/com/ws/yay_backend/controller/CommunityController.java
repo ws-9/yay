@@ -16,6 +16,7 @@ import java.util.List;
 public class CommunityController {
   private final CommunityService communityService;
 
+  @Autowired
   public CommunityController(CommunityService communityService) {
     this.communityService = communityService;
   }
@@ -27,7 +28,7 @@ public class CommunityController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  GetCommunityResponse createCommunity(@RequestBody @Valid CreateCommunityRequest request) {
+  public GetCommunityResponse createCommunity(@RequestBody @Valid CreateCommunityRequest request) {
     return communityService.createCommunity(request);
   }
 
@@ -38,7 +39,7 @@ public class CommunityController {
   }
 
   @GetMapping("{id}/members")
-  List<GetMemberResponse> getAllMembers(@PathVariable @Min(value = 1) Long id) {
+  public List<GetMemberResponse> getAllMembers(@PathVariable @Min(value = 1) Long id) {
     return communityService.getAllMembers(id);
   }
 }
