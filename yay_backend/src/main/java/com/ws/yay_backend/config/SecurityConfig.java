@@ -3,22 +3,44 @@ package com.ws.yay_backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
+  }
+
+  @Bean
+  public AuthenticationEntryPoint authenticationEntryPoint() {
+    return (request, response, ex) -> {
+      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+      response.setContentType("application/json");
+      response.setHeader("WWW-Authenticate", "");
+      response.getWriter().write("{\"error\": \"Unauthorized access\"}");
+    };
+  }
+
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
     http.authorizeHttpRequests(configurer ->
         configurer
             .requestMatchers("/docs/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/communities").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/communities").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/communities/*").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
@@ -27,6 +49,11 @@ public class SecurityConfig {
 
     http.httpBasic(Customizer.withDefaults());
     http.csrf(AbstractHttpConfigurer::disable);
+    http.exceptionHandling(exceptionHandling ->
+        exceptionHandling.authenticationEntryPoint(authenticationEntryPoint()));
+    http.sessionManagement(session ->
+        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 }
