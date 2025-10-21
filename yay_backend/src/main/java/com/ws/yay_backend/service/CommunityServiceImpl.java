@@ -68,6 +68,19 @@ public class CommunityServiceImpl implements CommunityService {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public GetCommunityResponse getCommunity(long id) {
+    Community community = communityRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+    return new GetCommunityResponse(
+        community.getId(),
+        community.getName(),
+        community.getOwner().getId(),
+        community.getOwner().getUsername()
+    );
+  }
+
+  @Override
   @Transactional
   @PreAuthorize("hasRole('ADMIN') or @communityRepository.existsByIdAndOwner_Id(#id, authentication.principal.id)")
   public void deleteCommunity(long id) {

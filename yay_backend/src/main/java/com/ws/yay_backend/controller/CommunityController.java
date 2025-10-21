@@ -34,6 +34,11 @@ public class CommunityController {
     return communityService.createCommunity(request);
   }
 
+  @GetMapping("/{id}")
+  public GetCommunityResponse getCommunity(@PathVariable @Min(value = 1) long id) {
+    return communityService.getCommunity(id);
+  }
+
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCommunity(@PathVariable @Min(value = 1) Long id) {
