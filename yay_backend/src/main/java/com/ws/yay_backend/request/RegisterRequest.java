@@ -1,12 +1,18 @@
 package com.ws.yay_backend.request;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
-  @NotEmpty(message = "Username required")
+  @NotNull(message = "Username required")
+  @NotBlank(message = "Username cannot be whitespace")
+  @Size(min = 3, max = 32, message = "Username must be between {min} and {max} characters")
   private String username;
 
-  @NotEmpty(message = "Password required")
+  @NotNull(message = "Password required")
+  @NotBlank(message = "Password cannot be whitespace")
+  @Size(min = 8, max = 255, message = "Password must be between {min} and {max} characters")
   private String password;
 
   public RegisterRequest(String username, String password) {
