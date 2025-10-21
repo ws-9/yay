@@ -17,10 +17,10 @@ public class User implements UserDetails {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "username", length = 50)
+  @Column(name = "username", length = 32)
   private String username;
 
-  @Column(name = "password", nullable = false, length = 100)
+  @Column(name = "password", nullable = false, length = 255)
   private String password;
 
   @Column(name = "enabled", nullable = false)

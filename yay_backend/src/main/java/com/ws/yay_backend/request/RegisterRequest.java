@@ -12,7 +12,7 @@ public class RegisterRequest {
 
   @NotNull(message = "Password required")
   @NotBlank(message = "Password cannot be whitespace")
-  @Size(min = 8, max = 255, message = "Password must be between {min} and {max} characters")
+  @Size(min = 8, max = 50, message = "Password must be between {min} and {max} characters")
   private String password;
 
   public RegisterRequest(String username, String password) {
