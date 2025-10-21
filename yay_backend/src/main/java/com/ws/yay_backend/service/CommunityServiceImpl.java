@@ -48,13 +48,13 @@ public class CommunityServiceImpl implements CommunityService {
   @Transactional
   public GetCommunityResponse createCommunity(CreateCommunityRequest request) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth == null || auth.getName() == null) {
-      throw new IllegalStateException("No authenticated user found");
-    }
 
     String username = auth.getName();
     User owner = userRepository.findByUsername(username)
-        .orElseThrow(() -> new IllegalStateException("Authenticated user not found in database: " + username));
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Authenticated user not found: " + username
+        ));
 
     Community community = new Community(request.getName(), owner, Set.of(owner));
     Community saved = communityRepository.save(community);
@@ -96,7 +96,7 @@ public class CommunityServiceImpl implements CommunityService {
             .map(u -> new GetMemberResponse(u.getId(), u.getUsername()))
             .collect(Collectors.toList())
         )
-        .orElseThrow(() -> new IllegalStateException(("Community not found: " + id)));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + id));
   }
 
   @Override
@@ -104,16 +104,16 @@ public class CommunityServiceImpl implements CommunityService {
   // TODO: implement banned_users table and check current user against it.
   public JoinCommunityResponse joinCommunity(Long communityId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth == null || auth.getName() == null) {
-      throw new IllegalStateException("No authenticated user found");
-    }
 
     String username = auth.getName();
     User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new IllegalStateException("Authenticated user not found in database: " + username));
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Authenticated user not found: " + username
+        ));
 
     Community community = communityRepository.findWithMembersById(communityId)
-        .orElseThrow(() -> new IllegalStateException("Community not found: " + communityId));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + communityId));
 
     boolean userAlreadyMember = communityRepository.existsByIdAndMembers_Id(communityId, user.getId());
     if (!userAlreadyMember) {
