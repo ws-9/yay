@@ -4,7 +4,6 @@ import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetCommunityResponse;
 import com.ws.yay_backend.response.GetMemberResponse;
 import com.ws.yay_backend.response.JoinCommunityResponse;
-import jakarta.validation.constraints.Min;
 
 import java.util.List;
 
