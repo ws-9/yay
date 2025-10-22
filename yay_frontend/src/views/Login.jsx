@@ -1,5 +1,63 @@
+import { useState } from "react";
+import { API_LOGIN_URL } from "../../utilities/urls";
+import { useAuth } from "../store/AuthStore";
+
 function Login() {
-  return <h1>Login</h1>
+  const [usernameField, setUsernameField] = useState("");
+  const [passwordField, setPasswordField] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { token, login } = useAuth()
+
+function sendLoginRequest(event) {
+    event.preventDefault()
+
+    setLoading(true)
+    fetch(API_LOGIN_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: usernameField,
+        password: passwordField
+      })
+    })
+    .then(response => response.json())
+    .then(json => login(json.jwtToken, {}))
+    .finally(() => setLoading(false))
+  }
+
+  return <>
+    <h1>Login Page</h1>
+    <form onSubmit={sendLoginRequest}>
+      <div>
+        <label htmlFor="username">Username</label>
+        <input
+          id="username"
+          value={usernameField}
+          onChange={event => setUsernameField(event.target.value)}
+          type="text"
+          placeholder="Type Username"
+          required={true}
+        />
+      </div>
+      <div>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          value={passwordField}
+          onChange={event => setPasswordField(event.target.value)}
+          type="password"
+          placeholder="Type Password"
+          required={true}
+        />
+      </div>
+      <button type="submit">
+        {loading ? "Loading" : "Log in"}
+      </button>
+    </form>
+  </>
 }
 
 export default Login
