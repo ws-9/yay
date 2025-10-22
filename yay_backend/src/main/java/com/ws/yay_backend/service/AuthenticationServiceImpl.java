@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -54,12 +55,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         )
     );
 
-    User user = userRepository.findByUsername(authenticationRequest.getUsername())
+    User user = userRepository.findByUsernameWithRoles(authenticationRequest.getUsername())
         .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+    List<String> roles = user.getRoles().stream()
+        .map(role -> role.getName())
+        .toList();
 
     String jwtToken = jwtService.generateToken(new HashMap<>(), user);
 
-    return new AuthenticationResponse(jwtToken);
+    return new AuthenticationResponse(
+        jwtToken,
+        user.getUsername(),
+        user.getId(),
+        roles);
   }
 
   private boolean isUsernameTaken(String username) {

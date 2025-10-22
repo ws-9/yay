@@ -2,15 +2,12 @@ package com.ws.yay_backend.response;
 
 import jakarta.validation.constraints.NotNull;
 
-public class AuthenticationResponse {
-  @NotNull
-  private final String jwtToken;
+import java.util.List;
 
-  public AuthenticationResponse(String jwtToken) {
-    this.jwtToken = jwtToken;
-  }
-
-  public String getJwtToken() {
-    return jwtToken;
-  }
+public record AuthenticationResponse(
+    @NotNull String jwtToken,
+    @NotNull String username,
+    @NotNull long id,
+    @NotNull List<String> roles
+) {
 }
