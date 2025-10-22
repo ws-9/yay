@@ -10,7 +10,7 @@ function Login() {
 
   const { login } = useAuth()
 
-function sendLoginRequest(event) {
+  function sendLoginRequest(event) {
     event.preventDefault()
 
     setLoading(true)
