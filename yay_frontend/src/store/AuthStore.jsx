@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import User from "../../utilities/User";
 
 const AuthContext = createContext({
   token: "",
@@ -10,7 +11,7 @@ const AuthContext = createContext({
 function AuthProvider({ children }) {
   const [auth, setAuth] = useState({
     token: "",
-    user: {},
+    user: new User()
   })
 
   function login(token, user) {
@@ -18,7 +19,7 @@ function AuthProvider({ children }) {
   }
 
   function logout() {
-    setAuth({ token: null, user: null })
+    setAuth({ token: "", user: new User() })
   }
 
   return (
