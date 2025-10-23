@@ -2,12 +2,14 @@ import { useState } from "react";
 import { API_LOGIN_URL } from "../../utilities/urls";
 import { useAuth } from "../store/AuthStore";
 import User from "../../utilities/User";
+import { Link, useNavigate } from "react-router";
 
 function Login() {
   const [usernameField, setUsernameField] = useState("");
   const [passwordField, setPasswordField] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate()
   const { login } = useAuth()
 
   function sendLoginRequest(event) {
@@ -26,15 +28,16 @@ function Login() {
     })
     .then(response => response.json())
     .then(json => {
-      login(json.jwtToken, new User(json.id, json.username, json.roles))}
-    )
+      login(json.jwtToken, new User(json.id, json.username, json.roles))
+      navigate("/chat")
+    })
     .finally(() => setLoading(false))
   }
 
-  return <>
-    <h1>Login Page</h1>
-    <form onSubmit={sendLoginRequest}>
-      <div>
+  return (
+    <div className="border-2 border-solid">
+      <h1>Login Page</h1>
+      <form onSubmit={sendLoginRequest} className="flex flex-col">
         <label htmlFor="username">Username</label>
         <input
           id="username"
@@ -44,8 +47,6 @@ function Login() {
           placeholder="Type Username"
           required={true}
         />
-      </div>
-      <div>
         <label htmlFor="password">Password</label>
         <input
           id="password"
@@ -55,12 +56,13 @@ function Login() {
           placeholder="Type Password"
           required={true}
         />
-      </div>
-      <button type="submit">
-        {loading ? "Loading" : "Log in"}
-      </button>
-    </form>
-  </>
+        <button type="submit" className="border-2 border-solid">
+          {loading ? "Loading" : "Log in"}
+        </button>
+        <Link to="/register">Need a new account?</Link>
+      </form>
+    </div>
+  )
 }
 
 export default Login

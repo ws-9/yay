@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API_REGISTER_URL } from "../../utilities/urls";
+import { Link } from "react-router";
 
 function Register() {
   const [usernameField, setUsernameField] = useState("");
@@ -37,10 +38,10 @@ function Register() {
     .finally(() => setLoading(false))
   }
 
-  return <>
-    <h1>Register Page</h1>
-    <form onSubmit={sendRegisterRequest}>
-      <div>
+  return (
+    <div className="border-2 border-solid">
+      <h1>Register Page</h1>
+      <form onSubmit={sendRegisterRequest} className="flex flex-col">
         <label htmlFor="username">Username</label>
         <input
           id="username"
@@ -50,8 +51,6 @@ function Register() {
           placeholder="Type Username"
           required={true}
         />
-      </div>
-      <div>
         <label htmlFor="password">Password</label>
         <input
           id="password"
@@ -61,12 +60,13 @@ function Register() {
           placeholder="Type Password"
           required={true}
         />
-      </div>
-      <button type="submit">
-        {loading ? "Loading" : "Sign up"}
-      </button>
-    </form>
-  </>
+        <button type="submit" className="border-2 border-solid">
+          {loading ? "Loading" : "Sign up"}
+        </button>
+        <Link to="/login">Already have an account?</Link>
+      </form>
+    </div>
+  )
 }
 
 export default Register
