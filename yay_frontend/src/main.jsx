@@ -10,6 +10,8 @@ import Login from './views/Login.jsx'
 import { AuthProvider } from './store/AuthStore.jsx'
 import Chat from './views/Chat.jsx'
 import CenteredAuthLayout from './components/CenteredAuthLayout.jsx'
+import WideChatLayout from './components/WideChatLayout.jsx'
+import MainSideBar from './components/MainSideBar.jsx'
 
 const router = createBrowserRouter([
   {
@@ -32,6 +34,15 @@ const router = createBrowserRouter([
           }, 
         ]
       },
+      {
+        element: <WideChatLayout primarySidebar={<MainSideBar />} />,
+        children: [
+          {
+            path: 'chat',
+            Component: Chat
+          },
+        ]
+      }
     ]
   },
 ]);
