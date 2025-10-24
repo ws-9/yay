@@ -71,4 +71,10 @@ public class CommunityController {
   public void removeMember(@PathVariable @Min(value = 1) Long id, @PathVariable @Min(value = 1) Long userId) {
     communityService.deleteMember(id, userId);
   }
+
+  @Operation(summary = "Get user's own communities")
+  @GetMapping("/my-communities")
+  public List<GetCommunityResponse> getMyCommunities() {
+    return communityService.getUserOwnCommunities();
+  }
 }

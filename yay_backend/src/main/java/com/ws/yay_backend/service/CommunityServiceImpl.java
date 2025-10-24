@@ -150,4 +150,24 @@ public class CommunityServiceImpl implements CommunityService {
 
     communityRepository.deleteMember(communityId, userId);
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<GetCommunityResponse> getUserOwnCommunities() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+    String username = auth.getName();
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Authenticated user not found: " + username
+        ));
+    return communityRepository.findByMembers_id(user.getId()).stream()
+        .map(community -> new GetCommunityResponse(
+            community.getId(),
+            community.getName(),
+            community.getOwner().getId(),
+            community.getOwner().getUsername()
+        )).toList();
+  }
 }

@@ -21,4 +21,6 @@ public interface CommunityService {
   JoinCommunityResponse joinCommunity(Long communityId);
 
   void deleteMember(Long communityId, Long userId);
+
+  List<GetCommunityResponse> getUserOwnCommunities();
 }
