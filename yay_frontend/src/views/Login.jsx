@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { API_LOGIN_URL } from "../../utilities/urls";
 import { useAuth } from "../store/AuthStore";
 import User from "../../utilities/User";
@@ -10,7 +10,13 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { token, login } = useAuth()
+
+  useEffect(() => {
+    if (token) {
+      navigate("/chat")
+    }
+  }, [])
 
   function sendLoginRequest(event) {
     event.preventDefault()
