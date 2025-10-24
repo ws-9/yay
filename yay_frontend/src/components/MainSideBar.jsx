@@ -2,17 +2,48 @@ import { useNavigate } from "react-router"
 import { useAuth } from "../store/AuthStore"
 import useApi from "../../utilities/hooks/useApi"
 import { useEffect, useState } from "react"
-import { API_COMMUNITIES_URL } from "../../utilities/urls"
+import { API_COMMUNITIES_URL, API_MY_COMMUNITIES_URL } from "../../utilities/urls"
 import Community from "../../utilities/Community"
 
 function MainSideBar() {
   const { token, logout } = useAuth()
   const navigate = useNavigate()
   const api = useApi()
-  const [communities, setCommunities] = useState([])
-  const [loading, setLoading] = useState(true)
+
+  const [activeTab, setActiveTab] = useState("my-communities")
+
+  const [myCommunities, setMyCommunities] = useState([])
+  const [myCommunitiesLoading, setMyCommunitiesLoading] = useState(true)
+
+  const [searchCommunities, setSearchCommunities] = useState([])
+  const [searchLoading, setSearchLoading] = useState(false)
 
   useEffect(() => {
+    api(API_MY_COMMUNITIES_URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(data => {
+      const communityList = data.map(c => 
+        new Community(c.id, c.name, c.ownerId, c.ownerUsername)
+      )
+      setMyCommunities(communityList)
+    })
+    .catch(error => {
+      console.error("Failed to fetch my communities:", error)
+    })
+    .finally(() => {
+      setMyCommunitiesLoading(false)
+    })
+  }, [])
+
+  function handleFetchAllCommunities(event) {
+    event.preventDefault()
+
+    setSearchLoading(true)
     api(API_COMMUNITIES_URL, {
       method: "GET",
       headers: {
@@ -24,15 +55,15 @@ function MainSideBar() {
       const communityList = data.map(c => 
         new Community(c.id, c.name, c.ownerId, c.ownerUsername)
       )
-      setCommunities(communityList)
+      setSearchCommunities(communityList)
     })
     .catch(error => {
-      console.error("Failed to fetch communities:", error)
+      console.error("Failed to search communities:", error)
     })
     .finally(() => {
-      setLoading(false)
+      setSearchLoading(false)
     })
-  }, [])
+  }
 
   function handleLogout(event) {
     event.preventDefault()
@@ -40,23 +71,73 @@ function MainSideBar() {
     navigate("/login")
   }
 
-  if (loading) {
-    return <div className="bg-gray-100 min-h-full p-4">Loading...</div>
-  }
-
   return (
     <div className="bg-gray-100 min-h-full p-4">
-      <h1 className="text-lg font-bold mb-4">All Communities</h1>
-      <nav className="flex flex-col gap-2 mb-4">
-        {communities.map(community => (
-          <div key={community.id} className="hover:underline cursor-pointer">
-            {community.name}
-          </div>
-        ))}
-      </nav>
+      <div className="flex gap-2 mb-4 border-b">
+        <button
+          onClick={() => setActiveTab("my-communities")}
+          className={`px-4 py-2 cursor-pointer ${
+            activeTab === "my-communities"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600"
+          }`}
+          >
+          My Communities
+        </button>
+        <button
+          onClick={(e) => {
+            setActiveTab("search")
+            handleFetchAllCommunities(e)
+          }}
+          className={`px-4 py-2 cursor-pointer ${
+            activeTab === "search"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600"
+          }`}
+        >
+          Search
+        </button>
+      </div>
+
+      {activeTab === "my-communities" && (
+        <div>
+          {myCommunitiesLoading ? (
+            <p>Loading...</p>
+          ) : myCommunities.length === 0 ? (
+            <p>No communities yet.</p>
+          ) : (
+            <nav className="flex flex-col gap-2">
+              {myCommunities.map(community => (
+                <div key={community.id} className="hover:underline cursor-pointer">
+                  {community.name}
+                </div>
+              ))}
+            </nav>
+          )}
+        </div>
+      )}
+
+      {activeTab === "search" && (
+        <div>
+          {searchLoading ? (
+            <p>Loading...</p>
+          ) : searchCommunities.length === 0 ? (
+            <p>No communities found.</p>
+          ) : (
+            <nav className="flex flex-col gap-2">
+              {searchCommunities.map(community => (
+                <div key={community.id} className="hover:underline cursor-pointer">
+                  {community.name}
+                </div>
+              ))}
+            </nav>
+          )}
+        </div>
+      )}
+ 
       <button 
         onClick={handleLogout}
-        className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:underline cursor-pointer"
       >
         Logout
       </button>
