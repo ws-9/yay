@@ -1,6 +1,8 @@
 package com.ws.yay_backend.controller;
 
+import com.ws.yay_backend.request.CreateChannelRequest;
 import com.ws.yay_backend.request.CreateCommunityRequest;
+import com.ws.yay_backend.response.GetChannelResponse;
 import com.ws.yay_backend.response.GetCommunityResponse;
 import com.ws.yay_backend.response.GetMemberResponse;
 import com.ws.yay_backend.response.JoinCommunityResponse;
@@ -76,5 +78,12 @@ public class CommunityController {
   @GetMapping("/my-communities")
   public List<GetCommunityResponse> getMyCommunities() {
     return communityService.getUserOwnCommunities();
+  }
+
+  @Operation(summary = "Create a channel")
+  @PostMapping("{id}/channels")
+  @ResponseStatus(HttpStatus.CREATED)
+  public GetChannelResponse createChannel(@PathVariable @Min(value = 1) Long id, @RequestBody @Valid CreateChannelRequest request) {
+    return communityService.createChannel(id, request);
   }
 }

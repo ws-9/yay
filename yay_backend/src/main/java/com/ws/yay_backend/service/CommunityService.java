@@ -1,6 +1,8 @@
 package com.ws.yay_backend.service;
 
+import com.ws.yay_backend.request.CreateChannelRequest;
 import com.ws.yay_backend.request.CreateCommunityRequest;
+import com.ws.yay_backend.response.GetChannelResponse;
 import com.ws.yay_backend.response.GetCommunityResponse;
 import com.ws.yay_backend.response.GetMemberResponse;
 import com.ws.yay_backend.response.JoinCommunityResponse;
@@ -23,4 +25,6 @@ public interface CommunityService {
   void deleteMember(Long communityId, Long userId);
 
   List<GetCommunityResponse> getUserOwnCommunities();
+
+  GetChannelResponse createChannel(Long communityId, CreateChannelRequest request);
 }

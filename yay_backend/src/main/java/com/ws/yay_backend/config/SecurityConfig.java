@@ -62,6 +62,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/communities/*/members").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/communities/*/members").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/communities/*/members/*").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/communities/*/channels").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
     );
 
     http.httpBasic(Customizer.withDefaults());
