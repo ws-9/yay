@@ -26,5 +26,7 @@ public interface CommunityService {
 
   List<GetCommunityResponse> getUserOwnCommunities();
 
+  List<GetChannelResponse> getCommunityChannels(Long communityId);
+
   GetChannelResponse createChannel(Long communityId, CreateChannelRequest request);
 }

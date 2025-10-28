@@ -182,6 +182,21 @@ public class CommunityServiceImpl implements CommunityService {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  @PreAuthorize("""
+      hasRole('ADMIN') or
+      @communityRepository.existsByIdAndMembers_Id(#communityId, authentication.principal.id)
+      """)
+  public List<GetChannelResponse> getCommunityChannels(Long communityId) {
+    return channelRepository.findAllByCommunity_Id(communityId).stream()
+        .map(channel -> new GetChannelResponse(
+            channel.getId(),
+            channel.getName(),
+            channel.getCommunity().getId()
+        )).toList();
+  }
+
+  @Override
   @Transactional
   @PreAuthorize("""
       hasRole('ADMIN') or

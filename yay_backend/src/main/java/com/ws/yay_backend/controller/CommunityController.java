@@ -80,6 +80,12 @@ public class CommunityController {
     return communityService.getUserOwnCommunities();
   }
 
+  @Operation(summary = "Get all community channels")
+  @GetMapping("{id}/channels")
+  public List<GetChannelResponse> getChannels(@PathVariable @Min(value = 1) Long id) {
+    return communityService.getCommunityChannels(id);
+  }
+
   @Operation(summary = "Create a channel")
   @PostMapping("{id}/channels")
   @ResponseStatus(HttpStatus.CREATED)
