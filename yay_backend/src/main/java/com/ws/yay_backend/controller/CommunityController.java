@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Community Controller")
 @RestController
 @RequestMapping("/api/communities")
 public class CommunityController {
@@ -28,12 +27,14 @@ public class CommunityController {
     this.communityService = communityService;
   }
 
+  @Tag(name = "Communities")
   @Operation(summary = "Get all existing communities")
   @GetMapping
   public List<GetCommunityResponse> getAllCommunities() {
     return communityService.getAll();
   }
 
+  @Tag(name = "Communities")
   @Operation(summary = "Create a community")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -41,12 +42,14 @@ public class CommunityController {
     return communityService.createCommunity(request);
   }
 
+  @Tag(name = "Communities")
   @Operation(summary = "Get community by id")
   @GetMapping("/{id}")
   public GetCommunityResponse getCommunity(@PathVariable @Min(value = 1) long id) {
     return communityService.getCommunity(id);
   }
 
+  @Tag(name = "Communities")
   @Operation(summary = "Delete community by id")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -54,12 +57,14 @@ public class CommunityController {
     communityService.deleteCommunity(id);
   }
 
+  @Tag(name = "Members")
   @Operation(summary = "Get all community members by id")
   @GetMapping("{id}/members")
   public List<GetMemberResponse> getAllMembers(@PathVariable @Min(value = 1) Long id) {
     return communityService.getAllMembers(id);
   }
 
+  @Tag(name = "Members")
   @Operation(summary = "Add user to community")
   @PostMapping("{id}/members")
   @ResponseStatus(HttpStatus.CREATED)
@@ -67,6 +72,7 @@ public class CommunityController {
     return communityService.joinCommunity(id);
   }
 
+  @Tag(name = "Members")
   @Operation(summary = "Remove user from a community")
   @DeleteMapping("{id}/members/{userId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -74,18 +80,21 @@ public class CommunityController {
     communityService.deleteMember(id, userId);
   }
 
+  @Tag(name = "Communities")
   @Operation(summary = "Get user's own communities")
   @GetMapping("/my-communities")
   public List<GetCommunityResponse> getMyCommunities() {
     return communityService.getUserOwnCommunities();
   }
 
+  @Tag(name = "Channels")
   @Operation(summary = "Get all community channels")
   @GetMapping("{id}/channels")
   public List<GetChannelResponse> getChannels(@PathVariable @Min(value = 1) Long id) {
     return communityService.getCommunityChannels(id);
   }
 
+  @Tag(name = "Channels")
   @Operation(summary = "Create a channel")
   @PostMapping("{id}/channels")
   @ResponseStatus(HttpStatus.CREATED)
