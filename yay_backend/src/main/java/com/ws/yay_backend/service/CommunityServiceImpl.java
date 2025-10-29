@@ -1,13 +1,10 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dao.ChannelMessageRepository;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.UserRepository;
-import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.User;
-import com.ws.yay_backend.request.CreateChannelRequest;
 import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetChannelResponse;
 import com.ws.yay_backend.response.GetCommunityResponse;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,14 +28,12 @@ public class CommunityServiceImpl implements CommunityService {
   private final CommunityRepository communityRepository;
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
-  private final ChannelMessageRepository channelMessageRepository;
 
   @Autowired
-  public CommunityServiceImpl(CommunityRepository communityRepository, UserRepository userRepository, ChannelRepository channelRepository, ChannelMessageRepository channelMessageRepository) {
+  public CommunityServiceImpl(CommunityRepository communityRepository, UserRepository userRepository, ChannelRepository channelRepository) {
     this.communityRepository = communityRepository;
     this.userRepository = userRepository;
     this.channelRepository = channelRepository;
-    this.channelMessageRepository = channelMessageRepository;
   }
 
   @Override
@@ -194,28 +188,5 @@ public class CommunityServiceImpl implements CommunityService {
             channel.getName(),
             channel.getCommunity().getId()
         )).toList();
-  }
-
-  @Override
-  @Transactional
-  @PreAuthorize("""
-      hasRole('ADMIN') or
-      @communityRepository.existsByIdAndOwner_Id(#communityId, authentication.principal.id)
-      """)
-  public GetChannelResponse createChannel(Long communityId, CreateChannelRequest request) {
-    Community community = communityRepository.findById(communityId)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Community not found: " + communityId
-        ));
-
-    Channel channel = new Channel(request.name(), community, new ArrayList<>());
-    Channel saved = channelRepository.save(channel);
-
-    return new  GetChannelResponse(
-        saved.getId(),
-        saved.getName(),
-        saved.getCommunity().getId()
-    );
   }
 }
