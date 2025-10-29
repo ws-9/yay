@@ -104,58 +104,6 @@ public class CommunityServiceImpl implements CommunityService {
   }
 
   @Override
-  @Transactional
-  // TODO: implement banned_users table and check current user against it.
-  public JoinCommunityResponse joinCommunity(Long communityId) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    String username = auth.getName();
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Authenticated user not found: " + username
-        ));
-
-    Community community = communityRepository.findWithMembersById(communityId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + communityId));
-
-    boolean userAlreadyMember = communityRepository.existsByIdAndMembers_Id(communityId, user.getId());
-    if (!userAlreadyMember) {
-      community.getMembers().add(user);
-      communityRepository.save(community);
-    }
-
-    return new JoinCommunityResponse(user.getId(), user.getUsername());
-  }
-
-  @Override
-  @Transactional
-  @PreAuthorize("""
-      hasRole('ADMIN') or
-      @communityRepository.existsByIdAndOwner_Id(#communityId, authentication.principal.id) or
-      (@communityRepository.existsByIdAndMembers_Id(#communityId, authentication.principal.id) and
-      #userId == authentication.principal.id)
-      """)
-  public void deleteMember(Long communityId, Long userId) {
-    if (!userRepository.existsById(userId)) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id not found in database: " + userId);
-    }
-
-    long communityOwnerId = communityRepository.findById(communityId)
-        .map(c -> c.getOwner().getId())
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Community id not found in database: " + communityId
-        ));
-
-    if (communityOwnerId == userId) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
-    }
-
-    communityRepository.deleteMember(communityId, userId);
-  }
-
-  @Override
   @Transactional(readOnly = true)
   public List<GetCommunityResponse> getUserOwnCommunities() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -1,0 +1,9 @@
+package com.ws.yay_backend.request;
+
+import jakarta.validation.constraints.NotNull;
+
+public record RemoveMemberRequest(
+    @NotNull(message = "communityId required") Long communityId,
+    @NotNull(message = "userId required") Long userId
+) {
+}

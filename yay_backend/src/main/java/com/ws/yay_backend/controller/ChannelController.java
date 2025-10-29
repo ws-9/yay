@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Channels")
 @RestController
 @RequestMapping("/api/channels")
-public class ChannelsController {
+public class ChannelController {
   private final ChannelService channelService;
 
   @Autowired
-  public ChannelsController(ChannelService channelService) {
+  public ChannelController(ChannelService channelService) {
     this.channelService = channelService;
   }
 
