@@ -29,11 +29,6 @@ public class Community {
 
   public Community() {}
 
-  public Community(String name, User owner) {
-    this.name = name;
-    this.owner = owner;
-  }
-
   public Community(String name, User owner, Set<User> members) {
     this.name = name;
     this.owner = owner;
