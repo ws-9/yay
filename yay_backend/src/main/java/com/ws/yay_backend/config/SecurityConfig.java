@@ -66,6 +66,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/channels").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/members").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/members").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/messages").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
     );
 
     http.httpBasic(Customizer.withDefaults());
