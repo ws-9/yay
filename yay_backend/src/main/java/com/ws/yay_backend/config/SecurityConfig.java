@@ -64,6 +64,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.DELETE, "/api/communities/*/members/*").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.GET, "/api/communities/*/channels").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/channels").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/channels/*/messages").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/members").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/members").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/messages").hasAnyRole("USER", "MOD", "ADMIN", "SUPER_ADMIN")

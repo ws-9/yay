@@ -1,6 +1,7 @@
 package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.request.CreateChannelRequest;
+import com.ws.yay_backend.response.GetChannelMessageResponse;
 import com.ws.yay_backend.response.GetChannelResponse;
 import com.ws.yay_backend.service.ChannelService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Channels")
 @RestController
@@ -26,5 +29,11 @@ public class ChannelController {
   @ResponseStatus(HttpStatus.CREATED)
   public GetChannelResponse createChannel(@RequestBody @Valid CreateChannelRequest request) {
     return channelService.createChannel(request);
+  }
+
+  @Operation(summary = "Get all channel messages")
+  @GetMapping("{id}/messages")
+  public List<GetChannelMessageResponse> getChannels(@PathVariable Long id) {
+    return channelService.getChannelMessages(id);
   }
 }
