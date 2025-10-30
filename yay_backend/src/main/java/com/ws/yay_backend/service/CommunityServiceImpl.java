@@ -9,7 +9,6 @@ import com.ws.yay_backend.request.CreateCommunityRequest;
 import com.ws.yay_backend.response.GetChannelResponse;
 import com.ws.yay_backend.response.GetCommunityResponse;
 import com.ws.yay_backend.response.GetMemberResponse;
-import com.ws.yay_backend.response.JoinCommunityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
