@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router"
 import { useAuth } from "../store/AuthStore"
 import useApi from "../../utilities/hooks/useApi"
-import { useEffect, useState } from "react"
-import { API_COMMUNITIES_URL, API_MY_COMMUNITIES_URL } from "../../utilities/urls"
+import { useState } from "react"
+import { API_COMMUNITIES_URL } from "../../utilities/urls"
 import Community from "../../utilities/Community"
 import SidebarCommunityCollapsible from "./SidebarCommunityCollapsible"
+import { useCommunity } from "../store/CommunityStore"
 
 function MainSideBar() {
   const { token, logout } = useAuth()
@@ -13,33 +14,13 @@ function MainSideBar() {
 
   const [activeTab, setActiveTab] = useState("my-communities")
 
-  const [myCommunities, setMyCommunities] = useState([])
-  const [myCommunitiesLoading, setMyCommunitiesLoading] = useState(true)
+  const  {
+    myCommunities,
+    myCommunitiesLoading,
+  } = useCommunity()
 
   const [searchCommunities, setSearchCommunities] = useState([])
   const [searchLoading, setSearchLoading] = useState(false)
-
-  useEffect(() => {
-    api(API_MY_COMMUNITIES_URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
-    })
-    .then(data => {
-      const communityList = data.map(c => 
-        new Community(c.id, c.name, c.ownerId, c.ownerUsername)
-      )
-      setMyCommunities(communityList)
-    })
-    .catch(error => {
-      console.error("Failed to fetch my communities:", error)
-    })
-    .finally(() => {
-      setMyCommunitiesLoading(false)
-    })
-  }, [])
 
   function handleFetchAllCommunities(event) {
     event.preventDefault()

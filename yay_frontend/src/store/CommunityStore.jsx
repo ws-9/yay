@@ -6,7 +6,7 @@ import Community from "../../utilities/Community";
 
 const CommunityContext = createContext({
   myCommunities: [],
-  loading: true,
+  myCommunitiesLoading: true,
   selectedCommunity: null,
   fetchMyCommunities: function() {},
   setSelectedCommunity: function() {},
@@ -17,12 +17,12 @@ export function CommunityProvider({ children }) {
   const api = useApi()
 
   const [myCommunities, setMyCommunities] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [myCommunitiesLoading, setMyCommunitiesLoading] = useState(true)
   const [selectedCommunity, setSelectedCommunity] = useState(null)
 
   useEffect(() => {
     if (!token) {
-      setLoading(false)
+      setMyCommunitiesLoading(false)
       return
     }
 
@@ -30,7 +30,7 @@ export function CommunityProvider({ children }) {
   }, [])
 
   function fetchMyCommunities() {
-    setLoading(true)
+    setMyCommunitiesLoading(true)
     api(API_MY_COMMUNITIES_URL, {
       method: "GET",
       headers: {
@@ -47,13 +47,13 @@ export function CommunityProvider({ children }) {
     .catch(error => {
       console.error("Failed to fetch my communities:", error)
     })
-    .finally(() => setLoading(false))
+    .finally(() => setMyCommunitiesLoading(false))
   }
   return (
     <CommunityContext
       value={{
         myCommunities,
-        loading,
+        myCommunitiesLoading,
         selectedCommunity,
         fetchMyCommunities,
         setSelectedCommunity
