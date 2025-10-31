@@ -4,6 +4,7 @@ import useApi from "../../utilities/hooks/useApi"
 import { useEffect, useState } from "react"
 import { API_COMMUNITIES_URL, API_MY_COMMUNITIES_URL } from "../../utilities/urls"
 import Community from "../../utilities/Community"
+import SidebarCommunityCollapsible from "./SidebarCommunityCollapsible"
 
 function MainSideBar() {
   const { token, logout } = useAuth()
@@ -108,9 +109,10 @@ function MainSideBar() {
           ) : (
             <nav className="flex flex-col gap-2">
               {myCommunities.map(community => (
-                <div key={community.id} className="hover:underline cursor-pointer">
-                  {community.name}
-                </div>
+                <SidebarCommunityCollapsible
+                    key={community.id}
+                    community={community}
+                />
               ))}
             </nav>
           )}
