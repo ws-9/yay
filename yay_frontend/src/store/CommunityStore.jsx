@@ -7,9 +7,7 @@ import Community from "../../utilities/Community";
 const CommunityContext = createContext({
   myCommunities: [],
   myCommunitiesLoading: true,
-  selectedCommunity: null,
   fetchMyCommunities: function() {},
-  setSelectedCommunity: function() {},
 })
 
 export function CommunityProvider({ children }) {
@@ -18,7 +16,6 @@ export function CommunityProvider({ children }) {
 
   const [myCommunities, setMyCommunities] = useState([])
   const [myCommunitiesLoading, setMyCommunitiesLoading] = useState(true)
-  const [selectedCommunity, setSelectedCommunity] = useState(null)
 
   useEffect(() => {
     if (!token) {
@@ -54,9 +51,7 @@ export function CommunityProvider({ children }) {
       value={{
         myCommunities,
         myCommunitiesLoading,
-        selectedCommunity,
         fetchMyCommunities,
-        setSelectedCommunity
       }}
     >
       {children}
