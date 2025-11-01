@@ -8,10 +8,8 @@ import Home from './views/Home.jsx'
 import Register from './views/Register.jsx'
 import Login from './views/Login.jsx'
 import { AuthProvider } from './store/AuthStore.jsx'
-import Chat from './views/Chat.jsx'
 import CenteredAuthLayout from './components/CenteredAuthLayout.jsx'
-import WideChatLayout from './components/WideChatLayout.jsx'
-import MainSideBar from './components/MainSideBar.jsx'
+import Chat from './views/Chat.jsx'
 import { CommunityProvider } from './store/CommunityStore.jsx'
 import { ChannelSelectionProvider } from './store/SelectedChannelStore.jsx'
 
@@ -37,19 +35,14 @@ const router = createBrowserRouter([
         ]
       },
       {
+        path: 'chat',
         element: (
           <CommunityProvider>
             <ChannelSelectionProvider>
-              <WideChatLayout primarySidebar={<MainSideBar />} />
+              <Chat />
             </ChannelSelectionProvider>
           </CommunityProvider>
         ),
-        children: [
-          {
-            path: 'chat',
-            Component: Chat
-          },
-        ]
       }
     ]
   },
