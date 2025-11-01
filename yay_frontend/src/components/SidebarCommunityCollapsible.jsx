@@ -3,10 +3,12 @@ import useApi from "../../utilities/hooks/useApi"
 import { useAuth } from "../store/AuthStore"
 import { API_COMMUNITIES_URL } from "../../utilities/urls"
 import Channel from "../../utilities/Channel"
+import { useSetChannelSelection } from "../store/SelectedChannelStore"
 
 export default function SidebarCommunityCollapsible({ community }) {
   const { token } = useAuth()
   const api = useApi()
+  const { setSelectedChannel } = useSetChannelSelection()
 
   const [isExpanded, setIsExpanded] = useState(false)
   const [channels, setChannels] = useState([])
@@ -35,6 +37,10 @@ export default function SidebarCommunityCollapsible({ community }) {
     }
   }
 
+  function handleChannelSelection(channel) {
+    setSelectedChannel(channel)
+  }
+
   return (
     <div>
       <button
@@ -53,12 +59,13 @@ export default function SidebarCommunityCollapsible({ community }) {
           ) : (
             <nav className="flex flex-col gap-1">
               {channels.map(channel => (
-                <div
+                <button
                   key={channel.id}
-                  className="text-sm hover:underline cursor-pointer py-1"
+                  onClick={() => handleChannelSelection(channel)}
+                  className="text-sm text-left hover:underline cursor-pointer py-1"
                 >
                   # {channel.name}
-                </div>
+                </button>
               ))}
             </nav>
           )}
