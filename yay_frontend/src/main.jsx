@@ -13,6 +13,7 @@ import CenteredAuthLayout from './components/CenteredAuthLayout.jsx'
 import WideChatLayout from './components/WideChatLayout.jsx'
 import MainSideBar from './components/MainSideBar.jsx'
 import { CommunityProvider } from './store/CommunityStore.jsx'
+import { ChannelSelectionProvider } from './store/SelectedChannelStore.jsx'
 
 const router = createBrowserRouter([
   {
@@ -38,7 +39,9 @@ const router = createBrowserRouter([
       {
         element: (
           <CommunityProvider>
-            <WideChatLayout primarySidebar={<MainSideBar />} />
+            <ChannelSelectionProvider>
+              <WideChatLayout primarySidebar={<MainSideBar />} />
+            </ChannelSelectionProvider>
           </CommunityProvider>
         ),
         children: [
