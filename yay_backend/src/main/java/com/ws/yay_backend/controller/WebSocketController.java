@@ -1,6 +1,6 @@
 package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.request.Message;
+import com.ws.yay_backend.dto.request.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;

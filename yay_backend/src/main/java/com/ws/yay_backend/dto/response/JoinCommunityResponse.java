@@ -1,4 +1,4 @@
-package com.ws.yay_backend.response;
+package com.ws.yay_backend.dto.response;
 
 import jakarta.validation.constraints.NotNull;
 

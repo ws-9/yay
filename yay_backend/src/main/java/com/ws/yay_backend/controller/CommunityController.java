@@ -1,9 +1,9 @@
 package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.request.CreateCommunityRequest;
-import com.ws.yay_backend.response.GetChannelResponse;
-import com.ws.yay_backend.response.GetCommunityResponse;
-import com.ws.yay_backend.response.GetMemberResponse;
+import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.response.GetChannelResponse;
+import com.ws.yay_backend.dto.response.GetCommunityResponse;
+import com.ws.yay_backend.dto.response.GetMemberResponse;
 import com.ws.yay_backend.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

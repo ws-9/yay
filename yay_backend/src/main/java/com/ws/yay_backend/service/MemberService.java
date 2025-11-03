@@ -1,8 +1,8 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.request.JoinCommunityRequest;
-import com.ws.yay_backend.request.RemoveMemberRequest;
-import com.ws.yay_backend.response.JoinCommunityResponse;
+import com.ws.yay_backend.dto.request.JoinCommunityRequest;
+import com.ws.yay_backend.dto.request.RemoveMemberRequest;
+import com.ws.yay_backend.dto.response.JoinCommunityResponse;
 
 public interface MemberService {
   JoinCommunityResponse joinCommunity(JoinCommunityRequest request);

@@ -1,8 +1,8 @@
 package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.request.JoinCommunityRequest;
-import com.ws.yay_backend.request.RemoveMemberRequest;
-import com.ws.yay_backend.response.JoinCommunityResponse;
+import com.ws.yay_backend.dto.request.JoinCommunityRequest;
+import com.ws.yay_backend.dto.request.RemoveMemberRequest;
+import com.ws.yay_backend.dto.response.JoinCommunityResponse;
 import com.ws.yay_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

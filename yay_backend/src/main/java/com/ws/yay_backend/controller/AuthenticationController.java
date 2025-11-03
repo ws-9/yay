@@ -1,8 +1,8 @@
 package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.request.AuthenticationRequest;
-import com.ws.yay_backend.request.RegisterRequest;
-import com.ws.yay_backend.response.AuthenticationResponse;
+import com.ws.yay_backend.dto.request.AuthenticationRequest;
+import com.ws.yay_backend.dto.request.RegisterRequest;
+import com.ws.yay_backend.dto.response.AuthenticationResponse;
 import com.ws.yay_backend.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

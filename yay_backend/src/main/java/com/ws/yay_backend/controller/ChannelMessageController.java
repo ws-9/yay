@@ -1,7 +1,7 @@
 package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.request.CreateChannelMessageRequest;
-import com.ws.yay_backend.response.GetChannelMessageResponse;
+import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
+import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.service.ChannelMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

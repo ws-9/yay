@@ -1,6 +1,6 @@
 package com.ws.yay_backend.advice;
 
-import com.ws.yay_backend.response.SimpleErrorResponse;
+import com.ws.yay_backend.dto.response.SimpleErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
