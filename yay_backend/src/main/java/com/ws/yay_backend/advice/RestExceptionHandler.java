@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class RestExceptionHandler {
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<SimpleErrorResponse> handleUsernameNotFoundException(ResponseStatusException e) {
     return ResponseEntity
