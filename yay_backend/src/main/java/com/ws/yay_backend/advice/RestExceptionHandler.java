@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -21,10 +21,10 @@ public class RestExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-    Map<String, String> errors = new HashMap<>();
+  public ResponseEntity<List<SimpleErrorResponse>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    List<SimpleErrorResponse> errors = new ArrayList<>();
     ex.getBindingResult().getFieldErrors()
-        .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        .forEach(error -> errors.add(new SimpleErrorResponse(error.getDefaultMessage())));
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
