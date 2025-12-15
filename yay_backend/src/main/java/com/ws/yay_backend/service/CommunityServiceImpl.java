@@ -3,6 +3,8 @@ package com.ws.yay_backend.service;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.UserRepository;
+import com.ws.yay_backend.dto.response.GetCommunityWithChannelsResponse;
+import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
@@ -18,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -104,7 +108,7 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<GetCommunityResponse> getUserOwnCommunities() {
+  public List<GetCommunityWithChannelsResponse> getUserOwnCommunities() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
     String username = auth.getName();
@@ -113,12 +117,33 @@ public class CommunityServiceImpl implements CommunityService {
             HttpStatus.INTERNAL_SERVER_ERROR,
             "Authenticated user not found: " + username
         ));
-    return communityRepository.findByMembers_id(user.getId()).stream()
-        .map(community -> new GetCommunityResponse(
-            community.getId(),
-            community.getName(),
-            community.getOwner().getId(),
-            community.getOwner().getUsername()
+
+    List<Community> communities = communityRepository.findByMembers_id(user.getId());
+
+    if (communities.isEmpty()) {
+      return List.of();
+    }
+
+    List<Long> communityIds = communities.stream().map(Community::getId).toList();
+
+    List<Channel> channels = channelRepository.findAllByCommunity_IdIn(communityIds);
+    Map<Long, List<GetChannelResponse>> communityIdToChannels = channels.stream()
+        .map(c -> new GetChannelResponse(
+            c.getId(),
+            c.getName(),
+            c.getCommunity().getId()
+        ))
+        .collect(Collectors.groupingBy(
+            GetChannelResponse::communityId
+        ));
+
+    return communities.stream()
+        .map( c -> new GetCommunityWithChannelsResponse(
+            c.getId(),
+            c.getName(),
+            c.getOwner().getId(),
+            c.getOwner().getUsername(),
+            communityIdToChannels.getOrDefault(c.getId(), List.of())
         )).toList();
   }
 

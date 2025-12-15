@@ -12,4 +12,6 @@ public interface ChannelRepository extends JpaRepository<Channel, Long> {
   boolean existsByIdAndCommunity_Members_Id(Long channelId, Long userId);
   
   boolean existsByIdAndCommunity_Owner_Id(Long channelId, Long userId);
+
+  List<Channel> findAllByCommunity_IdIn(List<Long> communityIds);
 }
