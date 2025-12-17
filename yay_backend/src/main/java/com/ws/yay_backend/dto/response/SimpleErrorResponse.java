@@ -1,4 +1,6 @@
 package com.ws.yay_backend.dto.response;
 
-public record SimpleErrorResponse(String error) {
+import jakarta.validation.constraints.NotNull;
+
+public record SimpleErrorResponse(@NotNull String error) {
 }

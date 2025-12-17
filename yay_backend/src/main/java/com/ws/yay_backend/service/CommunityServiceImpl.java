@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +62,7 @@ public class CommunityServiceImpl implements CommunityService {
             "Authenticated user not found: " + username
         ));
 
-    Community community = new Community(request.getName(), owner, Set.of(owner));
+    Community community = new Community(request.name(), owner, Set.of(owner));
     Community saved = communityRepository.save(community);
 
     return new GetCommunityResponse(

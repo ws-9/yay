@@ -40,7 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   @Override
   @Transactional
   public void register(RegisterRequest registerRequest) throws Exception {
-    if (isUsernameTaken(registerRequest.getUsername())) {
+    if (isUsernameTaken(registerRequest.username())) {
       throw new Exception("Username is already taken");
     }
     userRepository.save(createUserEntity(registerRequest));
@@ -51,11 +51,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
-            authenticationRequest.getUsername(), authenticationRequest.getPassword()
+            authenticationRequest.username(), authenticationRequest.password()
         )
     );
 
-    User user = userRepository.findByUsernameWithRoles(authenticationRequest.getUsername())
+    User user = userRepository.findByUsernameWithRoles(authenticationRequest.username())
         .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
     List<String> roles = user.getRoles().stream()
@@ -76,8 +76,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   private User createUserEntity(RegisterRequest registerRequest) {
-    String username = registerRequest.getUsername();
-    String password = registerRequest.getPassword();
+    String username = registerRequest.username();
+    String password = registerRequest.username();
 
     Role defaultRole = roleRepository.findByName("ROLE_USER")
         .orElseThrow(() -> new RuntimeException("Default role not found"));
