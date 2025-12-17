@@ -39,8 +39,8 @@ export default function MainSidebar() {
   ));
 
   return (
-    <div className="hidden flex-col justify-between border-r-2 sm:flex">
-      <div>{communityTabs}</div>
+    <div className="hidden max-h-full grid-rows-[1fr_auto] border-r-2 sm:grid">
+      <div className="overflow-y-auto">{communityTabs}</div>
       <button className="cursor-pointer" onClick={logout}>
         Logout
       </button>

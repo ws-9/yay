@@ -15,7 +15,7 @@ export default function Chat() {
     }
   }, [isAuthenticated, connect]);
   return (
-    <div className="grid min-h-screen grid-cols-[1fr] sm:grid-cols-[15rem_1fr] lg:grid-cols-[15rem_1fr_15rem]">
+    <div className="grid h-screen grid-cols-[1fr] grid-rows-[100dvh] sm:grid-cols-[15rem_1fr] lg:grid-cols-[15rem_1fr_15rem]">
       <MainSidebar />
       <ChatNode />
       <div className="hidden bg-gray-300 lg:block">Secondary bar</div>
