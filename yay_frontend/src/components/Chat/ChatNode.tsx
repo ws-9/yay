@@ -76,12 +76,10 @@ export default function ChatNode() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
-      <div className="border-b-2">Top Bar</div>
-      <div className="overflow-y-auto">
-        <p>Selected Channel = {selectedChannel || 'None'}</p>
-        {isLoading ? <div>Loading</div> : <div>{JSON.stringify(data)}</div>}
-        {renderedMessages}
+      <div className="border-b-2">
+        {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
       </div>
+      <div className="overflow-y-auto">{renderedMessages}</div>
       <textarea
         className="field-sizing-content max-h-[9lh] w-full resize-none border-2"
         placeholder="Type away..."
