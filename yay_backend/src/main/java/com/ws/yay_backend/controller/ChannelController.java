@@ -31,6 +31,12 @@ public class ChannelController {
     return channelService.createChannel(request);
   }
 
+  @Operation(summary = "Get channel by id")
+  @GetMapping("{id}")
+  public GetChannelResponse getChannel(@PathVariable long id) {
+    return channelService.getChannel(id);
+  }
+
   @Operation(summary = "Get all channel messages")
   @GetMapping("{id}/messages")
   public List<GetChannelMessageResponse> getChannels(@PathVariable Long id) {

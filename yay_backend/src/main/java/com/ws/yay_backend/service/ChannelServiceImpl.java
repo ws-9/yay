@@ -54,6 +54,16 @@ public class ChannelServiceImpl implements ChannelService {
 
   @Override
   @Transactional(readOnly = true)
+  public GetChannelResponse getChannel(long id) {
+    Channel channel = channelRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Channel not found with id: " + id
+        ));
+    return new GetChannelResponse(channel.getId(), channel.getName(), channel.getCommunity().getId());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public List<GetChannelMessageResponse> getChannelMessages(long channelId) {
     return channelMessageRepository.findAllByChannel_Id(channelId).stream()
         .map(c -> new GetChannelMessageResponse(
