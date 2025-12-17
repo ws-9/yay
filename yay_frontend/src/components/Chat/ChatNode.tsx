@@ -5,23 +5,12 @@ import {
   useWebSocketConnectedStatus,
 } from '../../store/webSocketStore';
 import { useChannelQuery } from '../../hooks/useChannelQuery';
-
-type ChannelMessageBroadcast = {
-  id: number;
-  message: string;
-  userId: number;
-  username: string;
-  channelId: number;
-};
-
-type ChannelMessageEvent = {
-  message: string;
-};
+import MessageField from './MessageField';
+import type { ChannelMessageBroadcast } from '../../types/ChannelMessageBroadcast';
 
 export default function ChatNode() {
   const selectedChannel = useSelectedChannel();
-  const [message, setMessage] = useState('');
-  const { subscribe, publish } = useWebSocketActions();
+  const { subscribe } = useWebSocketActions();
   const webSocketConnected = useWebSocketConnectedStatus();
   const [messageEvents, setMessagesEvents] = useState<
     Array<ChannelMessageBroadcast>
@@ -61,32 +50,13 @@ export default function ChatNode() {
     />
   ));
 
-  function handleEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      if (!message.trim()) {
-        return;
-      }
-      event.preventDefault();
-      const messageBroadcast: ChannelMessageEvent = { message };
-      publish(`/app/chat/${selectedChannel}`, messageBroadcast);
-      console.log('yeah');
-      setMessage('');
-    }
-  }
-
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
       <div className="border-b-2">
         {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
       </div>
       <div className="overflow-y-auto">{renderedMessages}</div>
-      <textarea
-        className="field-sizing-content max-h-[9lh] w-full resize-none border-2"
-        placeholder="Type away..."
-        value={message}
-        onChange={event => setMessage(event.target.value)}
-        onKeyDown={handleEnter}
-      />
+      <MessageField selectedChannel={selectedChannel} />
     </div>
   );
 }
