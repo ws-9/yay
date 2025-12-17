@@ -4,7 +4,6 @@ import { useTokenState } from './authStore';
 
 type WebSocketStore = {
   client: Client | null;
-  connected: boolean;
   actions: {
     connect: (brokerURL: string) => void;
     disconnect: () => void;
@@ -18,7 +17,6 @@ type WebSocketStore = {
 
 const useWebSocketStore = create<WebSocketStore>()((set, get) => ({
   client: null,
-  connected: false,
   actions: {
     connect: brokerURL => {
       const { client: currentClient } = get();
@@ -35,11 +33,11 @@ const useWebSocketStore = create<WebSocketStore>()((set, get) => ({
         },
         onConnect: () => {
           console.log('Connected to websocket');
-          set({ connected: true });
+          set({ client });
         },
         onDisconnect: () => {
           console.log('Disconnected from websocket');
-          set({ connected: false });
+          set({ client: null });
         },
         onStompError: frame => {
           console.error('STOMP error:', frame);
@@ -53,7 +51,7 @@ const useWebSocketStore = create<WebSocketStore>()((set, get) => ({
       const { client } = get();
       if (client) {
         client.deactivate();
-        set({ client: null, connected: false });
+        set({ client: null });
       }
     },
     subscribe: (destination, callback) => {
@@ -74,7 +72,7 @@ const useWebSocketStore = create<WebSocketStore>()((set, get) => ({
         subscription.unsubscribe();
       };
     },
-    publish(destination, body) {
+    publish: (destination, body) => {
       const { client } = get();
       if (!client?.connected) {
         console.warn('WebSocket not connected');
@@ -94,7 +92,7 @@ export function useWebSocketActions() {
 }
 
 export function useWebSocketConnectedStatus() {
-  return useWebSocketStore(state => state.connected);
+  return useWebSocketStore(state => state.client?.connected ?? false);
 }
 
 export function useWebSocketClient() {
