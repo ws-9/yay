@@ -1,22 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_MY_COMMUNITIES } from '../../constants';
 import { useAuthActions, useToken } from '../../store/authStore';
-import { Activity, useEffect, useState } from 'react';
+import React, { Activity, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-
-type Community = {
-  id: string;
-  name: string;
-  ownerId: number;
-  ownerUsername: string;
-  channels: Array<Channel>;
-};
-
-type Channel = {
-  id: number;
-  name: string;
-  communityId: number;
-};
+import { useSelectedActions } from '../../store/selectionStore';
+import type { Channel } from '../../types/Channel';
+import type { Community } from '../../types/Community';
 
 export default function MainSidebar() {
   const token = useToken();
@@ -45,7 +34,7 @@ export default function MainSidebar() {
     <CommunityTab
       key={community.id}
       name={community.name}
-      channels={community.channels}
+      channels={community.channels ?? []}
     />
   ));
 
@@ -86,8 +75,14 @@ function CommunityTab({
 }
 
 function ChannelTab({ name, id }: { name: string; id: number }) {
+  const { selectChannel } = useSelectedActions();
+
+  function handleClick(e: React.MouseEvent<HTMLDivElement>) {
+    selectChannel(id);
+  }
+
   return (
-    <div className="max-w-max cursor-pointer" onClick={() => console.log(id)}>
+    <div className="max-w-max cursor-pointer" onClick={handleClick}>
       - {name}
     </div>
   );

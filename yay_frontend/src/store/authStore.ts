@@ -37,3 +37,7 @@ export function useAuthActions() {
 export function useIsAuthenticated() {
   return useAuthStore(state => state.token !== null);
 }
+
+export function useTokenState() {
+  return useAuthStore.getState();
+}
