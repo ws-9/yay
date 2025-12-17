@@ -1,9 +1,8 @@
 package com.ws.yay_backend.service;
 
+import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.ChannelMessageRepository;
 import com.ws.yay_backend.dao.ChannelRepository;
-import com.ws.yay_backend.dao.CommunityRepository;
-import com.ws.yay_backend.dao.UserRepository;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
 import com.ws.yay_backend.entity.User;
@@ -12,8 +11,6 @@ import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,15 +19,13 @@ import org.springframework.web.server.ResponseStatusException;
 public class ChannelMessageServiceImpl implements ChannelMessageService {
   private final ChannelMessageRepository channelMessageRepository;
   private final ChannelRepository channelRepository;
-  private final CommunityRepository communityRepository;
-  private final UserRepository userRepository;
+  private final AuthUtilsComponent authUtilsComponent;
 
   @Autowired
-  public ChannelMessageServiceImpl(ChannelMessageRepository channelMessageRepository, ChannelRepository channelRepository, CommunityRepository communityRepository, UserRepository userRepository) {
+  public ChannelMessageServiceImpl(ChannelMessageRepository channelMessageRepository, ChannelRepository channelRepository, AuthUtilsComponent authUtilsComponent) {
     this.channelMessageRepository = channelMessageRepository;
     this.channelRepository = channelRepository;
-    this.communityRepository = communityRepository;
-    this.userRepository = userRepository;
+    this.authUtilsComponent = authUtilsComponent;
   }
 
   @Override
@@ -41,13 +36,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       @channelRepository.existsByIdAndCommunity_Owner_Id(#request.channelId, authentication.principal.id)
       """)
   public GetChannelMessageResponse createMessage(CreateChannelMessageRequest request) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    User user = userRepository.findByUsername(auth.getName())
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Authenticated user not found: " + auth.getName()
-        ));
+    User user = authUtilsComponent.getAuthenticatedUser();
 
     Channel channel = channelRepository.findById((request.channelId()))
         .orElseThrow(() -> new ResponseStatusException(
@@ -57,6 +46,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
     ChannelMessage channelMessage = new ChannelMessage(request.message(), user, channel);
     ChannelMessage saved = channelMessageRepository.save(channelMessage);
+
     return new GetChannelMessageResponse(
         saved.getId(),
         saved.getMessage(),

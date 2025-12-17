@@ -1,8 +1,8 @@
 package com.ws.yay_backend.service;
 
+import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
-import com.ws.yay_backend.dao.UserRepository;
 import com.ws.yay_backend.dto.response.GetCommunityWithChannelsResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
@@ -14,8 +14,6 @@ import com.ws.yay_backend.dto.response.GetMemberResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,14 +26,14 @@ import java.util.stream.Collectors;
 @Service
 public class CommunityServiceImpl implements CommunityService {
   private final CommunityRepository communityRepository;
-  private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
+  private final AuthUtilsComponent authUtilsComponent;
 
   @Autowired
-  public CommunityServiceImpl(CommunityRepository communityRepository, UserRepository userRepository, ChannelRepository channelRepository) {
+  public CommunityServiceImpl(CommunityRepository communityRepository, ChannelRepository channelRepository, AuthUtilsComponent authUtilsComponent) {
     this.communityRepository = communityRepository;
-    this.userRepository = userRepository;
     this.channelRepository = channelRepository;
+    this.authUtilsComponent = authUtilsComponent;
   }
 
   @Override
@@ -53,14 +51,7 @@ public class CommunityServiceImpl implements CommunityService {
   @Override
   @Transactional
   public GetCommunityResponse createCommunity(CreateCommunityRequest request) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    String username = auth.getName();
-    User owner = userRepository.findByUsername(username)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Authenticated user not found: " + username
-        ));
+    User owner = authUtilsComponent.getAuthenticatedUser();
 
     Community community = new Community(request.name(), owner, Set.of(owner));
     Community saved = communityRepository.save(community);
@@ -108,14 +99,7 @@ public class CommunityServiceImpl implements CommunityService {
   @Override
   @Transactional(readOnly = true)
   public List<GetCommunityWithChannelsResponse> getUserOwnCommunities() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    String username = auth.getName();
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Authenticated user not found: " + username
-        ));
+    User user = authUtilsComponent.getAuthenticatedUser();
 
     List<Community> communities = communityRepository.findByMembers_id(user.getId());
 

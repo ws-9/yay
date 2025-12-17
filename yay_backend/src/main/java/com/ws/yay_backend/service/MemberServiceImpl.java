@@ -1,5 +1,6 @@
 package com.ws.yay_backend.service;
 
+import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.UserRepository;
 import com.ws.yay_backend.entity.Community;
@@ -9,8 +10,6 @@ import com.ws.yay_backend.dto.request.RemoveMemberRequest;
 import com.ws.yay_backend.dto.response.JoinCommunityResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,24 +18,19 @@ import org.springframework.web.server.ResponseStatusException;
 public class MemberServiceImpl implements MemberService {
   private final UserRepository userRepository;
   private final CommunityRepository communityRepository;
+  private final AuthUtilsComponent authUtilsComponent;
 
-  public MemberServiceImpl(UserRepository userRepository, CommunityRepository communityRepository) {
+  public MemberServiceImpl(UserRepository userRepository, CommunityRepository communityRepository, AuthUtilsComponent authUtilsComponent) {
     this.userRepository = userRepository;
     this.communityRepository = communityRepository;
+    this.authUtilsComponent = authUtilsComponent;
   }
 
   @Override
   @Transactional
   // TODO: implement banned_users table and check current user against it.
   public JoinCommunityResponse joinCommunity(JoinCommunityRequest request) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    String username = auth.getName();
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Authenticated user not found: " + username
-        ));
+    User user = authUtilsComponent.getAuthenticatedUser();
 
     Community community = communityRepository.findWithMembersById(request.communityId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));

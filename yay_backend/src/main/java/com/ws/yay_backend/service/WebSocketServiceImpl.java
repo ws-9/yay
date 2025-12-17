@@ -1,29 +1,27 @@
 package com.ws.yay_backend.service;
 
+import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.ChannelMessageRepository;
 import com.ws.yay_backend.dao.ChannelRepository;
-import com.ws.yay_backend.dao.UserRepository;
 import com.ws.yay_backend.dto.broadcast.ChannelMessageBroadcast;
 import com.ws.yay_backend.dto.event.CreateChannelMessageEvent;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
 import com.ws.yay_backend.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WebSocketServiceImpl implements  WebSocketService {
   private final ChannelMessageRepository channelMessageRepository;
   private final ChannelRepository channelRepository;
-  private final UserRepository userRepository;
+  private final AuthUtilsComponent authUtilsComponent;
 
   @Autowired
-  public WebSocketServiceImpl(ChannelMessageRepository channelMessageRepository, ChannelRepository channelRepository, UserRepository userRepository) {
+  public WebSocketServiceImpl(ChannelMessageRepository channelMessageRepository, ChannelRepository channelRepository, AuthUtilsComponent authUtilsComponent) {
     this.channelMessageRepository = channelMessageRepository;
     this.channelRepository = channelRepository;
-    this.userRepository = userRepository;
+    this.authUtilsComponent = authUtilsComponent;
   }
 
   @Override
@@ -32,9 +30,7 @@ public class WebSocketServiceImpl implements  WebSocketService {
       throw new RuntimeException("Message cannot be empty");
     }
 
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    User user = userRepository.findByUsername(auth.getName())
-        .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + auth.getName()));
+    User user = authUtilsComponent.getAuthenticatedUser();
 
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> new RuntimeException("Channel not found: " + channelId));
