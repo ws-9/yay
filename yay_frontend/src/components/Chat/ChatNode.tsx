@@ -13,9 +13,13 @@ type ChannelMessageBroadcast = {
   channelId: number;
 };
 
+type ChannelMessageEvent = {
+  message: string;
+};
+
 export default function ChatNode() {
   const selectedChannel = useSelectedChannel();
-  const { subscribe } = useWebSocketActions();
+  const { subscribe, publish } = useWebSocketActions();
   const webSocketConnected = useWebSocketConnectedStatus();
   const [messages, setMessages] = useState<Array<ChannelMessageBroadcast>>([]);
   const { data, isLoading, error } = useChannelQuery(selectedChannel);
@@ -48,6 +52,18 @@ export default function ChatNode() {
   return (
     <div>
       <p>Chat</p>
+      <button className="cursor-pointer" onClick={() => console.log(messages)}>
+        Messages
+      </button>
+      <button
+        className="cursor-pointer"
+        onClick={() => {
+          const message: ChannelMessageEvent = { message: 'hi' };
+          publish(`/app/chat/${selectedChannel}`, message);
+        }}
+      >
+        Send message
+      </button>
       <p>Selected Channel = {selectedChannel || 'None'}</p>
       {isLoading ? <div>Loading</div> : <div>{JSON.stringify(data)}</div>}
     </div>

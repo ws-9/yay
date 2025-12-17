@@ -12,6 +12,7 @@ type WebSocketStore = {
       destination: string,
       callback: (message: any) => void,
     ) => () => void;
+    publish: (destination: string, body: any) => void;
   };
 };
 
@@ -72,6 +73,18 @@ const useWebSocketStore = create<WebSocketStore>()((set, get) => ({
         console.log('Unsubscribing');
         subscription.unsubscribe();
       };
+    },
+    publish(destination, body) {
+      const { client } = get();
+      if (!client?.connected) {
+        console.warn('WebSocket not connected');
+        return;
+      }
+
+      client.publish({
+        destination,
+        body: JSON.stringify(body),
+      });
     },
   },
 }));
