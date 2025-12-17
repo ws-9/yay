@@ -11,11 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
-  // Eagerly load owners
-  @Override
-  @EntityGraph(attributePaths = {"owner"})
-  List<Community> findAll();
-
   boolean existsByIdAndOwner_Id(Long id, Long ownerId);
 
   // findById with a different name convention for eager loading

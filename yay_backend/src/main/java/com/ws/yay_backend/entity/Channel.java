@@ -15,7 +15,7 @@ public class Channel {
   @Column(name = "name", length = 35, nullable = false)
   private String name;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "community_id", nullable = false)
   private Community community;
 
