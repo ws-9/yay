@@ -6,6 +6,7 @@ public record ChannelMessageBroadcast(
     @NotNull long id,
     @NotNull String message,
     @NotNull long userId,
+    @NotNull String username,
     @NotNull long channelId
 ) {
 }

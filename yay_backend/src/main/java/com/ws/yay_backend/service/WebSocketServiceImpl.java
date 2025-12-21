@@ -51,6 +51,7 @@ public class WebSocketServiceImpl implements  WebSocketService {
         saved.getId(),
         saved.getMessage(),
         saved.getUser().getId(),
+        saved.getUser().getUsername(),
         saved.getChannel().getId()
     );
   }

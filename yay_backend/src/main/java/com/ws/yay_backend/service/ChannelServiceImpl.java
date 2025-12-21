@@ -48,7 +48,8 @@ public class ChannelServiceImpl implements ChannelService {
     return new GetChannelResponse(
         saved.getId(),
         saved.getName(),
-        saved.getCommunity().getId()
+        saved.getCommunity().getId(),
+        saved.getCommunity().getName()
     );
   }
 
@@ -59,7 +60,12 @@ public class ChannelServiceImpl implements ChannelService {
         .orElseThrow(() -> new ResponseStatusException(
             HttpStatus.NOT_FOUND, "Channel not found with id: " + id
         ));
-    return new GetChannelResponse(channel.getId(), channel.getName(), channel.getCommunity().getId());
+    return new GetChannelResponse(
+        channel.getId(),
+        channel.getName(),
+        channel.getCommunity().getId(),
+        channel.getCommunity().getName()
+    );
   }
 
   @Override

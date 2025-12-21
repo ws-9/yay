@@ -114,7 +114,8 @@ public class CommunityServiceImpl implements CommunityService {
         .map(c -> new GetChannelResponse(
             c.getId(),
             c.getName(),
-            c.getCommunity().getId()
+            c.getCommunity().getId(),
+            c.getCommunity().getName()
         ))
         .collect(Collectors.groupingBy(
             GetChannelResponse::communityId
@@ -141,7 +142,8 @@ public class CommunityServiceImpl implements CommunityService {
         .map(channel -> new GetChannelResponse(
             channel.getId(),
             channel.getName(),
-            channel.getCommunity().getId()
+            channel.getCommunity().getId(),
+            channel.getCommunity().getName()
         )).toList();
   }
 }
