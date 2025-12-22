@@ -10,6 +10,4 @@ public interface ChannelService {
   GetChannelResponse createChannel(CreateChannelRequest request);
 
   GetChannelResponse getChannel(long id);
-
-  List<GetChannelMessageResponse> getChannelMessages(long channelId);
 }

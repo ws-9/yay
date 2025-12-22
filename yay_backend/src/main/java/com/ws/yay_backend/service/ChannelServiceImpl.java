@@ -67,16 +67,4 @@ public class ChannelServiceImpl implements ChannelService {
         channel.getCommunity().getName()
     );
   }
-
-  @Override
-  @Transactional(readOnly = true)
-  public List<GetChannelMessageResponse> getChannelMessages(long channelId) {
-    return channelMessageRepository.findAllByChannel_Id(channelId).stream()
-        .map(c -> new GetChannelMessageResponse(
-           c.getId(),
-           c.getMessage(),
-           c.getUser().getId(),
-           c.getChannel().getId()
-        )).toList();
-  }
 }
