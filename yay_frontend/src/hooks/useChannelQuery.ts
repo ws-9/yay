@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_COMMUNITY } from '../constants';
+import { API_CHANNELS } from '../constants';
 import { useTokenState } from '../store/authStore';
 import type { Channel } from '../types/Channel';
 
@@ -22,7 +22,7 @@ async function getChannel(
   selectedChannel: number | null,
   token: string | null,
 ) {
-  const response = await fetch(`${API_COMMUNITY}/${selectedChannel}`, {
+  const response = await fetch(`${API_CHANNELS}/${selectedChannel}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
