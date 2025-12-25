@@ -22,7 +22,7 @@ export default function Inbox({
   const [messageEvents, setMessagesEvents] = useState<Array<ChannelMessage>>(
     [],
   );
-  const { data, error, status } = useInfiniteQuery({
+  const { data, error, status, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['channels', selectedChannel, 'messages'],
     queryFn: fetchMessages,
     initialPageParam: {
@@ -44,10 +44,6 @@ export default function Inbox({
       };
     },
   });
-
-  if (data) {
-    console.log(data);
-  }
 
   async function fetchMessages({
     pageParam,
@@ -106,7 +102,12 @@ export default function Inbox({
     return unsubscribe;
   }, [selectedChannel, webSocketConnected, subscribe]);
 
-  const renderedMessages = messageEvents.map(message => (
+  const oldMessages = data?.pages.flatMap(page => page.data) ?? [];
+  const allMessages = [...oldMessages, ...messageEvents].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
+
+  const renderedMessages = allMessages.map(message => (
     <MessageRender
       key={message.id}
       username={message.username}
@@ -114,7 +115,15 @@ export default function Inbox({
       createdAt={message.createdAt}
     />
   ));
-  return <div className="overflow-y-auto">{renderedMessages}</div>;
+
+  return (
+    <div className="overflow-y-auto">
+      {renderedMessages}
+      {hasNextPage && (
+        <button onClick={() => fetchNextPage()}>Load more</button>
+      )}
+    </div>
+  );
 }
 
 function MessageRender({
