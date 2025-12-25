@@ -1,7 +1,7 @@
-import type { GetChannelMessageResponse } from './GetChannelMessageResponse';
+import type { ChannelMessage } from './ChannelMessage';
 
 export type CursorPaginatedChannelMessages = {
-  data: Array<GetChannelMessageResponse>;
+  data: Array<ChannelMessage>;
   nextCursor: string;
   nextCursorId: number;
   hasNext: boolean;

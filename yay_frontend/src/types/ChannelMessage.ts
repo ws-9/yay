@@ -1,4 +1,4 @@
-export type ChannelMessageBroadcast = {
+export type ChannelMessage = {
   id: number;
   message: string;
   userId: number;

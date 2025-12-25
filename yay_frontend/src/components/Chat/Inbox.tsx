@@ -3,11 +3,12 @@ import {
   useWebSocketActions,
   useWebSocketConnectedStatus,
 } from '../../store/webSocketStore';
-import type { ChannelMessageBroadcast } from '../../types/ChannelMessageBroadcast';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import type { ChannelMessagePageParam } from '../../types/ChannelMessagePageParam';
 import type { CursorPaginatedChannelMessages } from '../../types/CursorPaginatedChannelMessages';
-import type { GetChannelMessageResponse } from '../../types/GetChannelMessageResponse';
+import type { ChannelMessage } from '../../types/ChannelMessage';
+import { API_CHANNELS } from '../../constants';
+import { useTokenState } from '../../store/authStore';
 
 const PAGE_SIZE = 10;
 
@@ -18,13 +19,10 @@ export default function Inbox({
 }) {
   const { subscribe } = useWebSocketActions();
   const webSocketConnected = useWebSocketConnectedStatus();
-  const [oldMessages, setOldMessages] = useState<
-    Array<GetChannelMessageResponse>
-  >([]);
-  const [messageEvents, setMessagesEvents] = useState<
-    Array<ChannelMessageBroadcast>
-  >([]);
-  const query = useInfiniteQuery({
+  const [messageEvents, setMessagesEvents] = useState<Array<ChannelMessage>>(
+    [],
+  );
+  const { data, error, status } = useInfiniteQuery({
     queryKey: ['channels', selectedChannel, 'messages'],
     queryFn: fetchMessages,
     initialPageParam: {
@@ -47,6 +45,39 @@ export default function Inbox({
     },
   });
 
+  if (data) {
+    console.log(data);
+  }
+
+  async function fetchMessages({
+    pageParam,
+  }: {
+    pageParam: ChannelMessagePageParam;
+  }): Promise<CursorPaginatedChannelMessages> {
+    const { token } = useTokenState();
+    const params = new URLSearchParams({
+      size: PAGE_SIZE.toString(),
+    });
+
+    if (pageParam.cursor) {
+      params.append('cursor', pageParam.cursor);
+    }
+    if (pageParam.cursorId) {
+      params.append('cursorId', pageParam.cursorId.toString());
+    }
+
+    const response = await fetch(
+      `${API_CHANNELS}/${selectedChannel}/messages?${params}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.json();
+  }
+
   useEffect(() => {
     if (!webSocketConnected || !selectedChannel) {
       return;
@@ -56,7 +87,6 @@ export default function Inbox({
     const unsubscribe = subscribe(
       `/topic/channel/${selectedChannel}`,
       payload => {
-        console.log(JSON.stringify(payload));
         setMessagesEvents(prev => [
           ...prev,
           {
@@ -97,26 +127,4 @@ function MessageRender({
   createdAt: string;
 }) {
   return <div>{`[${createdAt}] ${username}: ${message}`}</div>;
-}
-
-async function fetchMessages({
-  pageParam,
-}: {
-  pageParam: ChannelMessagePageParam;
-}): Promise<CursorPaginatedChannelMessages> {
-  const params = new URLSearchParams({
-    size: pageParam.size.toString(),
-  });
-
-  if (pageParam.cursor) {
-    params.append('cursor', pageParam.cursor);
-  }
-  if (pageParam.cursorId) {
-    params.append('cursorId', pageParam.cursorId.toString());
-  }
-
-  const response = await fetch(
-    `/api/channels/${pageParam.id}/messages?${params}`,
-  );
-  return response.json();
 }
