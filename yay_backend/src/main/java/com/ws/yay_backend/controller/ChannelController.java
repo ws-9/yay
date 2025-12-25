@@ -46,7 +46,7 @@ public class ChannelController {
 
   @Operation(summary = "Get paginated channel messages")
   @GetMapping("{id}/messages")
-  public CursorPaginatedResponse<GetChannelMessageResponse> getChannels(
+  public CursorPaginatedResponse<GetChannelMessageResponse> getChannelMessages(
       @PathVariable
       long id,
       @RequestParam(defaultValue = "50") @Min(1) @Max(100)
