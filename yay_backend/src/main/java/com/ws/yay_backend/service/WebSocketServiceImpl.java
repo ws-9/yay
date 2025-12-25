@@ -47,12 +47,6 @@ public class WebSocketServiceImpl implements  WebSocketService {
     ChannelMessage message = new ChannelMessage(event.message(), user, channel);
     ChannelMessage saved = channelMessageRepository.save(message);
 
-    return new ChannelMessageBroadcast(
-        saved.getId(),
-        saved.getMessage(),
-        saved.getUser().getId(),
-        saved.getUser().getUsername(),
-        saved.getChannel().getId()
-    );
+    return new ChannelMessageBroadcast(saved);
   }
 }
