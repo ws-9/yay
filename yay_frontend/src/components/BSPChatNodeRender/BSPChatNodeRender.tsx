@@ -1,5 +1,5 @@
 import type { BSPChatNode } from '../../types/BSPChatNode';
-import ChatPane from '../Chat/ChatPane';
+import ChatPane from '../ChatPage/ChatPane';
 import {
   useWorkspaceActions,
   useActivePaneId,
