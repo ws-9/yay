@@ -10,7 +10,7 @@ export default function ChatPane({
   const { data, isLoading, error } = useChannelQuery(selectedChannel);
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto]">
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr_auto]">
       <div className="border-b-2">
         {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
       </div>
