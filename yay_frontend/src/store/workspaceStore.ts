@@ -145,3 +145,6 @@ export const useActivePaneId = () =>
 
 // Non-reactive getter for use in event handlers
 export const getActivePaneId = () => useWorkspaceStore.getState().activePaneId;
+
+export const useIsActivePane = (nodeId: string) =>
+  useWorkspaceStore(state => state.activePaneId === nodeId);
