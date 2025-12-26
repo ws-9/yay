@@ -2,7 +2,7 @@ import { useChannelQuery } from '../../hooks/useChannelQuery';
 import MessageField from './MessageField';
 import Inbox from './Inbox';
 
-export default function ChatNode({
+export default function ChatPane({
   selectedChannel,
 }: {
   selectedChannel: number | null;

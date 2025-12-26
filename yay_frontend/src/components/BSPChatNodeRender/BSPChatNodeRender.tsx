@@ -1,5 +1,5 @@
 import type { BSPChatNode } from '../../types/BSPChatNode';
-import ChatNode from '../Chat/ChatNode';
+import ChatPane from '../Chat/ChatPane';
 import {
   useWorkspaceActions,
   useActivePaneId,
@@ -48,7 +48,7 @@ export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
         {/* Pane content */}
         <div className="flex-1 overflow-hidden">
           {node.channelId !== null ? (
-            <ChatNode selectedChannel={node.channelId} />
+            <ChatPane selectedChannel={node.channelId} />
           ) : (
             <div className="flex h-full items-center justify-center text-gray-500">
               Select a channel from the sidebar
