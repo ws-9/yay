@@ -4,11 +4,7 @@ import type { ChannelMessagePageParam } from '../types/ChannelMessagePageParam';
 import { useTokenState } from '../store/authStore';
 import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../constants';
 
-export function useInfChannelMessagesQuery({
-  selectedChannel,
-}: {
-  selectedChannel: number;
-}) {
+export function useInfChannelMessagesQuery(selectedChannel: number) {
   const { data, error, status, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['channels', selectedChannel, 'messages'],
     queryFn: fetchMessages,

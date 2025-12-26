@@ -1,11 +1,6 @@
-import { useEffect, useState } from 'react';
-import {
-  useWebSocketActions,
-  useWebSocketConnectedStatus,
-} from '../../store/webSocketStore';
-import type { ChannelMessage } from '../../types/ChannelMessage';
 import { format } from 'date-fns';
 import { useInfChannelMessagesQuery } from '../../hooks/useInfChannelMessagesQuery';
+import { useChannelSubscription } from '../../hooks/useChannelSubscription';
 
 export default function Inbox({
   selectedChannel,
@@ -13,40 +8,8 @@ export default function Inbox({
   selectedChannel: number;
 }) {
   const { data, error, status, hasNextPage, fetchNextPage } =
-    useInfChannelMessagesQuery({ selectedChannel });
-  const { subscribe } = useWebSocketActions();
-  const webSocketConnected = useWebSocketConnectedStatus();
-  const [messageEvents, setMessagesEvents] = useState<Array<ChannelMessage>>(
-    [],
-  );
-
-  useEffect(() => {
-    if (!webSocketConnected || !selectedChannel) {
-      return;
-    }
-    setMessagesEvents([]);
-
-    const unsubscribe = subscribe(
-      `/topic/channel/${selectedChannel}`,
-      payload => {
-        setMessagesEvents(prev => [
-          ...prev,
-          {
-            id: payload.id,
-            message: payload.message,
-            userId: payload.userId,
-            username: payload.username,
-            channelId: payload.channelId,
-            createdAt: payload.createdAt,
-            updatedAt: payload.updatedAt,
-            deletedAt: payload.deletedAt,
-          },
-        ]);
-      },
-    );
-
-    return unsubscribe;
-  }, [selectedChannel, webSocketConnected]);
+    useInfChannelMessagesQuery(selectedChannel);
+  const messageEvents = useChannelSubscription(selectedChannel);
 
   const oldMessages = data?.pages.flatMap(page => page.data) ?? [];
   const allMessages = [...oldMessages, ...messageEvents].sort(
