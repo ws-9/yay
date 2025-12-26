@@ -1,15 +1,24 @@
 import { format } from 'date-fns';
 import { useInfChannelMessagesQuery } from '../../hooks/useInfChannelMessagesQuery';
 import { useChannelSubscription } from '../../hooks/useChannelSubscription';
+import { useInView } from 'react-intersection-observer';
+import { useEffect } from 'react';
 
 export default function Inbox({
   selectedChannel,
 }: {
   selectedChannel: number;
 }) {
-  const { data, error, status, hasNextPage, fetchNextPage } =
+  const { data, error, status, fetchNextPage, isFetchingNextPage } =
     useInfChannelMessagesQuery(selectedChannel);
   const messageEvents = useChannelSubscription(selectedChannel);
+  const { ref: endOfInboxRef, inView: endOfInboxInView } = useInView();
+
+  useEffect(() => {
+    if (endOfInboxInView && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [endOfInboxInView, fetchNextPage, isFetchingNextPage]);
 
   const oldMessages = data?.pages.flatMap(page => page.data) ?? [];
   const allMessages = [...oldMessages, ...messageEvents].sort(
@@ -27,10 +36,10 @@ export default function Inbox({
 
   return (
     <div className="overflow-y-auto">
+      <div ref={endOfInboxRef} className="bg-amber-200">
+        End
+      </div>
       {renderedMessages}
-      {hasNextPage && (
-        <button onClick={() => fetchNextPage()}>Load more</button>
-      )}
     </div>
   );
 }
