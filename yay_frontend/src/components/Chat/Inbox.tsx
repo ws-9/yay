@@ -9,16 +9,22 @@ export default function Inbox({
 }: {
   selectedChannel: number;
 }) {
-  const { data, error, status, fetchNextPage, isFetchingNextPage } =
-    useInfChannelMessagesQuery(selectedChannel);
+  const {
+    data,
+    error,
+    status,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfChannelMessagesQuery(selectedChannel);
   const messageEvents = useChannelSubscription(selectedChannel);
   const { ref: endOfInboxRef, inView: endOfInboxInView } = useInView();
 
   useEffect(() => {
-    if (endOfInboxInView && !isFetchingNextPage) {
+    if (endOfInboxInView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [endOfInboxInView, fetchNextPage, isFetchingNextPage]);
+  }, [endOfInboxInView, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const oldMessages = data?.pages.flatMap(page => page.data) ?? [];
   const allMessages = [...oldMessages, ...messageEvents].sort(
