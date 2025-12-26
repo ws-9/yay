@@ -2,11 +2,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import Home from './components/Home';
-import AuthLayout from './components/AuthLayout';
-import Register from './components/AuthLayout/Register';
-import Login from './components/AuthLayout/Login';
-import Chat from './components/Chat';
+import HomePage from './components/HomePage';
+import AuthPage from './components/AuthPage';
+import Register from './components/AuthPage/Register';
+import Login from './components/AuthPage/Login';
+import ChatPage from './components/Chat';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
@@ -14,10 +14,10 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: Home,
+    Component: HomePage,
   },
   {
-    Component: AuthLayout,
+    Component: AuthPage,
     children: [
       { path: 'register', Component: Register },
       { path: 'login', Component: Login },
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'chat',
-    Component: Chat,
+    Component: ChatPage,
   },
 ]);
 

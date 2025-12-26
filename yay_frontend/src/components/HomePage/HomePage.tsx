@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div className="flex flex-col">
       <h1>Home Page</h1>

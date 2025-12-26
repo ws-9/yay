@@ -6,7 +6,7 @@ import { useWebSocketActions } from '../../store/webSocketStore';
 import { useWorkspaceRoot } from '../../store/workspaceStore';
 import BSPChatNodeRender from '../BSPChatNodeRender/BSPChatNodeRender';
 
-export default function Chat() {
+export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();
   const rootNode = useWorkspaceRoot();
 
