@@ -1,4 +1,3 @@
-import { useChannelQuery } from '../../hooks/useChannelQuery';
 import MessageField from './MessageField';
 import Inbox from './Inbox';
 
@@ -7,19 +6,18 @@ export default function ChatPane({
 }: {
   selectedChannel: number | null;
 }) {
-  const { data, isLoading, error } = useChannelQuery(selectedChannel);
+  if (selectedChannel === null) {
+    return (
+      <div className="flex items-center justify-center text-gray-500">
+        Select a channel from the sidebar
+      </div>
+    );
+  }
 
   return (
-    <div className="grid h-full min-h-0 grid-rows-[auto_1fr_auto]">
-      <div className="border-b-2">
-        {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
-      </div>
-      {selectedChannel ? (
-        <Inbox selectedChannel={selectedChannel} />
-      ) : (
-        <div>Loading</div>
-      )}
+    <>
+      <Inbox selectedChannel={selectedChannel} />
       <MessageField selectedChannel={selectedChannel} />
-    </div>
+    </>
   );
 }

@@ -8,7 +8,8 @@ export function useChannelQuery(selectedChannel: number | null) {
 
   const query = useQuery<Channel>({
     queryKey: ['channels', { selectedChannel }],
-    queryFn: () => getChannel(selectedChannel, token),
+    queryFn: () => getChannel(selectedChannel!, token!),
+    enabled: selectedChannel !== null && token !== null,
   });
 
   return {
@@ -18,10 +19,7 @@ export function useChannelQuery(selectedChannel: number | null) {
   };
 }
 
-async function getChannel(
-  selectedChannel: number | null,
-  token: string | null,
-) {
+async function getChannel(selectedChannel: number, token: string) {
   const response = await fetch(`${API_CHANNELS}/${selectedChannel}`, {
     method: 'GET',
     headers: {

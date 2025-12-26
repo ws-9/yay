@@ -5,6 +5,7 @@ import {
   useActivePaneId,
 } from '../../store/workspaceStore';
 import type { SplitDirection } from '../../types/BSPChatNode';
+import { useChannelQuery } from '../../hooks/useChannelQuery';
 
 export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
   const { setActivePane } = useWorkspaceActions();
@@ -14,11 +15,11 @@ export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
   if (node.type === 'pane') {
     return (
       <div
-        className={`grid h-full grid-rows-[auto_1fr]`}
+        className="grid h-full min-h-0 grid-rows-[auto_1fr_auto]"
         onClick={() => setActivePane(node.id)}
       >
-        <PaneControls nodeId={node.id} isRoot={node.id === 'root'} />
-        <PaneContent channelId={node.channelId} />
+        <PaneHeader nodeId={node.id} channelId={node.channelId} />
+        <ChatPane selectedChannel={node.channelId} />
       </div>
     );
   }
@@ -32,11 +33,24 @@ export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
   );
 }
 
-function PaneControls({ nodeId, isRoot }: { nodeId: string; isRoot: boolean }) {
+function PaneHeader({
+  nodeId,
+  channelId,
+}: {
+  nodeId: string;
+  channelId: number | null;
+}) {
   const { splitNode, removeNode } = useWorkspaceActions();
+  const isRoot = nodeId === 'root';
+  const { data, isLoading, error } = useChannelQuery(channelId);
 
   return (
     <div className="flex gap-2 border-b bg-gray-100 p-1">
+      {channelId !== null && (
+        <div className="border-b-2">
+          {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
+        </div>
+      )}
       <button
         onClick={() => splitNode(nodeId, 'horizontal')}
         className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
@@ -60,18 +74,6 @@ function PaneControls({ nodeId, isRoot }: { nodeId: string; isRoot: boolean }) {
           ✕
         </button>
       )}
-    </div>
-  );
-}
-
-function PaneContent({ channelId }: { channelId: number | null }) {
-  if (channelId !== null) {
-    return <ChatPane selectedChannel={channelId} />;
-  }
-
-  return (
-    <div className="flex items-center justify-center text-gray-500">
-      Select a channel from the sidebar
     </div>
   );
 }
