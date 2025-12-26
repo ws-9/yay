@@ -4,12 +4,14 @@ import type { BSPChatNode, SplitDirection } from '../types/BSPChatNode';
 
 type WorkspaceStore = {
   rootNode: BSPChatNode;
+  activePaneId: string | null;
   actions: {
     // set node with id nodeId to display channel with channelId
     setChannel: (nodeId: string, channelId: number | null) => void;
     // turn a pane into a split where one split is an empty pane
     splitNode: (nodeId: string, direction: SplitDirection) => void;
     removeNode: (nodeId: string) => void;
+    setActivePane: (nodeId: string) => void;
   };
 };
 
@@ -79,6 +81,7 @@ const useWorkspaceStore = create<WorkspaceStore>()(
         id: 'root',
         channelId: null,
       },
+      activePaneId: 'root',
       actions: {
         setChannel: (nodeId, channelId) =>
           set(state => ({
@@ -112,13 +115,21 @@ const useWorkspaceStore = create<WorkspaceStore>()(
                 id: 'root',
                 channelId: null,
               },
+              activePaneId:
+                state.activePaneId === nodeId ? 'root' : state.activePaneId,
             };
           }),
+        setActivePane: nodeId => set({ activePaneId: nodeId }),
       },
     }),
     {
       name: 'workspace-store',
+      version: 1, // Increment this to invalidate old corrupted state
       storage: createJSONStorage(() => sessionStorage),
+      partialize: state => ({
+        rootNode: state.rootNode,
+        activePaneId: state.activePaneId,
+      }),
     },
   ),
 );
@@ -128,3 +139,9 @@ export const useWorkspaceActions = () =>
 
 export const useWorkspaceRoot = () =>
   useWorkspaceStore(state => state.rootNode);
+
+export const useActivePaneId = () =>
+  useWorkspaceStore(state => state.activePaneId);
+
+// Non-reactive getter for use in event handlers
+export const getActivePaneId = () => useWorkspaceStore.getState().activePaneId;

@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_MY_COMMUNITIES } from '../../constants';
 import { useAuthActions, useToken } from '../../store/authStore';
-import React, { Activity, useEffect, useState } from 'react';
+import { Activity, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useSelectedActions } from '../../store/selectionStore';
+import {
+  useWorkspaceActions,
+  getActivePaneId,
+} from '../../store/workspaceStore';
 import type { Channel } from '../../types/Channel';
 import type { Community } from '../../types/Community';
 
@@ -75,10 +78,14 @@ function CommunityTab({
 }
 
 function ChannelTab({ name, id }: { name: string; id: number }) {
-  const { selectChannel } = useSelectedActions();
+  const { setChannel } = useWorkspaceActions();
 
-  function handleClick(e: React.MouseEvent<HTMLDivElement>) {
-    selectChannel(id);
+  function handleClick() {
+    const activePaneId = getActivePaneId();
+
+    if (activePaneId) {
+      setChannel(activePaneId, id);
+    }
   }
 
   return (
