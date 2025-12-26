@@ -1,10 +1,12 @@
-import { useSelectedChannel } from '../../store/selectionStore';
 import { useChannelQuery } from '../../hooks/useChannelQuery';
 import MessageField from './MessageField';
 import Inbox from './Inbox';
 
-export default function ChatNode() {
-  const selectedChannel = useSelectedChannel();
+export default function ChatNode({
+  selectedChannel,
+}: {
+  selectedChannel: number | null;
+}) {
   const { data, isLoading, error } = useChannelQuery(selectedChannel);
 
   return (
