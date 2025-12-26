@@ -6,3 +6,5 @@ export const API_MY_COMMUNITIES = API_BASE_URL + '/communities/my-communities';
 export const API_CHANNELS = API_BASE_URL + '/channels';
 
 export const WS_BROKER = 'ws://localhost:8080/ws';
+
+export const CHANNEL_MESSAGES_PAGE_SIZE = 50;
