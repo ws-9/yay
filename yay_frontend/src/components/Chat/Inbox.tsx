@@ -9,6 +9,7 @@ import type { CursorPaginatedChannelMessages } from '../../types/CursorPaginated
 import type { ChannelMessage } from '../../types/ChannelMessage';
 import { API_CHANNELS } from '../../constants';
 import { useTokenState } from '../../store/authStore';
+import { format } from 'date-fns';
 
 const PAGE_SIZE = 10;
 
@@ -100,7 +101,7 @@ export default function Inbox({
     );
 
     return unsubscribe;
-  }, [selectedChannel, webSocketConnected, subscribe]);
+  }, [selectedChannel, webSocketConnected]);
 
   const oldMessages = data?.pages.flatMap(page => page.data) ?? [];
   const allMessages = [...oldMessages, ...messageEvents].sort(
@@ -135,5 +136,6 @@ function MessageRender({
   message: string;
   createdAt: string;
 }) {
-  return <div>{`[${createdAt}] ${username}: ${message}`}</div>;
+  const formattedDate = format(new Date(createdAt), 'MM/dd/yyyy HH:mm');
+  return <div>{`${formattedDate} ${username}: ${message}`}</div>;
 }
