@@ -1,6 +1,7 @@
 import { useState, type KeyboardEvent } from 'react';
 import { useWebSocketActions } from '../../store/webSocketStore';
 import type { ChannelMessageEvent } from '../../types/ChannelMessageEvent';
+import { useInboxActions } from '../../store/inboxStore';
 
 export default function MessageField({
   selectedChannel,
@@ -9,6 +10,7 @@ export default function MessageField({
 }) {
   const [message, setMessage] = useState('');
   const { publish } = useWebSocketActions();
+  const { scrollToBottom } = useInboxActions();
 
   function handleEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -20,6 +22,7 @@ export default function MessageField({
       publish(`/app/chat/${selectedChannel}`, messageBroadcast);
       console.log('yeah');
       setMessage('');
+      scrollToBottom();
     }
   }
 
