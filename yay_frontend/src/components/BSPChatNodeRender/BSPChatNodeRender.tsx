@@ -8,15 +8,11 @@ export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
   }
 
   return (
-    <SplitContainer
-      direction={node.direction}
-      left={node.left}
-      right={node.right}
-    />
+    <ChatSplit direction={node.direction} left={node.left} right={node.right} />
   );
 }
 
-function SplitContainer({
+function ChatSplit({
   direction,
   left,
   right,
