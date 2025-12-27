@@ -1,5 +1,6 @@
+import { useRef } from 'react';
 import MessageField from './MessageField';
-import Inbox from './Inbox';
+import Inbox, { type InboxHandle } from './Inbox';
 import { useChannelQuery } from '../../hooks/useChannelQuery';
 import {
   useIsActivePane,
@@ -13,6 +14,8 @@ export default function ChatPane({
   selectedChannel: number | null;
   nodeId: string;
 }) {
+  const inboxRef = useRef<InboxHandle>(null);
+
   return (
     <PaneSelector nodeId={nodeId}>
       <PaneHeader nodeId={nodeId} channelId={selectedChannel} />
@@ -22,8 +25,12 @@ export default function ChatPane({
         </div>
       ) : (
         <>
-          <Inbox selectedChannel={selectedChannel} />
-          <MessageField selectedChannel={selectedChannel} />
+          {/* inboxRef refers to scrollToBottom defined within inbox */}
+          <Inbox ref={inboxRef} selectedChannel={selectedChannel} />
+          <MessageField
+            selectedChannel={selectedChannel}
+            onMessageSent={() => inboxRef.current?.scrollToBottom()}
+          />
         </>
       )}
     </PaneSelector>

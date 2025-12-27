@@ -4,8 +4,10 @@ import type { ChannelMessageEvent } from '../../types/ChannelMessageEvent';
 
 export default function MessageField({
   selectedChannel,
+  onMessageSent,
 }: {
   selectedChannel: number;
+  onMessageSent?: () => void;
 }) {
   const [message, setMessage] = useState('');
   const { publish } = useWebSocketActions();
@@ -23,8 +25,8 @@ export default function MessageField({
       event.preventDefault();
       const messageBroadcast: ChannelMessageEvent = { message };
       publish(`/app/chat/${selectedChannel}`, messageBroadcast);
-      console.log('yeah');
       setMessage('');
+      onMessageSent?.();
     }
   }
 

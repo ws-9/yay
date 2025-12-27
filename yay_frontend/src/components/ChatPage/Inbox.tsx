@@ -2,12 +2,18 @@ import { format } from 'date-fns';
 import { useInfChannelMessagesQuery } from '../../hooks/useInfChannelMessagesQuery';
 import { useChannelSubscription } from '../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+
+export type InboxHandle = {
+  scrollToBottom: () => void;
+};
 
 export default function Inbox({
   selectedChannel,
+  ref,
 }: {
   selectedChannel: number;
+  ref?: React.Ref<InboxHandle>;
 }) {
   const {
     data,
@@ -23,6 +29,15 @@ export default function Inbox({
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  // defines what to forward to the parent component
+  useImperativeHandle(ref, () => ({
+    scrollToBottom: () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    },
+  }));
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -35,8 +50,13 @@ export default function Inbox({
     }
   }, [endOfInboxInView, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
+  // cached data if it exists
   const oldMessages = data?.pages.flatMap(page => page.data) ?? [];
-  const allMessages = [...oldMessages, ...messageEvents].sort(
+  // since we update optimistically, we get duplication if we paginate through old messages.
+  const messageMap = new Map(
+    [...oldMessages, ...messageEvents].map(msg => [msg.id, msg]),
+  );
+  const allMessages = [...messageMap.values()].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 
