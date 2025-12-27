@@ -9,9 +9,9 @@ type WebSocketStore = {
     disconnect: () => void;
     subscribe: (
       destination: string,
-      callback: (message: any) => void,
+      callback: (message: unknown) => void,
     ) => () => void;
-    publish: (destination: string, body: any) => void;
+    publish: (destination: string, body: unknown) => void;
   };
 };
 

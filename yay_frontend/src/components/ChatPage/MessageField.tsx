@@ -14,6 +14,7 @@ export default function MessageField({
 
   // reset message on channel switch
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessage('');
   }, [selectedChannel]);
 

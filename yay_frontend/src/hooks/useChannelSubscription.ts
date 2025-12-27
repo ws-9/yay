@@ -34,6 +34,7 @@ export function useChannelSubscription(selectedChannel: number) {
     if (!webSocketConnected || !selectedChannel) {
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessagesEvents([]);
 
     const unsubscribe = doSubscribe(selectedChannel);
