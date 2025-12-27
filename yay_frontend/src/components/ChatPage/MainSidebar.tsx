@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_MY_COMMUNITIES } from '../../constants';
 import { useAuthActions, useToken } from '../../store/authStore';
-import { Activity, useEffect, useState } from 'react';
+import { Activity, useEffect, useEffectEvent, useState } from 'react';
 import { useNavigate } from 'react-router';
 import {
   useWorkspaceActions,
@@ -19,9 +19,13 @@ export default function MainSidebar() {
     queryFn: () => getMyCommunities(token),
   });
 
+  const onLogout = useEffectEvent(() => {
+    navigate('/login');
+  });
+
   useEffect(() => {
     if (token === null) {
-      navigate('/login');
+      onLogout();
     }
   }, [token]);
 

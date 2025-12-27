@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { useIsAuthenticated } from '../../store/authStore';
 import { useLogin } from '../../hooks/useLoginMutation';
 import { Link, useNavigate } from 'react-router';
@@ -10,9 +10,13 @@ export default function Login() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
+  const onAuthenticated = useEffectEvent(() => {
+    navigate('/chat');
+  });
+
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/chat');
+      onAuthenticated();
     }
   }, [isAuthenticated]);
 

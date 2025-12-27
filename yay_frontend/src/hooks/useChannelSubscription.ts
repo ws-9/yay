@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import {
   useWebSocketActions,
   useWebSocketConnectedStatus,
@@ -12,30 +12,31 @@ export function useChannelSubscription(selectedChannel: number) {
     [],
   );
 
+  const doSubscribe = useEffectEvent((channelId: number) => {
+    return subscribe(`/topic/channel/${channelId}`, payload => {
+      setMessagesEvents(prev => [
+        ...prev,
+        {
+          id: payload.id,
+          message: payload.message,
+          userId: payload.userId,
+          username: payload.username,
+          channelId: payload.channelId,
+          createdAt: payload.createdAt,
+          updatedAt: payload.updatedAt,
+          deletedAt: payload.deletedAt,
+        },
+      ]);
+    });
+  });
+
   useEffect(() => {
     if (!webSocketConnected || !selectedChannel) {
       return;
     }
     setMessagesEvents([]);
 
-    const unsubscribe = subscribe(
-      `/topic/channel/${selectedChannel}`,
-      payload => {
-        setMessagesEvents(prev => [
-          ...prev,
-          {
-            id: payload.id,
-            message: payload.message,
-            userId: payload.userId,
-            username: payload.username,
-            channelId: payload.channelId,
-            createdAt: payload.createdAt,
-            updatedAt: payload.updatedAt,
-            deletedAt: payload.deletedAt,
-          },
-        ]);
-      },
-    );
+    const unsubscribe = doSubscribe(selectedChannel);
 
     return unsubscribe;
   }, [selectedChannel, webSocketConnected]);
