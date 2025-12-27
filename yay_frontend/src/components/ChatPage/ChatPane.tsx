@@ -20,7 +20,7 @@ export default function ChatPane({
     <PaneSelector nodeId={nodeId}>
       <PaneHeader nodeId={nodeId} channelId={selectedChannel} />
       {selectedChannel === null ? (
-        <div className="flex items-center justify-center text-gray-500">
+        <div className="m-auto content-center text-gray-500">
           Select a channel from the sidebar
         </div>
       ) : (
