@@ -46,9 +46,12 @@ function PaneSelector({
 }) {
   const { setActivePane } = useWorkspaceActions();
   const isActive = useIsActivePane(nodeId);
+
   return (
     <div
-      className="grid h-full min-h-0 grid-rows-[auto_1fr_auto]"
+      className={`grid h-full min-h-0 grid-rows-[auto_1fr_auto] ${
+        isActive && 'ring-2 ring-blue-500 ring-inset'
+      }`}
       onClick={() => setActivePane(nodeId)}
     >
       {children}
@@ -75,14 +78,20 @@ function PaneHeader({
         </div>
       )}
       <button
-        onClick={() => splitNode(nodeId, 'horizontal')}
+        onClick={e => {
+          e.stopPropagation();
+          splitNode(nodeId, 'horizontal');
+        }}
         className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
         title="Split Side by Side"
       >
         ↔
       </button>
       <button
-        onClick={() => splitNode(nodeId, 'vertical')}
+        onClick={e => {
+          e.stopPropagation();
+          splitNode(nodeId, 'vertical');
+        }}
         className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
         title="Split Top and Bottom"
       >
@@ -90,7 +99,10 @@ function PaneHeader({
       </button>
       {!isRoot && (
         <button
-          onClick={() => removeNode(nodeId)}
+          onClick={e => {
+            e.stopPropagation();
+            removeNode(nodeId);
+          }}
           className="ml-auto rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
           title="Close Pane"
         >

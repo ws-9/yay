@@ -90,20 +90,26 @@ const useWorkspaceStore = create<WorkspaceStore>()(
             ),
           })),
         splitNode: (nodeId, direction) =>
-          set(state => ({
-            rootNode: updateTree(state.rootNode, nodeId, node => {
-              if (node.type === 'split') {
-                return node;
-              }
-              return {
-                type: 'split',
-                id: node.id,
-                direction,
-                left: { ...node, id: generateId() },
-                right: { type: 'pane', id: generateId(), channelId: null },
-              };
-            }),
-          })),
+          set(state => {
+            const newLeftId = generateId();
+            return {
+              rootNode: updateTree(state.rootNode, nodeId, node => {
+                if (node.type === 'split') {
+                  return node;
+                }
+                return {
+                  type: 'split',
+                  id: node.id,
+                  direction,
+                  left: { ...node, id: newLeftId },
+                  right: { type: 'pane', id: generateId(), channelId: null },
+                };
+              }),
+              // Keep focus on the original pane (now on the left)
+              activePaneId:
+                state.activePaneId === nodeId ? newLeftId : state.activePaneId,
+            };
+          }),
         removeNode: nodeId =>
           set(state => {
             // potentially null if you delete the root node
