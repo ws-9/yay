@@ -3,7 +3,6 @@ import { useInfChannelMessagesQuery } from '../../hooks/useInfChannelMessagesQue
 import { useChannelSubscription } from '../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useRef, useState } from 'react';
-import { useScrollTrigger } from '../../store/inboxStore';
 
 export default function Inbox({
   selectedChannel,
@@ -23,13 +22,12 @@ export default function Inbox({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const scrollTrigger = useScrollTrigger();
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [scrollTrigger]);
+  }, []);
 
   useEffect(() => {
     if (endOfInboxInView && hasNextPage && !isFetchingNextPage) {
@@ -43,7 +41,7 @@ export default function Inbox({
   );
 
   // Add scroll event listener
-  // Updates whether use is at the bottom
+  // Updates whether user is at the bottom
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) {
