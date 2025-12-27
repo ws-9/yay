@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import type { CursorPaginatedChannelMessages } from '../types/CursorPaginatedChannelMessages';
 import type { ChannelMessagePageParam } from '../types/ChannelMessagePageParam';
-import { useTokenState } from '../store/authStore';
+import { getTokenState } from '../store/authStore';
 import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../constants';
 
 export function useInfChannelMessagesQuery(selectedChannel: number) {
@@ -52,7 +52,7 @@ async function fetchMessages({
   pageParam: ChannelMessagePageParam;
   queryKey: (string | number)[];
 }): Promise<CursorPaginatedChannelMessages> {
-  const { token } = useTokenState();
+  const { token } = getTokenState();
   const [, selectedChannel] = queryKey;
 
   const params = new URLSearchParams({

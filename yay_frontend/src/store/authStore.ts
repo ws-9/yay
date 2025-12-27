@@ -38,6 +38,6 @@ export function useIsAuthenticated() {
   return useAuthStore(state => state.token !== null);
 }
 
-export function useTokenState() {
+export function getTokenState() {
   return useAuthStore.getState();
 }

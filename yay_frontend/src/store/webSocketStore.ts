@@ -1,6 +1,6 @@
 import { Client } from '@stomp/stompjs';
 import { create } from 'zustand';
-import { useTokenState } from './authStore';
+import { getTokenState } from './authStore';
 
 type WebSocketStore = {
   client: Client | null;
@@ -24,7 +24,7 @@ const useWebSocketStore = create<WebSocketStore>()((set, get) => ({
         return;
       }
 
-      const token = useTokenState().token;
+      const token = getTokenState().token;
 
       const client = new Client({
         brokerURL,

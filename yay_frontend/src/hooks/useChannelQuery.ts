@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_CHANNELS } from '../constants';
-import { useTokenState } from '../store/authStore';
+import { getTokenState } from '../store/authStore';
 import type { Channel } from '../types/Channel';
 
 export function useChannelQuery(selectedChannel: number | null) {
-  const { token } = useTokenState();
+  const { token } = getTokenState();
 
   const query = useQuery<Channel>({
     queryKey: ['channels', { selectedChannel }],
