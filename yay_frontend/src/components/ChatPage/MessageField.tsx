@@ -1,14 +1,19 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useState, useEffect, type KeyboardEvent } from 'react';
 import { useWebSocketActions } from '../../store/webSocketStore';
 import type { ChannelMessageEvent } from '../../types/ChannelMessageEvent';
 
 export default function MessageField({
   selectedChannel,
 }: {
-  selectedChannel: number | null;
+  selectedChannel: number;
 }) {
   const [message, setMessage] = useState('');
   const { publish } = useWebSocketActions();
+
+  // reset message on channel switch
+  useEffect(() => {
+    setMessage('');
+  }, [selectedChannel]);
 
   function handleEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === 'Enter' && !event.shiftKey) {
