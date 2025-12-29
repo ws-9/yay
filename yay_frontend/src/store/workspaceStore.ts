@@ -11,6 +11,12 @@ type WorkspaceStore = {
     setChannel: (nodeId: string, channelId: number | null) => void;
     // turn a pane into a split where one split is an empty pane
     splitNode: (nodeId: string, direction: SplitDirection) => void;
+    // split a pane and set the new pane's channel
+    splitNodeWithChannel: (
+      nodeId: string,
+      direction: SplitDirection,
+      channelId: number,
+    ) => void;
     removeNode: (nodeId: string) => void;
     setActivePane: (nodeId: string) => void;
   };
@@ -112,6 +118,7 @@ const useWorkspaceStore = create<WorkspaceStore>()(
         splitNode: (nodeId, direction) =>
           set(state => {
             const originalPaneId = generateId();
+            const newPaneId = generateId();
 
             return {
               rootNode: updateTree(state.rootNode, nodeId, node => {
@@ -126,8 +133,47 @@ const useWorkspaceStore = create<WorkspaceStore>()(
 
                 const newPane: BSPChatNode = {
                   type: 'pane',
-                  id: generateId(),
+                  id: newPaneId,
                   channelId: null,
+                };
+
+                const splitNorthOrWest =
+                  direction === 'north' || direction === 'west';
+
+                return {
+                  type: 'split',
+                  id: node.id,
+                  direction,
+                  left: splitNorthOrWest ? newPane : originalPane,
+                  right: splitNorthOrWest ? originalPane : newPane,
+                };
+              }),
+              activePaneId:
+                state.activePaneId === nodeId
+                  ? originalPaneId
+                  : state.activePaneId,
+            };
+          }),
+        splitNodeWithChannel: (nodeId, direction, channelId) =>
+          set(state => {
+            const originalPaneId = generateId();
+            const newPaneId = generateId();
+
+            return {
+              rootNode: updateTree(state.rootNode, nodeId, node => {
+                if (node.type === 'split') {
+                  return node;
+                }
+
+                const originalPane: BSPChatNode = {
+                  ...node,
+                  id: originalPaneId,
+                };
+
+                const newPane: BSPChatNode = {
+                  type: 'pane',
+                  id: newPaneId,
+                  channelId,
                 };
 
                 const splitNorthOrWest =
@@ -197,9 +243,6 @@ export const useWorkspaceActions = () =>
 
 export const useWorkspaceRoot = () =>
   useWorkspaceStore(state => state.rootNode);
-
-export const useActivePaneId = () =>
-  useWorkspaceStore(state => state.activePaneId);
 
 // Non-reactive getter for use in event handlers
 export const getActivePaneId = () => useWorkspaceStore.getState().activePaneId;
