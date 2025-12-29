@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_MY_COMMUNITIES } from '../../constants';
 import { useAuthActions, useToken } from '../../store/authStore';
-import { Activity, useEffect, useEffectEvent, useState } from 'react';
+import React, { Activity, useEffect, useEffectEvent, useState } from 'react';
 import { useNavigate } from 'react-router';
 import {
   useWorkspaceActions,
@@ -62,21 +62,32 @@ function CommunityTab({
   name: string;
   channels: Array<Channel>;
 }) {
+  const channelTabs = channels.map(channel => (
+    <ChannelTab key={channel.id} name={channel.name} id={channel.id} />
+  ));
+
+  return <Hideable communityName={name}>{channelTabs}</Hideable>;
+}
+
+function Hideable({
+  communityName,
+  children,
+}: {
+  communityName: string;
+  children: React.ReactNode;
+}) {
   const [expanded, setExpanded] = useState(false);
+
   return (
     <div>
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex w-full cursor-pointer justify-between"
       >
-        <h1>{name}</h1>
+        <h1>{communityName}</h1>
         <p>{expanded ? 'Less' : 'More'}</p>
       </button>
-      <Activity mode={expanded ? 'visible' : 'hidden'}>
-        {channels.map(channel => (
-          <ChannelTab key={channel.id} name={channel.name} id={channel.id} />
-        ))}
-      </Activity>
+      <Activity mode={expanded ? 'visible' : 'hidden'}>{children}</Activity>
     </div>
   );
 }
