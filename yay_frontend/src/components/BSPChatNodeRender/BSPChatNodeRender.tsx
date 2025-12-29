@@ -21,9 +21,11 @@ function ChatSplit({
   left: BSPChatNode;
   right: BSPChatNode;
 }) {
+  const isHorizontal = direction === 'east' || direction === 'west';
+
   return (
     <div
-      className={`flex ${direction === 'horizontal' ? 'flex-row' : 'flex-col'} h-full w-full`}
+      className={`flex ${isHorizontal ? 'flex-row' : 'flex-col'} h-full w-full`}
     >
       <div className="flex-1 overflow-hidden border-r border-b">
         <BSPChatNodeRender node={left} />

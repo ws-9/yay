@@ -80,22 +80,42 @@ function PaneHeader({
       <button
         onClick={e => {
           e.stopPropagation();
-          splitNode(nodeId, 'horizontal');
+          splitNode(nodeId, 'north');
         }}
         className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
-        title="Split Side by Side"
+        title="Split up"
       >
-        ↔
+        ↑
       </button>
       <button
         onClick={e => {
           e.stopPropagation();
-          splitNode(nodeId, 'vertical');
+          splitNode(nodeId, 'south');
         }}
         className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
-        title="Split Top and Bottom"
+        title="Split down"
       >
-        ↕
+        ↓
+      </button>
+      <button
+        onClick={e => {
+          e.stopPropagation();
+          splitNode(nodeId, 'west');
+        }}
+        className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+        title="Split left"
+      >
+        ←
+      </button>
+      <button
+        onClick={e => {
+          e.stopPropagation();
+          splitNode(nodeId, 'east');
+        }}
+        className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+        title="Split right"
+      >
+        →
       </button>
       {!isRoot && (
         <button

@@ -1,4 +1,4 @@
-export type SplitDirection = 'horizontal' | 'vertical';
+export type SplitDirection = 'north' | 'east' | 'south' | 'west';
 
 // Either displays a channel (if channelId is not null) or displays a split
 export type BSPChatNode =

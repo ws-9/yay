@@ -91,23 +91,28 @@ const useWorkspaceStore = create<WorkspaceStore>()(
           })),
         splitNode: (nodeId, direction) =>
           set(state => {
-            const newLeftId = generateId();
             return {
               rootNode: updateTree(state.rootNode, nodeId, node => {
                 if (node.type === 'split') {
                   return node;
                 }
+
+                const newPane: BSPChatNode = {
+                  type: 'pane',
+                  id: generateId(),
+                  channelId: null,
+                };
+                const splitNorthOrWest =
+                  direction === 'north' || direction === 'west';
+
                 return {
                   type: 'split',
-                  id: node.id,
+                  id: generateId(),
                   direction,
-                  left: { ...node, id: newLeftId },
-                  right: { type: 'pane', id: generateId(), channelId: null },
+                  left: splitNorthOrWest ? newPane : node,
+                  right: splitNorthOrWest ? node : newPane,
                 };
               }),
-              // Keep focus on the original pane (now on the left)
-              activePaneId:
-                state.activePaneId === nodeId ? newLeftId : state.activePaneId,
             };
           }),
         removeNode: nodeId =>
