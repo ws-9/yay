@@ -5,6 +5,7 @@ import type { BSPChatNode, SplitDirection } from '../types/BSPChatNode';
 type WorkspaceStore = {
   rootNode: BSPChatNode;
   activePaneId: string | null;
+  paneHistory: string[]; // Most recently used at end
   actions: {
     // set node with id nodeId to display channel with channelId
     setChannel: (nodeId: string, channelId: number | null) => void;
@@ -75,6 +76,22 @@ function removeNodeFromTree(
   return parent;
 }
 
+// Get all pane IDs from a tree
+function getAllPaneIds(node: BSPChatNode): string[] {
+  if (node.type === 'pane') {
+    return [node.id];
+  }
+  return [...getAllPaneIds(node.left), ...getAllPaneIds(node.right)];
+}
+
+// Find the first pane in the tree (DFS left-first)
+function findFirstPaneId(node: BSPChatNode): string {
+  if (node.type === 'pane') {
+    return node.id;
+  }
+  return findFirstPaneId(node.left);
+}
+
 const useWorkspaceStore = create<WorkspaceStore>()(
   persist(
     set => ({
@@ -84,6 +101,7 @@ const useWorkspaceStore = create<WorkspaceStore>()(
         channelId: null,
       },
       activePaneId: 'root',
+      paneHistory: ['root'],
       actions: {
         setChannel: (nodeId, channelId) =>
           set(state => ({
@@ -131,20 +149,34 @@ const useWorkspaceStore = create<WorkspaceStore>()(
           }),
         removeNode: nodeId =>
           set(state => {
-            // potentially null if you delete the root node
             const newRoot = removeNodeFromTree(state.rootNode, nodeId);
-            // reset everything if the root node is deleted
+            const finalRoot = newRoot || {
+              type: 'pane',
+              id: 'root',
+              channelId: null,
+            };
+
+            // Get most recent pane that still exists
+            const remainingPanes = getAllPaneIds(finalRoot);
+            const newHistory = state.paneHistory.filter(id => id !== nodeId);
+            const lastActivePane = [...newHistory]
+              .reverse()
+              .find(id => remainingPanes.includes(id));
+
             return {
-              rootNode: newRoot || {
-                type: 'pane',
-                id: 'root',
-                channelId: null,
-              },
-              activePaneId:
-                state.activePaneId === nodeId ? 'root' : state.activePaneId,
+              rootNode: finalRoot,
+              activePaneId: lastActivePane || findFirstPaneId(finalRoot),
+              paneHistory: newHistory,
             };
           }),
-        setActivePane: nodeId => set({ activePaneId: nodeId }),
+        setActivePane: nodeId =>
+          set(state => ({
+            activePaneId: nodeId,
+            paneHistory: [
+              ...state.paneHistory.filter(id => id !== nodeId),
+              nodeId,
+            ],
+          })),
       },
     }),
     {
@@ -154,6 +186,7 @@ const useWorkspaceStore = create<WorkspaceStore>()(
       partialize: state => ({
         rootNode: state.rootNode,
         activePaneId: state.activePaneId,
+        paneHistory: state.paneHistory,
       }),
     },
   ),
