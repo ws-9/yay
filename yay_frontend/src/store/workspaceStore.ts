@@ -52,15 +52,17 @@ function removeNodeFromTree(
   }
 
   if (parent.type === 'split') {
+    // only one child can be null since each child has a unique id
     const newLeft = removeNodeFromTree(parent.left, targetNodeId);
     const newRight = removeNodeFromTree(parent.right, targetNodeId);
 
-    // if you kill a subtree, promote the other sibling
+    // if you kill a subtree, promote the other sibling and give it the parent's
+    //  ID to maintain tree position identity
     if (newLeft === null) {
-      return newRight;
+      return { ...newRight!, id: parent.id };
     }
     if (newRight === null) {
-      return newLeft;
+      return { ...newLeft!, id: parent.id };
     }
 
     // create a new object to use as the new state
@@ -91,28 +93,40 @@ const useWorkspaceStore = create<WorkspaceStore>()(
           })),
         splitNode: (nodeId, direction) =>
           set(state => {
+            const originalPaneId = generateId();
+
             return {
               rootNode: updateTree(state.rootNode, nodeId, node => {
                 if (node.type === 'split') {
                   return node;
                 }
 
+                const originalPane: BSPChatNode = {
+                  ...node,
+                  id: originalPaneId,
+                };
+
                 const newPane: BSPChatNode = {
                   type: 'pane',
                   id: generateId(),
                   channelId: null,
                 };
+
                 const splitNorthOrWest =
                   direction === 'north' || direction === 'west';
 
                 return {
                   type: 'split',
-                  id: generateId(),
+                  id: node.id,
                   direction,
-                  left: splitNorthOrWest ? newPane : node,
-                  right: splitNorthOrWest ? node : newPane,
+                  left: splitNorthOrWest ? newPane : originalPane,
+                  right: splitNorthOrWest ? originalPane : newPane,
                 };
               }),
+              activePaneId:
+                state.activePaneId === nodeId
+                  ? originalPaneId
+                  : state.activePaneId,
             };
           }),
         removeNode: nodeId =>

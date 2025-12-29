@@ -67,7 +67,7 @@ function PaneHeader({
   channelId: number | null;
 }) {
   const { splitNode, removeNode } = useWorkspaceActions();
-  const isRoot = nodeId === 'root';
+  const showCloseButton = nodeId !== 'root' || channelId !== null;
   const { data, isLoading, error } = useChannelQuery(channelId);
 
   return (
@@ -117,7 +117,7 @@ function PaneHeader({
       >
         →
       </button>
-      {!isRoot && (
+      {showCloseButton && (
         <button
           onClick={e => {
             e.stopPropagation();
