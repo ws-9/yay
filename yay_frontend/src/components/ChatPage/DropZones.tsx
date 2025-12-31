@@ -48,58 +48,63 @@ export default function DropZones({
 
   return (
     <Activity mode={isDragging ? 'visible' : 'hidden'}>
-      <div className="pointer-events-none absolute inset-0 z-50 grid grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr]">
+      <div
+        className="pointer-events-none absolute inset-0 z-50"
+        onDragLeave={e => {
+          // Only reset if dragging completely out of the zones container
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            handleZoneChange(null);
+          }
+        }}
+      >
         <VisualFeedbackLayer ref={visualFeedbackRef} />
-        {/* North */}
-        <div
-          className={`pointer-events-auto col-start-1 col-end-4 row-start-1`}
-          onDragOver={e => {
-            e.preventDefault();
-            handleZoneChange('north');
-          }}
-          onDragLeave={() => handleZoneChange(null)}
-          onDrop={e => onDrop(e, 'north')}
-        />
-        {/* West */}
-        <div
-          className={`pointer-events-auto col-start-1 row-start-2`}
-          onDragOver={e => {
-            e.preventDefault();
-            handleZoneChange('west');
-          }}
-          onDragLeave={() => handleZoneChange(null)}
-          onDrop={e => onDrop(e, 'west')}
-        />
-        {/* Center (replace) */}
-        <div
-          className={`pointer-events-auto col-start-2 row-start-2`}
-          onDragOver={e => {
-            e.preventDefault();
-            handleZoneChange('replace');
-          }}
-          onDragLeave={() => handleZoneChange(null)}
-          onDrop={e => onDrop(e, 'replace')}
-        />
-        {/* East */}
-        <div
-          className={`pointer-events-auto col-start-3 row-start-2`}
-          onDragOver={e => {
-            e.preventDefault();
-            handleZoneChange('east');
-          }}
-          onDragLeave={() => handleZoneChange(null)}
-          onDrop={e => onDrop(e, 'east')}
-        />
-        {/* South */}
-        <div
-          className={`pointer-events-auto col-start-1 col-end-4 row-start-3`}
-          onDragOver={e => {
-            e.preventDefault();
-            handleZoneChange('south');
-          }}
-          onDragLeave={() => handleZoneChange(null)}
-          onDrop={e => onDrop(e, 'south')}
-        />
+        <div className="pointer-events-none grid h-full w-full grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr]">
+          {/* North */}
+          <div
+            className={`pointer-events-auto col-start-1 col-end-4 row-start-1`}
+            onDragOver={e => {
+              e.preventDefault();
+              handleZoneChange('north');
+            }}
+            onDrop={e => onDrop(e, 'north')}
+          />
+          {/* West */}
+          <div
+            className={`pointer-events-auto col-start-1 row-start-2`}
+            onDragOver={e => {
+              e.preventDefault();
+              handleZoneChange('west');
+            }}
+            onDrop={e => onDrop(e, 'west')}
+          />
+          {/* Center (replace) */}
+          <div
+            className={`pointer-events-auto col-start-2 row-start-2`}
+            onDragOver={e => {
+              e.preventDefault();
+              handleZoneChange('replace');
+            }}
+            onDrop={e => onDrop(e, 'replace')}
+          />
+          {/* East */}
+          <div
+            className={`pointer-events-auto col-start-3 row-start-2`}
+            onDragOver={e => {
+              e.preventDefault();
+              handleZoneChange('east');
+            }}
+            onDrop={e => onDrop(e, 'east')}
+          />
+          {/* South */}
+          <div
+            className={`pointer-events-auto col-start-1 col-end-4 row-start-3`}
+            onDragOver={e => {
+              e.preventDefault();
+              handleZoneChange('south');
+            }}
+            onDrop={e => onDrop(e, 'south')}
+          />
+        </div>
       </div>
     </Activity>
   );
