@@ -35,9 +35,10 @@ export default function DropZones({
   return (
     <Activity mode={isDragging ? 'visible' : 'hidden'}>
       <div className="pointer-events-none absolute inset-0 z-50 grid grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr]">
+        {activeZone !== null && <VisualFeedbackLayer activeZone={activeZone} />}
         {/* North */}
         <div
-          className={`pointer-events-auto col-start-2 row-start-1 ${activeZone === 'north' && 'bg-blue-500/50'}`}
+          className={`pointer-events-auto col-start-1 col-end-4 row-start-1`}
           /* Consider on drag enter */
           // Right now this kinda fires constantly
           onDragOver={e => {
@@ -49,7 +50,7 @@ export default function DropZones({
         />
         {/* West */}
         <div
-          className={`pointer-events-auto col-start-1 row-start-2 ${activeZone === 'west' && 'bg-blue-500/50'}`}
+          className={`pointer-events-auto col-start-1 row-start-2`}
           onDragOver={e => {
             e.preventDefault();
             setActiveZone('west');
@@ -59,7 +60,7 @@ export default function DropZones({
         />
         {/* Center (replace) */}
         <div
-          className={`pointer-events-auto col-start-2 row-start-2 ${activeZone === 'replace' && 'bg-green-500/50'}`}
+          className={`pointer-events-auto col-start-2 row-start-2`}
           onDragOver={e => {
             e.preventDefault();
             setActiveZone('replace');
@@ -69,7 +70,7 @@ export default function DropZones({
         />
         {/* East */}
         <div
-          className={`pointer-events-auto col-start-3 row-start-2 ${activeZone === 'east' && 'bg-blue-500/50'}`}
+          className={`pointer-events-auto col-start-3 row-start-2`}
           onDragOver={e => {
             e.preventDefault();
             setActiveZone('east');
@@ -79,7 +80,7 @@ export default function DropZones({
         />
         {/* South */}
         <div
-          className={`pointer-events-auto col-start-2 row-start-3 ${activeZone === 'south' && 'bg-blue-500/50'}`}
+          className={`pointer-events-auto col-start-1 col-end-4 row-start-3`}
           onDragOver={e => {
             e.preventDefault();
             setActiveZone('south');
@@ -89,5 +90,31 @@ export default function DropZones({
         />
       </div>
     </Activity>
+  );
+}
+
+function VisualFeedbackLayer({
+  activeZone,
+}: {
+  activeZone: 'replace' | SplitDirection;
+}) {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-50">
+      {activeZone === 'north' && (
+        <div className="absolute inset-x-0 top-0 h-1/2 bg-blue-500/30" />
+      )}
+      {activeZone === 'south' && (
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-500/30" />
+      )}
+      {activeZone === 'west' && (
+        <div className="absolute inset-y-0 left-0 w-1/2 bg-blue-500/30" />
+      )}
+      {activeZone === 'east' && (
+        <div className="absolute inset-y-0 right-0 w-1/2 bg-blue-500/30" />
+      )}
+      {activeZone === 'replace' && (
+        <div className="absolute inset-0 bg-green-500/30" />
+      )}
+    </div>
   );
 }
