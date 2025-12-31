@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MessageField from './MessageField';
 import Inbox, { type InboxHandle } from './Inbox';
 import { useChannelQuery } from '../../hooks/useChannelQuery';
@@ -6,6 +6,7 @@ import {
   useIsActivePane,
   useWorkspaceActions,
 } from '../../store/workspaceStore';
+import type { SplitDirection } from '../../types/BSPChatNode';
 
 export default function ChatPane({
   selectedChannel,
@@ -15,10 +16,29 @@ export default function ChatPane({
   nodeId: string;
 }) {
   const inboxRef = useRef<InboxHandle>(null);
+  const { setChannel, splitNodeWithChannel } = useWorkspaceActions();
+
+  function handleDrop(
+    event: React.DragEvent,
+    action: 'replace' | SplitDirection,
+  ) {
+    // drop is not enabled by default.
+    event.preventDefault();
+    const channelId = parseInt(event.dataTransfer.getData('channelId'));
+
+    if (action === 'replace') {
+      setChannel(nodeId, channelId);
+    } else {
+      splitNodeWithChannel(nodeId, action, channelId);
+    }
+  }
 
   return (
     <PaneSelector nodeId={nodeId}>
       <PaneHeader nodeId={nodeId} channelId={selectedChannel} />
+
+      <DropZones onDrop={handleDrop} />
+
       {selectedChannel === null ? (
         <div className="m-auto content-center text-gray-500">
           Select a channel from the sidebar
@@ -37,6 +57,103 @@ export default function ChatPane({
   );
 }
 
+function DropZones({
+  onDrop,
+}: {
+  onDrop: (event: React.DragEvent, action: 'replace' | SplitDirection) => void;
+}) {
+  // is there a drag event occuring?
+  const [isDragging, setIsDragging] = useState(false);
+  // on which zone?
+  const [activeZone, setActiveZone] = useState<
+    'replace' | SplitDirection | null
+  >(null);
+
+  useEffect(() => {
+    // on drag entering drop zone
+    const handleDragEnter = () => setIsDragging(true);
+    // on user stops dragging
+    const handleDragEnd = () => setIsDragging(false);
+    // on user stops dragging while on drop zone
+    const handleDrop = () => setIsDragging(false);
+
+    window.addEventListener('dragenter', handleDragEnter);
+    window.addEventListener('dragend', handleDragEnd);
+    window.addEventListener('drop', handleDrop);
+
+    return () => {
+      window.removeEventListener('dragenter', handleDragEnter);
+      window.removeEventListener('dragend', handleDragEnd);
+      window.removeEventListener('drop', handleDrop);
+    };
+  }, []);
+
+  if (!isDragging) {
+    return null;
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-50 grid grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr]">
+      {/* North */}
+      <div
+        className={`pointer-events-auto col-start-2 row-start-1 ${activeZone === 'north' ? 'bg-blue-500/50' : 'bg-blue-300/20'}`}
+        /* Consider on drag enter */
+        // Right now this kinda fires constantly
+        onDragOver={e => {
+          e.preventDefault();
+          setActiveZone('north');
+        }}
+        onDragLeave={() => setActiveZone(null)}
+        onDrop={e => onDrop(e, 'north')}
+      />
+
+      {/* West */}
+      <div
+        className={`pointer-events-auto col-start-1 row-start-2 ${activeZone === 'west' ? 'bg-blue-500/50' : 'bg-blue-300/20'}`}
+        onDragOver={e => {
+          e.preventDefault();
+          setActiveZone('west');
+        }}
+        onDragLeave={() => setActiveZone(null)}
+        onDrop={e => onDrop(e, 'west')}
+      />
+
+      {/* Center (replace) */}
+      <div
+        className={`pointer-events-auto col-start-2 row-start-2 ${activeZone === 'replace' ? 'bg-green-500/50' : 'bg-green-300/20'}`}
+        onDragOver={e => {
+          e.preventDefault();
+          setActiveZone('replace');
+        }}
+        onDragLeave={() => setActiveZone(null)}
+        onDrop={e => onDrop(e, 'replace')}
+      />
+
+      {/* East */}
+      <div
+        className={`pointer-events-auto col-start-3 row-start-2 ${activeZone === 'east' ? 'bg-blue-500/50' : 'bg-blue-300/20'}`}
+        onDragOver={e => {
+          e.preventDefault();
+          setActiveZone('east');
+        }}
+        onDragLeave={() => setActiveZone(null)}
+        onDrop={e => onDrop(e, 'east')}
+      />
+
+      {/* South */}
+      <div
+        className={`pointer-events-auto col-start-2 row-start-3 ${activeZone === 'south' ? 'bg-blue-500/50' : 'bg-blue-300/20'}`}
+        onDragOver={e => {
+          e.preventDefault();
+          setActiveZone('south');
+        }}
+        onDragLeave={() => setActiveZone(null)}
+        onDrop={e => onDrop(e, 'south')}
+      />
+    </div>
+  );
+}
+
 function PaneSelector({
   nodeId,
   children,
@@ -47,9 +164,10 @@ function PaneSelector({
   const { setActivePane } = useWorkspaceActions();
   const isActive = useIsActivePane(nodeId);
 
+  // relative pos so absolute pos in dropzones works
   return (
     <div
-      className={`grid h-full min-h-0 grid-rows-[auto_1fr_auto] ${
+      className={`relative grid h-full min-h-0 grid-rows-[auto_1fr_auto] ${
         isActive && 'ring-2 ring-blue-500 ring-inset'
       }`}
       onClick={() => setActivePane(nodeId)}

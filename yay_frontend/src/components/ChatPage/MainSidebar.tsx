@@ -104,7 +104,15 @@ function ChannelTab({ name, id }: { name: string; id: number }) {
   }
 
   return (
-    <div className="max-w-max cursor-pointer" onClick={handleClick}>
+    <div
+      className="cursor-pointer"
+      onClick={handleClick}
+      draggable
+      onDragStart={event => {
+        event.dataTransfer.effectAllowed = 'copy';
+        event.dataTransfer.setData('channelId', id.toString());
+      }}
+    >
       - {name}
     </div>
   );
