@@ -1,4 +1,10 @@
-import { useState, useEffect, Activity } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  Activity,
+} from 'react';
 import type { SplitDirection } from '../../types/BSPChatNode';
 
 export default function DropZones({
@@ -7,19 +13,27 @@ export default function DropZones({
   onDrop: (event: React.DragEvent, action: 'replace' | SplitDirection) => void;
 }) {
   // is there a drag event occuring?
+  // if so, expose invisible drag detectors
   const [isDragging, setIsDragging] = useState(false);
-  // on which zone?
-  const [activeZone, setActiveZone] = useState<
-    'replace' | SplitDirection | null
-  >(null);
+  const visualFeedbackRef = useRef<VisualFeedbackHandle>(null);
+
+  function handleZoneChange(zone: 'replace' | SplitDirection | null) {
+    visualFeedbackRef.current?.setActiveZone(zone);
+  }
 
   useEffect(() => {
     // on drag entering drop zone
     const handleDragEnter = () => setIsDragging(true);
     // on user stops dragging
-    const handleDragEnd = () => setIsDragging(false);
+    const handleDragEnd = () => {
+      setIsDragging(false);
+      handleZoneChange(null);
+    };
     // on user stops dragging while on drop zone
-    const handleDrop = () => setIsDragging(false);
+    const handleDrop = () => {
+      setIsDragging(false);
+      handleZoneChange(null);
+    };
 
     window.addEventListener('dragenter', handleDragEnter);
     window.addEventListener('dragend', handleDragEnd);
@@ -35,17 +49,15 @@ export default function DropZones({
   return (
     <Activity mode={isDragging ? 'visible' : 'hidden'}>
       <div className="pointer-events-none absolute inset-0 z-50 grid grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr]">
-        {activeZone !== null && <VisualFeedbackLayer activeZone={activeZone} />}
+        <VisualFeedbackLayer ref={visualFeedbackRef} />
         {/* North */}
         <div
           className={`pointer-events-auto col-start-1 col-end-4 row-start-1`}
-          /* Consider on drag enter */
-          // Right now this kinda fires constantly
           onDragOver={e => {
             e.preventDefault();
-            setActiveZone('north');
+            handleZoneChange('north');
           }}
-          onDragLeave={() => setActiveZone(null)}
+          onDragLeave={() => handleZoneChange(null)}
           onDrop={e => onDrop(e, 'north')}
         />
         {/* West */}
@@ -53,9 +65,9 @@ export default function DropZones({
           className={`pointer-events-auto col-start-1 row-start-2`}
           onDragOver={e => {
             e.preventDefault();
-            setActiveZone('west');
+            handleZoneChange('west');
           }}
-          onDragLeave={() => setActiveZone(null)}
+          onDragLeave={() => handleZoneChange(null)}
           onDrop={e => onDrop(e, 'west')}
         />
         {/* Center (replace) */}
@@ -63,9 +75,9 @@ export default function DropZones({
           className={`pointer-events-auto col-start-2 row-start-2`}
           onDragOver={e => {
             e.preventDefault();
-            setActiveZone('replace');
+            handleZoneChange('replace');
           }}
-          onDragLeave={() => setActiveZone(null)}
+          onDragLeave={() => handleZoneChange(null)}
           onDrop={e => onDrop(e, 'replace')}
         />
         {/* East */}
@@ -73,9 +85,9 @@ export default function DropZones({
           className={`pointer-events-auto col-start-3 row-start-2`}
           onDragOver={e => {
             e.preventDefault();
-            setActiveZone('east');
+            handleZoneChange('east');
           }}
-          onDragLeave={() => setActiveZone(null)}
+          onDragLeave={() => handleZoneChange(null)}
           onDrop={e => onDrop(e, 'east')}
         />
         {/* South */}
@@ -83,9 +95,9 @@ export default function DropZones({
           className={`pointer-events-auto col-start-1 col-end-4 row-start-3`}
           onDragOver={e => {
             e.preventDefault();
-            setActiveZone('south');
+            handleZoneChange('south');
           }}
-          onDragLeave={() => setActiveZone(null)}
+          onDragLeave={() => handleZoneChange(null)}
           onDrop={e => onDrop(e, 'south')}
         />
       </div>
@@ -93,11 +105,23 @@ export default function DropZones({
   );
 }
 
+type VisualFeedbackHandle = {
+  setActiveZone: (zone: 'replace' | SplitDirection | null) => void;
+};
+
 function VisualFeedbackLayer({
-  activeZone,
+  ref,
 }: {
-  activeZone: 'replace' | SplitDirection;
+  ref: React.Ref<VisualFeedbackHandle>;
 }) {
+  const [activeZone, setActiveZone] = useState<
+    'replace' | SplitDirection | null
+  >(null);
+
+  useImperativeHandle(ref, () => ({
+    setActiveZone,
+  }));
+
   return (
     <div className="pointer-events-none absolute inset-0 z-50">
       {activeZone === 'north' && (
