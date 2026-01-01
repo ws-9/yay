@@ -10,10 +10,10 @@ import type { SplitDirection } from '../../types/BSPChatNode';
 import DropZones from './DropZones';
 
 export default function ChatPane({
-  selectedChannel,
+  channelId,
   nodeId,
 }: {
-  selectedChannel: number | null;
+  channelId: number | null;
   nodeId: string;
 }) {
   const inboxRef = useRef<InboxHandle>(null);
@@ -36,20 +36,20 @@ export default function ChatPane({
 
   return (
     <PaneSelector nodeId={nodeId}>
-      <PaneHeader nodeId={nodeId} channelId={selectedChannel} />
+      <PaneHeader nodeId={nodeId} channelId={channelId} />
 
       <DropZones onDrop={handleDrop} />
 
-      {selectedChannel === null ? (
+      {channelId === null ? (
         <div className="m-auto content-center text-gray-500">
           Select a channel from the sidebar
         </div>
       ) : (
         <>
           {/* inboxRef refers to scrollToBottom defined within inbox */}
-          <Inbox ref={inboxRef} selectedChannel={selectedChannel} />
+          <Inbox ref={inboxRef} channelId={channelId} />
           <MessageField
-            selectedChannel={selectedChannel}
+            channelId={channelId}
             onMessageSent={() => inboxRef.current?.scrollToBottom()}
           />
         </>

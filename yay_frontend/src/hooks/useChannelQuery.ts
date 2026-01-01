@@ -3,13 +3,13 @@ import { API_CHANNELS } from '../constants';
 import { getTokenState } from '../store/authStore';
 import type { Channel } from '../types/Channel';
 
-export function useChannelQuery(selectedChannel: number | null) {
+export function useChannelQuery(channelId: number | null) {
   const { token } = getTokenState();
 
   const query = useQuery<Channel>({
-    queryKey: ['channels', { selectedChannel }],
-    queryFn: () => getChannel(selectedChannel!, token!),
-    enabled: selectedChannel !== null && token !== null,
+    queryKey: ['channels', { channelId: channelId }],
+    queryFn: () => getChannel(channelId!, token!),
+    enabled: channelId !== null && token !== null,
   });
 
   return {
@@ -19,8 +19,8 @@ export function useChannelQuery(selectedChannel: number | null) {
   };
 }
 
-async function getChannel(selectedChannel: number, token: string) {
-  const response = await fetch(`${API_CHANNELS}/${selectedChannel}`, {
+async function getChannel(channelId: number, token: string) {
+  const response = await fetch(`${API_CHANNELS}/${channelId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

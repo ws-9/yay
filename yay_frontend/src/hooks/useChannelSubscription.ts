@@ -5,7 +5,7 @@ import {
 } from '../store/webSocketStore';
 import type { ChannelMessage } from '../types/ChannelMessage';
 
-export function useChannelSubscription(selectedChannel: number) {
+export function useChannelSubscription(channelId: number) {
   const { subscribe } = useWebSocketActions();
   const webSocketConnected = useWebSocketConnectedStatus();
   const [messageEvents, setMessagesEvents] = useState<Array<ChannelMessage>>(
@@ -31,16 +31,16 @@ export function useChannelSubscription(selectedChannel: number) {
   });
 
   useEffect(() => {
-    if (!webSocketConnected || !selectedChannel) {
+    if (!webSocketConnected || !channelId) {
       return;
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessagesEvents([]);
 
-    const unsubscribe = doSubscribe(selectedChannel);
+    const unsubscribe = doSubscribe(channelId);
 
     return unsubscribe;
-  }, [selectedChannel, webSocketConnected]);
+  }, [channelId, webSocketConnected]);
 
   return messageEvents;
 }

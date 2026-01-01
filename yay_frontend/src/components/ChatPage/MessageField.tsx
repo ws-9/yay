@@ -3,10 +3,10 @@ import { useWebSocketActions } from '../../store/webSocketStore';
 import type { ChannelMessageEvent } from '../../types/ChannelMessageEvent';
 
 export default function MessageField({
-  selectedChannel,
+  channelId,
   onMessageSent,
 }: {
-  selectedChannel: number;
+  channelId: number;
   onMessageSent?: () => void;
 }) {
   const [message, setMessage] = useState('');
@@ -16,7 +16,7 @@ export default function MessageField({
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMessage('');
-  }, [selectedChannel]);
+  }, [channelId]);
 
   function handleEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -25,7 +25,7 @@ export default function MessageField({
       }
       event.preventDefault();
       const messageBroadcast: ChannelMessageEvent = { message };
-      publish(`/app/chat/${selectedChannel}`, messageBroadcast);
+      publish(`/app/chat/${channelId}`, messageBroadcast);
       setMessage('');
       onMessageSent?.();
     }

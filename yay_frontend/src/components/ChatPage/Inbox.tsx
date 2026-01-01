@@ -9,10 +9,10 @@ export type InboxHandle = {
 };
 
 export default function Inbox({
-  selectedChannel,
+  channelId,
   ref,
 }: {
-  selectedChannel: number;
+  channelId: number;
   ref?: React.Ref<InboxHandle>;
 }) {
   const {
@@ -22,8 +22,8 @@ export default function Inbox({
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfChannelMessagesQuery(selectedChannel);
-  const messageEvents = useChannelSubscription(selectedChannel);
+  } = useInfChannelMessagesQuery(channelId);
+  const messageEvents = useChannelSubscription(channelId);
   const { ref: endOfInboxRef, inView: endOfInboxInView } = useInView();
   const scrollContainerRef = useRef<ScrollableContainerHandle>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);

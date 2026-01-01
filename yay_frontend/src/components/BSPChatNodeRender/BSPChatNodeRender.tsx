@@ -4,7 +4,7 @@ import type { SplitDirection } from '../../types/BSPChatNode';
 
 export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
   if (node.type === 'pane') {
-    return <ChatPane selectedChannel={node.channelId} nodeId={node.id} />;
+    return <ChatPane channelId={node.channelId} nodeId={node.id} />;
   }
 
   return (
