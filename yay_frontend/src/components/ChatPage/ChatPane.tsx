@@ -72,7 +72,7 @@ function PaneSelector({
   return (
     <div
       className={`relative grid h-full min-h-0 grid-rows-[auto_1fr_auto] ${
-        isActive && 'ring-2 ring-blue-500 ring-inset'
+        isActive && 'ring-blue-500 ring-inset sm:ring-2'
       }`}
       onClick={() => setActivePane(nodeId)}
     >
