@@ -4,7 +4,7 @@ import type { BSPChatNode, SplitDirection } from '../types/BSPChatNode';
 
 type WorkspaceStore = {
   rootNode: BSPChatNode;
-  activePaneId: string | null;
+  activePaneId: string;
   paneHistory: string[]; // Most recently used at end
   actions: {
     // set node with id nodeId to display channel with channelId
