@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { BSPChatNode, SplitDirection } from '../types/BSPChatNode';
+import type {
+  BSPChatNode,
+  PaneNode,
+  SplitDirection,
+} from '../types/BSPChatNode';
 
 type WorkspaceStore = {
   rootNode: BSPChatNode;
@@ -249,3 +253,24 @@ export const getActivePaneId = () => useWorkspaceStore.getState().activePaneId;
 
 export const useIsActivePane = (nodeId: string) =>
   useWorkspaceStore(state => state.activePaneId === nodeId);
+
+export function useActivePane(): PaneNode {
+  return useWorkspaceStore(state => {
+    const stack: BSPChatNode[] = [state.rootNode];
+
+    while (stack.length > 0) {
+      const node = stack.shift()!;
+
+      if (node.type === 'pane' && node.id === state.activePaneId) {
+        return node;
+      }
+
+      if (node.type === 'split') {
+        stack.push(node.left, node.right);
+      }
+    }
+
+    // Should never reach here if activePaneId is always valid
+    throw new Error(`Active pane ${state.activePaneId} not found in tree`);
+  });
+}

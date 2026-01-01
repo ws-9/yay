@@ -14,3 +14,7 @@ export type BSPChatNode =
       left: BSPChatNode;
       right: BSPChatNode;
     };
+
+// Helper types for extracting specific variants
+export type PaneNode = Extract<BSPChatNode, { type: 'pane' }>;
+export type SplitNode = Extract<BSPChatNode, { type: 'split' }>;
