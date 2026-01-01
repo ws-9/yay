@@ -104,7 +104,7 @@ function PaneHeader({
           e.stopPropagation();
           splitNode(nodeId, 'north');
         }}
-        className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
         title="Split up"
       >
         ↑
@@ -114,7 +114,7 @@ function PaneHeader({
           e.stopPropagation();
           splitNode(nodeId, 'south');
         }}
-        className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
         title="Split down"
       >
         ↓
@@ -124,7 +124,7 @@ function PaneHeader({
           e.stopPropagation();
           splitNode(nodeId, 'west');
         }}
-        className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
         title="Split left"
       >
         ←
@@ -134,7 +134,7 @@ function PaneHeader({
           e.stopPropagation();
           splitNode(nodeId, 'east');
         }}
-        className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
+        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
         title="Split right"
       >
         →
@@ -145,7 +145,7 @@ function PaneHeader({
             e.stopPropagation();
             removeNode(nodeId);
           }}
-          className="ml-auto rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
+          className="ml-auto hidden rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600 sm:block"
           title="Close Pane"
         >
           ✕
