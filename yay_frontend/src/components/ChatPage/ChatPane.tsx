@@ -19,7 +19,8 @@ export default function ChatPane({
   mode?: 'single' | 'multi';
 }) {
   const inboxRef = useRef<InboxHandle>(null);
-  const { setChannel, splitNodeWithChannel } = useWorkspaceActions();
+  const { setChannel, splitNodeWithChannel, removeNode } =
+    useWorkspaceActions();
 
   function handleDrop(
     event: React.DragEvent,
@@ -28,11 +29,23 @@ export default function ChatPane({
     // drop is not enabled by default.
     event.preventDefault();
     const channelId = parseInt(event.dataTransfer.getData('channelId'));
+    const sourceNodeId = event.dataTransfer.getData('nodeId');
+    const canReplace = !sourceNodeId || sourceNodeId !== nodeId;
+
+    if (!canReplace) {
+      return;
+    }
 
     if (action === 'replace') {
       setChannel(nodeId, channelId);
+      if (sourceNodeId) {
+        removeNode(sourceNodeId);
+      }
     } else {
       splitNodeWithChannel(nodeId, action, channelId);
+      if (sourceNodeId) {
+        removeNode(sourceNodeId);
+      }
     }
   }
 
@@ -97,7 +110,15 @@ function PaneHeader({
   return (
     <div className="flex gap-2 border-b bg-gray-100 p-1">
       {channelId !== null && (
-        <div className="border-b-2">
+        <div
+          draggable
+          className="border-b-2"
+          onDragStart={event => {
+            event.dataTransfer.effectAllowed = 'copy';
+            event.dataTransfer.setData('channelId', channelId.toString());
+            event.dataTransfer.setData('nodeId', nodeId.toString());
+          }}
+        >
           {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
         </div>
       )}
