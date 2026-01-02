@@ -242,17 +242,22 @@ const useWorkspaceStore = create<WorkspaceStore>()(
   ),
 );
 
-export const useWorkspaceActions = () =>
-  useWorkspaceStore(state => state.actions);
+export function useWorkspaceActions() {
+  return useWorkspaceStore(state => state.actions);
+}
 
-export const useWorkspaceRoot = () =>
-  useWorkspaceStore(state => state.rootNode);
+export function useWorkspaceRoot() {
+  return useWorkspaceStore(state => state.rootNode);
+}
 
 // Non-reactive getter for use in event handlers
-export const getActivePaneId = () => useWorkspaceStore.getState().activePaneId;
+export function getActivePaneId() {
+  return useWorkspaceStore.getState().activePaneId;
+}
 
-export const useIsActivePane = (nodeId: string) =>
-  useWorkspaceStore(state => state.activePaneId === nodeId);
+export function useIsActivePane(nodeId: string) {
+  return useWorkspaceStore(state => state.activePaneId === nodeId);
+}
 
 export function useActivePane(): PaneNode {
   return useWorkspaceStore(state => {
