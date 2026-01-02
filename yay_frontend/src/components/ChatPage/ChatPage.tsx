@@ -6,6 +6,7 @@ import { useWebSocketActions } from '../../store/webSocketStore';
 import { useWorkspaceRoot, useActivePane } from '../../store/workspaceStore';
 import BSPChatNodeRender from '../BSPChatNodeRender/BSPChatNodeRender';
 import useMinBreakpoint from '../../hooks/useMinBreakpoint';
+import ChatPane from './ChatPane';
 
 export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -42,7 +43,11 @@ function SingleActivePaneRenderer() {
   // will pause subscriptions
   return (
     <Activity mode={isMinSm ? 'hidden' : 'visible'}>
-      <BSPChatNodeRender node={activePane} />
+      <ChatPane
+        channelId={activePane.channelId}
+        nodeId={activePane.id}
+        mode="single"
+      />
     </Activity>
   );
 }

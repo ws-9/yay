@@ -12,9 +12,11 @@ import DropZones from './DropZones';
 export default function ChatPane({
   channelId,
   nodeId,
+  mode = 'multi',
 }: {
   channelId: number | null;
   nodeId: string;
+  mode?: 'single' | 'multi';
 }) {
   const inboxRef = useRef<InboxHandle>(null);
   const { setChannel, splitNodeWithChannel } = useWorkspaceActions();
@@ -38,7 +40,7 @@ export default function ChatPane({
     <PaneSelector nodeId={nodeId}>
       <PaneHeader nodeId={nodeId} channelId={channelId} />
 
-      <DropZones onDrop={handleDrop} />
+      {mode === 'multi' && <DropZones onDrop={handleDrop} />}
 
       {channelId === null ? (
         <div className="m-auto content-center text-gray-500">
