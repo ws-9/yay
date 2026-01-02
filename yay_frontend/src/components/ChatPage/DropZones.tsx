@@ -23,7 +23,12 @@ export default function DropZones({
 
   useEffect(() => {
     // on drag entering drop zone
-    const handleDragEnter = () => setIsDragging(true);
+    const handleDragEnter = (event: DragEvent) => {
+      // could use something more rigorous should more drag events appear
+      if (event.dataTransfer?.types.includes('channelid')) {
+        setIsDragging(true);
+      }
+    };
     // on user stops dragging
     const handleDragEnd = () => {
       setIsDragging(false);
