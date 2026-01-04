@@ -58,24 +58,26 @@ export default function ChatPane({
         dropZonesRef={dropZonesRef}
       />
 
-      {mode === 'multi' && (
-        <DropZones dropZonesRef={dropZonesRef} onDrop={handleDrop} />
-      )}
+      <div className="relative grid h-full min-h-0 grid-rows-[1fr_auto]">
+        {mode === 'multi' && (
+          <DropZones dropZonesRef={dropZonesRef} onDrop={handleDrop} />
+        )}
 
-      {channelId === null ? (
-        <div className="m-auto content-center text-gray-500">
-          Select a channel from the sidebar
-        </div>
-      ) : (
-        <>
-          {/* inboxRef refers to scrollToBottom defined within inbox */}
-          <Inbox ref={inboxRef} channelId={channelId} />
-          <MessageField
-            channelId={channelId}
-            onMessageSent={() => inboxRef.current?.scrollToBottom()}
-          />
-        </>
-      )}
+        {channelId === null ? (
+          <div className="m-auto text-gray-500">
+            Select a channel from the sidebar
+          </div>
+        ) : (
+          <>
+            {/* inboxRef refers to scrollToBottom defined within inbox */}
+            <Inbox ref={inboxRef} channelId={channelId} />
+            <MessageField
+              channelId={channelId}
+              onMessageSent={() => inboxRef.current?.scrollToBottom()}
+            />
+          </>
+        )}
+      </div>
     </PaneSelector>
   );
 }
@@ -90,10 +92,9 @@ function PaneSelector({
   const { setActivePane } = useWorkspaceActions();
   const isActive = useIsActivePane(nodeId);
 
-  // relative pos so absolute pos in dropzones works
   return (
     <div
-      className={`relative grid h-full min-h-0 grid-rows-[auto_1fr_auto] ${
+      className={`grid h-full grid-rows-[auto_1fr] ${
         isActive && 'ring-blue-500 ring-inset sm:ring-2'
       }`}
       onClick={() => setActivePane(nodeId)}
