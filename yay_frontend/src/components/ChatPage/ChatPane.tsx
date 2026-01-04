@@ -7,7 +7,7 @@ import {
   useWorkspaceActions,
 } from '../../store/workspaceStore';
 import type { SplitDirection } from '../../types/BSPChatNode';
-import DropZones from './DropZones';
+import DropZones, { type DropZonesHandle } from './DropZones';
 
 export default function ChatPane({
   channelId,
@@ -19,6 +19,7 @@ export default function ChatPane({
   mode?: 'single' | 'multi';
 }) {
   const inboxRef = useRef<InboxHandle>(null);
+  const dropZonesRef = useRef<DropZonesHandle>(null!);
   const { setChannel, splitNodeWithChannel, removeNode } =
     useWorkspaceActions();
 
@@ -51,9 +52,15 @@ export default function ChatPane({
 
   return (
     <PaneSelector nodeId={nodeId}>
-      <PaneHeader nodeId={nodeId} channelId={channelId} />
+      <PaneHeader
+        nodeId={nodeId}
+        channelId={channelId}
+        dropZonesRef={dropZonesRef}
+      />
 
-      {mode === 'multi' && <DropZones onDrop={handleDrop} />}
+      {mode === 'multi' && (
+        <DropZones dropZonesRef={dropZonesRef} onDrop={handleDrop} />
+      )}
 
       {channelId === null ? (
         <div className="m-auto content-center text-gray-500">
@@ -99,9 +106,11 @@ function PaneSelector({
 function PaneHeader({
   nodeId,
   channelId,
+  dropZonesRef,
 }: {
   nodeId: string;
   channelId: number | null;
+  dropZonesRef: React.RefObject<DropZonesHandle>;
 }) {
   const { splitNode, removeNode } = useWorkspaceActions();
   const showCloseButton = nodeId !== 'root' || channelId !== null;
@@ -117,6 +126,10 @@ function PaneHeader({
             event.dataTransfer.effectAllowed = 'copy';
             event.dataTransfer.setData('channelId', channelId.toString());
             event.dataTransfer.setData('nodeId', nodeId.toString());
+            dropZonesRef.current?.disableDropZones();
+          }}
+          onDragEnd={() => {
+            dropZonesRef.current?.enableDropZones();
           }}
         >
           {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}

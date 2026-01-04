@@ -7,15 +7,28 @@ import {
 } from 'react';
 import type { SplitDirection } from '../../types/BSPChatNode';
 
+export type DropZonesHandle = {
+  enableDropZones: () => void;
+  disableDropZones: () => void;
+};
+
 export default function DropZones({
   onDrop,
+  dropZonesRef,
 }: {
   onDrop: (event: React.DragEvent, action: 'replace' | SplitDirection) => void;
+  dropZonesRef: React.RefObject<DropZonesHandle>;
 }) {
   // is there a drag event occuring?
   // if so, expose invisible drag detectors
+  const [isEnabled, setIsEnabled] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const visualFeedbackRef = useRef<VisualFeedbackHandle>(null);
+
+  useImperativeHandle(dropZonesRef, () => ({
+    enableDropZones: () => setIsEnabled(true),
+    disableDropZones: () => setIsEnabled(false),
+  }));
 
   function handleZoneChange(zone: 'replace' | SplitDirection | null) {
     visualFeedbackRef.current?.setActiveZone(zone);
@@ -25,7 +38,7 @@ export default function DropZones({
     // on drag entering drop zone
     const handleDragEnter = (event: DragEvent) => {
       // could use something more rigorous should more drag events appear
-      if (event.dataTransfer?.types.includes('channelid')) {
+      if (isEnabled && event.dataTransfer?.types.includes('channelid')) {
         setIsDragging(true);
       }
     };
@@ -49,7 +62,7 @@ export default function DropZones({
       window.removeEventListener('dragend', handleDragEnd);
       window.removeEventListener('drop', handleDrop);
     };
-  }, []);
+  }, [isEnabled]);
 
   return (
     <Activity mode={isDragging ? 'visible' : 'hidden'}>
