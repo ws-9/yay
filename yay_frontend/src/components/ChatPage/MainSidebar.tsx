@@ -1,5 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-import { API_MY_COMMUNITIES } from '../../constants';
 import { useAuthActions, useToken } from '../../store/authStore';
 import React, { Activity, useEffect, useEffectEvent, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -8,26 +6,12 @@ import {
   getActivePaneId,
 } from '../../store/workspaceStore';
 import type { Channel } from '../../types/Channel';
-import type { Community } from '../../types/Community';
+import useMyCommunitiesQuery from '../../hooks/useMyCommunitiesQuery';
 
 export default function MainSidebar() {
-  const token = useToken();
   const { logout } = useAuthActions();
   const navigate = useNavigate();
-  const { data, isLoading, error } = useQuery<Array<Community>>({
-    queryKey: ['communities', 'my-communities'],
-    queryFn: () => getMyCommunities(token),
-  });
-
-  const onLogout = useEffectEvent(() => {
-    navigate('/login');
-  });
-
-  useEffect(() => {
-    if (token === null) {
-      onLogout();
-    }
-  }, [token]);
+  const { data, isLoading, error } = useMyCommunitiesQuery();
 
   if (isLoading) {
     return <div>Loading</div>;
@@ -48,7 +32,13 @@ export default function MainSidebar() {
   return (
     <div className="hidden max-h-full grid-rows-[1fr_auto] border-r-2 sm:grid">
       <div className="overflow-y-auto">{communityTabs}</div>
-      <button className="cursor-pointer" onClick={logout}>
+      <button
+        className="cursor-pointer"
+        onClick={() => {
+          logout();
+          navigate('/login');
+        }}
+      >
         Logout
       </button>
     </div>
@@ -116,20 +106,4 @@ function ChannelTab({ name, id }: { name: string; id: number }) {
       - {name}
     </div>
   );
-}
-
-async function getMyCommunities(token: string | null) {
-  const response = await fetch(API_MY_COMMUNITIES, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-
-  return response.json();
 }
