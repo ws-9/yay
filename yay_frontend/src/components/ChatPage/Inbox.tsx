@@ -3,6 +3,7 @@ import { useInfChannelMessagesQuery } from '../../hooks/useInfChannelMessagesQue
 import { useChannelSubscription } from '../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import Markdown from 'react-markdown';
 
 export type InboxHandle = {
   scrollToBottom: () => void;
@@ -151,5 +152,18 @@ function MessageRender({
   createdAt: string;
 }) {
   const formattedDate = format(new Date(createdAt), 'MM/dd/yyyy HH:mm:ss');
-  return <div>{`${formattedDate} ${username}: ${message}`}</div>;
+  return (
+    <div>
+      {`${formattedDate} ${username}: `}
+      <Markdown
+        allowedElements={['em', 'strong', 'p']}
+        components={{
+          p: ({ children }) => <>{children}</>, // keep inline
+        }}
+        unwrapDisallowed={true} // preserve content but remove formatting
+      >
+        {message}
+      </Markdown>
+    </div>
+  );
 }
