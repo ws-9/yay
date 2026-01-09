@@ -1,1 +1,11 @@
 @import 'tailwindcss';
+
+/* Base UI portal support */
+#root {
+  isolation: isolate;
+}
+
+/* iOS 26+ Safari backdrop support */
+body {
+  position: relative;
+}
