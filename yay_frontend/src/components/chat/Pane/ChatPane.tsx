@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { useChannelQuery } from '../../../hooks/useChannelQuery';
 import {
   useWorkspaceActions,
   useIsActivePane,
@@ -8,6 +7,7 @@ import type { SplitDirection } from '../../../types/BSPChatNode';
 import Inbox, { type InboxHandle } from '../Inbox/Inbox';
 import MessageField from '../MessageField/MessageField';
 import DropZones, { type DropZonesHandle } from './DropZones';
+import PaneHeader from './PaneHeader';
 
 export default function ChatPane({
   channelId,
@@ -56,6 +56,7 @@ export default function ChatPane({
         nodeId={nodeId}
         channelId={channelId}
         dropZonesRef={dropZonesRef}
+        mode={mode}
       />
 
       <div className="relative grid h-full min-h-0 grid-rows-[1fr_auto]">
@@ -100,94 +101,6 @@ function PaneSelector({
       onClick={() => setActivePane(nodeId)}
     >
       {children}
-    </div>
-  );
-}
-
-function PaneHeader({
-  nodeId,
-  channelId,
-  dropZonesRef,
-}: {
-  nodeId: string;
-  channelId: number | null;
-  dropZonesRef: React.RefObject<DropZonesHandle>;
-}) {
-  const { splitNode, removeNode } = useWorkspaceActions();
-  const showCloseButton = nodeId !== 'root' || channelId !== null;
-  const { data, isLoading, error } = useChannelQuery(channelId);
-
-  return (
-    <div className="flex gap-2 border-b bg-gray-100 p-1">
-      {channelId !== null && (
-        <div
-          draggable
-          className="border-b-2"
-          onDragStart={event => {
-            event.dataTransfer.effectAllowed = 'copy';
-            event.dataTransfer.setData('channelId', channelId.toString());
-            event.dataTransfer.setData('nodeId', nodeId.toString());
-            dropZonesRef.current?.disableDropZones();
-          }}
-          onDragEnd={() => {
-            dropZonesRef.current?.enableDropZones();
-          }}
-        >
-          {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
-        </div>
-      )}
-      <button
-        onClick={e => {
-          e.stopPropagation();
-          splitNode(nodeId, 'north');
-        }}
-        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
-        title="Split up"
-      >
-        ↑
-      </button>
-      <button
-        onClick={e => {
-          e.stopPropagation();
-          splitNode(nodeId, 'south');
-        }}
-        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
-        title="Split down"
-      >
-        ↓
-      </button>
-      <button
-        onClick={e => {
-          e.stopPropagation();
-          splitNode(nodeId, 'west');
-        }}
-        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
-        title="Split left"
-      >
-        ←
-      </button>
-      <button
-        onClick={e => {
-          e.stopPropagation();
-          splitNode(nodeId, 'east');
-        }}
-        className="hidden rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600 sm:block"
-        title="Split right"
-      >
-        →
-      </button>
-      {showCloseButton && (
-        <button
-          onClick={e => {
-            e.stopPropagation();
-            removeNode(nodeId);
-          }}
-          className="ml-auto hidden rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600 sm:block"
-          title="Close Pane"
-        >
-          ✕
-        </button>
-      )}
     </div>
   );
 }
