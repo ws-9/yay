@@ -1,6 +1,6 @@
 import { useState, useEffect, type KeyboardEvent } from 'react';
-import { useWebSocketActions } from '../../store/webSocketStore';
-import type { ChannelMessageEvent } from '../../types/ChannelMessageEvent';
+import { useWebSocketActions } from '../../../store/webSocketStore';
+import type { ChannelMessageEvent } from '../../../types/ChannelMessageEvent';
 
 export default function MessageField({
   channelId,

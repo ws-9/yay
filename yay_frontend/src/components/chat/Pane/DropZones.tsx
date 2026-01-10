@@ -5,7 +5,7 @@ import {
   useImperativeHandle,
   Activity,
 } from 'react';
-import type { SplitDirection } from '../../types/BSPChatNode';
+import type { SplitDirection } from '../../../types/BSPChatNode';
 
 export type DropZonesHandle = {
   enableDropZones: () => void;

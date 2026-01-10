@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
-import { useInfChannelMessagesQuery } from '../../hooks/useInfChannelMessagesQuery';
-import { useChannelSubscription } from '../../hooks/useChannelSubscription';
+import { useInfChannelMessagesQuery } from '../../../hooks/useInfChannelMessagesQuery';
+import { useChannelSubscription } from '../../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Markdown from 'react-markdown';

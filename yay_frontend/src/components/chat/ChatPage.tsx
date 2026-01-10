@@ -1,12 +1,12 @@
-import MainSidebar from './MainSidebar';
+import MainSidebar from './MainSidebar/MainSidebar';
 import { useIsAuthenticated } from '../../store/authStore';
 import { useEffect, Activity } from 'react';
 import { WS_BROKER } from '../../constants';
 import { useWebSocketActions } from '../../store/webSocketStore';
 import { useWorkspaceRoot, useActivePane } from '../../store/workspaceStore';
-import BSPChatNodeRender from '../BSPChatNodeRender/BSPChatNodeRender';
+import BSPChatNodeRender from './BSPChatNodeRender';
 import useMinBreakpoint from '../../hooks/useMinBreakpoint';
-import ChatPane from './ChatPane';
+import ChatPane from './Pane/ChatPane';
 
 export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();

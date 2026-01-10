@@ -6,7 +6,7 @@ import HomePage from './components/HomePage';
 import AuthPage from './components/AuthPage';
 import Register from './components/AuthPage/Register';
 import Login from './components/AuthPage/Login';
-import ChatPage from './components/ChatPage';
+import { ChatPage } from './components/chat';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();

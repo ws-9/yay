@@ -1,6 +1,6 @@
 import type { BSPChatNode } from '../../types/BSPChatNode';
-import ChatPane from '../ChatPage/ChatPane';
 import type { SplitDirection } from '../../types/BSPChatNode';
+import ChatPane from './Pane/ChatPane';
 
 export default function BSPChatNodeRender({ node }: { node: BSPChatNode }) {
   if (node.type === 'pane') {

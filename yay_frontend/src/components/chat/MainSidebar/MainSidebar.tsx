@@ -1,12 +1,12 @@
-import { useAuthActions, useToken } from '../../store/authStore';
-import React, { Activity, useEffect, useEffectEvent, useState } from 'react';
+import { useState, Activity } from 'react';
 import { useNavigate } from 'react-router';
+import useMyCommunitiesQuery from '../../../hooks/useMyCommunitiesQuery';
+import { useAuthActions } from '../../../store/authStore';
 import {
   useWorkspaceActions,
   getActivePaneId,
-} from '../../store/workspaceStore';
-import type { Channel } from '../../types/Channel';
-import useMyCommunitiesQuery from '../../hooks/useMyCommunitiesQuery';
+} from '../../../store/workspaceStore';
+import type { Channel } from '../../../types/Channel';
 
 export default function MainSidebar() {
   const { logout } = useAuthActions();

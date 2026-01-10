@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
-import MessageField from './MessageField';
-import Inbox, { type InboxHandle } from './Inbox';
-import { useChannelQuery } from '../../hooks/useChannelQuery';
+import { useChannelQuery } from '../../../hooks/useChannelQuery';
 import {
-  useIsActivePane,
   useWorkspaceActions,
-} from '../../store/workspaceStore';
-import type { SplitDirection } from '../../types/BSPChatNode';
+  useIsActivePane,
+} from '../../../store/workspaceStore';
+import type { SplitDirection } from '../../../types/BSPChatNode';
+import Inbox, { type InboxHandle } from '../Inbox/Inbox';
+import MessageField from '../MessageField/MessageField';
 import DropZones, { type DropZonesHandle } from './DropZones';
 
 export default function ChatPane({
