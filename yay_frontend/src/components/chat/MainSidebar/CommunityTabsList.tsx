@@ -5,6 +5,7 @@ import {
   getActivePaneId,
 } from '../../../store/workspaceStore';
 import type { Channel } from '../../../types/Channel';
+import CommunityDialog from './CommunityDialog';
 
 export default function CommunityTabsList() {
   const { data, isLoading, error } = useMyCommunitiesQuery();
@@ -25,7 +26,12 @@ export default function CommunityTabsList() {
     />
   ));
 
-  return <div className="overflow-y-auto">{communityTabs}</div>;
+  return (
+    <div className="overflow-y-auto">
+      {communityTabs}
+      <CommunityDialog />
+    </div>
+  );
 }
 
 function CommunityTab({
