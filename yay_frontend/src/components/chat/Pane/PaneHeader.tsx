@@ -58,7 +58,10 @@ function HeaderMenu({
 
   return (
     <Menu.Root>
-      <Menu.Trigger className="ml-auto flex h-8 items-center justify-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 text-base font-medium text-gray-900 select-none hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-blue-800 active:bg-gray-100 data-[popup-open]:bg-gray-100">
+      <Menu.Trigger
+        onClick={event => event.stopPropagation()}
+        className="ml-auto flex h-8 items-center justify-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 text-base font-medium text-gray-900 select-none hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-blue-800 active:bg-gray-100 data-[popup-open]:bg-gray-100"
+      >
         ⋮
       </Menu.Trigger>
 
