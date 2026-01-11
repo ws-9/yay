@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useChannelQuery } from '../../../hooks/useChannelQuery';
 import { useWorkspaceActions } from '../../../store/workspaceStore';
 import type { DropZonesHandle } from './DropZones';
