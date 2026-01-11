@@ -71,10 +71,12 @@ function HeaderMenu({
 
       <Menu.Portal>
         <Menu.Positioner className="outline-none" sideOffset={8}>
-          <Menu.Popup className="origin-[var(--transform-origin)] rounded-md bg-[canvas] py-1 text-gray-900 shadow-lg shadow-gray-200 outline outline-1 outline-gray-200 transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 dark:shadow-none dark:-outline-offset-1 dark:outline-gray-300">
+          <Menu.Popup
+            onClick={event => event.stopPropagation()}
+            className="origin-[var(--transform-origin)] rounded-md bg-[canvas] py-1 text-gray-900 shadow-lg shadow-gray-200 outline outline-1 outline-gray-200 transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 dark:shadow-none dark:-outline-offset-1 dark:outline-gray-300"
+          >
             <Menu.Item
-              onClick={e => {
-                e.stopPropagation();
+              onClick={() => {
                 splitNode(nodeId, 'north');
               }}
               className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900"
@@ -82,8 +84,7 @@ function HeaderMenu({
               <span>↑</span> Split Up
             </Menu.Item>
             <Menu.Item
-              onClick={e => {
-                e.stopPropagation();
+              onClick={() => {
                 splitNode(nodeId, 'south');
               }}
               className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900"
@@ -92,8 +93,7 @@ function HeaderMenu({
             </Menu.Item>
 
             <Menu.Item
-              onClick={e => {
-                e.stopPropagation();
+              onClick={() => {
                 splitNode(nodeId, 'west');
               }}
               className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900"
@@ -102,8 +102,7 @@ function HeaderMenu({
             </Menu.Item>
 
             <Menu.Item
-              onClick={e => {
-                e.stopPropagation();
+              onClick={() => {
                 splitNode(nodeId, 'east');
               }}
               className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900"
@@ -115,8 +114,7 @@ function HeaderMenu({
               <>
                 <Menu.Separator className="mx-4 my-1.5 h-px bg-gray-200" />
                 <Menu.Item
-                  onClick={e => {
-                    e.stopPropagation();
+                  onClick={() => {
                     removeNode(nodeId);
                   }}
                   className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 text-red-600 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-red-600"
