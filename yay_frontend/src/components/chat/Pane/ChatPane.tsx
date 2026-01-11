@@ -1,8 +1,5 @@
 import React, { useRef } from 'react';
-import {
-  useWorkspaceActions,
-  useIsActivePane,
-} from '../../../store/workspaceStore';
+import { useWorkspaceActions } from '../../../store/workspaceStore';
 import type { SplitDirection } from '../../../types/BSPChatNode';
 import Inbox, { type InboxHandle } from '../Inbox/Inbox';
 import MessageField from '../MessageField/MessageField';
@@ -91,13 +88,10 @@ function PaneSelector({
   children: React.ReactNode;
 }) {
   const { setActivePane } = useWorkspaceActions();
-  const isActive = useIsActivePane(nodeId);
 
   return (
     <div
-      className={`grid h-full grid-rows-[auto_1fr] ${
-        isActive && 'ring-blue-500 ring-inset sm:ring-2'
-      }`}
+      className="grid h-full grid-rows-[auto_1fr]"
       onClick={() => setActivePane(nodeId)}
     >
       {children}

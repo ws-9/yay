@@ -1,5 +1,8 @@
 import { useChannelQuery } from '../../../hooks/useChannelQuery';
-import { useWorkspaceActions } from '../../../store/workspaceStore';
+import {
+  useIsActivePane,
+  useWorkspaceActions,
+} from '../../../store/workspaceStore';
 import type { DropZonesHandle } from './DropZones';
 import { Menu } from '@base-ui/react/menu';
 import useMinBreakpoint from '../../../hooks/useMinBreakpoint';
@@ -16,13 +19,14 @@ export default function PaneHeader({
   mode: 'single' | 'multi';
 }) {
   const { data, isLoading } = useChannelQuery(channelId);
+  const isActive = useIsActivePane(nodeId);
 
   return (
     <div className="flex gap-2 border-b bg-gray-100 p-1">
       {channelId !== null && (
         <div
           draggable={mode === 'multi'}
-          className="border-b-2"
+          className={`border-b-2 ${isActive ? 'text-black' : 'text-gray-500'}`}
           onDragStart={event => {
             event.dataTransfer.effectAllowed = 'copy';
             event.dataTransfer.setData('channelId', channelId.toString());
