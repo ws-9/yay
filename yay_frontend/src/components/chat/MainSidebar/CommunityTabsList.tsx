@@ -1,11 +1,10 @@
-import { useState, Activity } from 'react';
 import useMyCommunitiesQuery from '../../../hooks/useMyCommunitiesQuery';
 import {
   useWorkspaceActions,
   getActivePaneId,
 } from '../../../store/workspaceStore';
 import type { Channel } from '../../../types/Channel';
-import CommunityDialog from './CommunityDialog';
+import { Accordion } from '@base-ui/react/accordion';
 
 export default function CommunityTabsList() {
   const { data, isLoading, error } = useMyCommunitiesQuery();
@@ -27,10 +26,17 @@ export default function CommunityTabsList() {
   ));
 
   return (
-    <div className="overflow-y-auto">
+    <Accordion.Root multiple className="flex flex-col text-gray-900">
       {communityTabs}
-      <CommunityDialog />
-    </div>
+    </Accordion.Root>
+  );
+}
+
+function PlusIcon(props: React.ComponentProps<'svg'>) {
+  return (
+    <svg viewBox="0 0 12 12" fill="currentcolor" {...props}>
+      <path d="M6.75 0H5.25V5.25H0V6.75L5.25 6.75V12H6.75V6.75L12 6.75V5.25H6.75V0Z" />
+    </svg>
   );
 }
 
@@ -45,29 +51,18 @@ function CommunityTab({
     <ChannelTab key={channel.id} name={channel.name} id={channel.id} />
   ));
 
-  return <Hideable communityName={name}>{channelTabs}</Hideable>;
-}
-
-function Hideable({
-  communityName,
-  children,
-}: {
-  communityName: string;
-  children: React.ReactNode;
-}) {
-  const [expanded, setExpanded] = useState(false);
-
   return (
-    <div>
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full cursor-pointer justify-between"
-      >
-        <h1>{communityName}</h1>
-        <p>{expanded ? 'Less' : 'More'}</p>
-      </button>
-      <Activity mode={expanded ? 'visible' : 'hidden'}>{children}</Activity>
-    </div>
+    <Accordion.Item className="border-b border-gray-200">
+      <Accordion.Header>
+        <Accordion.Trigger className="group relative flex w-full items-baseline justify-between gap-4 bg-gray-50 py-2 pr-1 pl-3 text-left font-medium hover:bg-gray-100 focus-visible:z-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-800">
+          {name}
+          <PlusIcon className="mr-2 size-3 shrink-0 transition-all ease-out group-data-[panel-open]:scale-110 group-data-[panel-open]:rotate-45" />
+        </Accordion.Trigger>
+      </Accordion.Header>
+      <Accordion.Panel className="h-[var(--accordion-panel-height)] overflow-hidden text-base text-gray-600 transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0">
+        {channelTabs}
+      </Accordion.Panel>
+    </Accordion.Item>
   );
 }
 
