@@ -26,7 +26,7 @@ export default function CommunityTabsList() {
   ));
 
   return (
-    <Accordion.Root multiple className="flex flex-col text-gray-900">
+    <Accordion.Root className="flex flex-col text-gray-900">
       {communityTabs}
     </Accordion.Root>
   );
