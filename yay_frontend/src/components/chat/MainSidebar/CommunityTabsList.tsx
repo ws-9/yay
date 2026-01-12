@@ -5,6 +5,7 @@ import {
 } from '../../../store/workspaceStore';
 import type { Channel } from '../../../types/Channel';
 import { Accordion } from '@base-ui/react/accordion';
+import CommunityMenu from './CommunityMenu';
 
 export default function CommunityTabsList() {
   const { data, isLoading, error } = useMyCommunitiesQuery();
@@ -57,6 +58,7 @@ function CommunityTab({
         <Accordion.Trigger className="group relative flex w-full items-baseline justify-between gap-4 bg-gray-50 py-2 pr-1 pl-3 text-left font-medium hover:bg-gray-100 focus-visible:z-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-800">
           {name}
           <PlusIcon className="mr-2 size-3 shrink-0 transition-all ease-out group-data-[panel-open]:scale-110 group-data-[panel-open]:rotate-45" />
+          <CommunityMenu />
         </Accordion.Trigger>
       </Accordion.Header>
       <Accordion.Panel className="h-[var(--accordion-panel-height)] overflow-hidden text-base text-gray-600 transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0">
