@@ -3,6 +3,7 @@ import { Form } from '@base-ui/react/form';
 import { Field } from '@base-ui/react/field';
 import { Button } from '@base-ui/react/button';
 import { useState } from 'react';
+import useCreateCommunity from '../../../hooks/useCreateCommunityMutation';
 
 type DialogMode = 'join' | 'create';
 
@@ -10,6 +11,7 @@ export default function CommunityDialog() {
   const [mode, setMode] = useState<DialogMode>('join');
   const [joinCode, setJoinCode] = useState('');
   const [serverName, setServerName] = useState('');
+  const { mutate, isPending } = useCreateCommunity();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +21,7 @@ export default function CommunityDialog() {
     } else {
       // Handle create logic
       console.log('Create server:', serverName);
+      mutate({ name: serverName });
     }
   };
 
