@@ -1,4 +1,7 @@
 import { Dialog } from '@base-ui/react/dialog';
+import { Form } from '@base-ui/react/form';
+import { Field } from '@base-ui/react/field';
+import { Button } from '@base-ui/react/button';
 import { useState } from 'react';
 
 type DialogMode = 'join' | 'create';
@@ -42,17 +45,13 @@ export default function CommunityDialog() {
               : 'Choose a name for your new server'}
           </Dialog.Description>
 
-          <form onSubmit={handleSubmit} className="mb-6">
+          <Form onSubmit={handleSubmit} className="mb-6">
             {mode === 'join' ? (
-              <div>
-                <label
-                  htmlFor="join-code"
-                  className="mb-2 block text-sm font-medium"
-                >
+              <Field.Root name="joinCode" className="mb-4">
+                <Field.Label className="mb-2 block text-sm font-medium">
                   Invite Code
-                </label>
-                <input
-                  id="join-code"
+                </Field.Label>
+                <Field.Control
                   type="text"
                   value={joinCode}
                   onChange={e => setJoinCode(e.target.value)}
@@ -60,17 +59,19 @@ export default function CommunityDialog() {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   required
                 />
-              </div>
-            ) : (
-              <div>
-                <label
-                  htmlFor="server-name"
-                  className="mb-2 block text-sm font-medium"
+                <Field.Error
+                  className="text-sm text-red-800"
+                  match="valueMissing"
                 >
+                  Please enter an invite code
+                </Field.Error>
+              </Field.Root>
+            ) : (
+              <Field.Root name="serverName" className="mb-4">
+                <Field.Label className="mb-2 block text-sm font-medium">
                   Server Name
-                </label>
-                <input
-                  id="server-name"
+                </Field.Label>
+                <Field.Control
                   type="text"
                   value={serverName}
                   onChange={e => setServerName(e.target.value)}
@@ -78,31 +79,37 @@ export default function CommunityDialog() {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   required
                 />
-              </div>
+                <Field.Error
+                  className="text-sm text-red-800"
+                  match="valueMissing"
+                >
+                  Please enter a community name
+                </Field.Error>
+              </Field.Root>
             )}
 
-            <button
+            <Button
               type="button"
               onClick={() => setMode(mode === 'join' ? 'create' : 'join')}
-              className="mt-4 text-sm text-blue-600 hover:underline"
+              className="text-sm text-blue-600 hover:underline"
             >
               {mode === 'join'
                 ? 'Or create a new server'
                 : 'Or join an existing server'}
-            </button>
+            </Button>
 
             <div className="mt-6 flex justify-end gap-4">
               <Dialog.Close className="flex h-10 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-3.5 text-base font-medium text-gray-900 select-none hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-blue-800 active:bg-gray-100">
                 Cancel
               </Dialog.Close>
-              <button
+              <Button
                 type="submit"
                 className="flex h-10 items-center justify-center rounded-md bg-blue-600 px-3.5 text-base font-medium text-white select-none hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-blue-800 active:bg-blue-700"
               >
                 {mode === 'join' ? 'Join Server' : 'Create Server'}
-              </button>
+              </Button>
             </div>
-          </form>
+          </Form>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
