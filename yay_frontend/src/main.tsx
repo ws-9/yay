@@ -8,8 +8,10 @@ import Register from './components/AuthPage/Register';
 import Login from './components/AuthPage/Login';
 import { ChatPage } from './components/chat';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toast } from '@base-ui/react/toast';
 
 const queryClient = new QueryClient();
+const toastManager = Toast.createToastManager();
 
 const router = createBrowserRouter([
   {
@@ -31,8 +33,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <Toast.Provider toastManager={toastManager}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </Toast.Provider>
   </StrictMode>,
 );
