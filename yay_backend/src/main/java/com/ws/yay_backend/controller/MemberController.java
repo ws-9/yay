@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Members")
@@ -24,9 +25,10 @@ public class MemberController {
 
   @Operation(summary = "Add user to community")
   @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public JoinCommunityResponse joinCommunity(@RequestBody @Valid JoinCommunityRequest request) {
-    return memberService.joinCommunity(request);
+  public ResponseEntity<JoinCommunityResponse> joinCommunity(@RequestBody @Valid JoinCommunityRequest request) {
+    JoinCommunityResponse result = memberService.joinCommunity(request);
+    HttpStatus status = result.isNewMember() ? HttpStatus.CREATED : HttpStatus.OK;
+    return ResponseEntity.status(status).body(result);
   }
 
   @Operation(summary = "Remove user from a community")

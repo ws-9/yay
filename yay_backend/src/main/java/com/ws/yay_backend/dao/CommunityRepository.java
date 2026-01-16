@@ -24,6 +24,10 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
   @Query(value = "DELETE FROM community_members WHERE community_id = :communityId AND user_id = :userId", nativeQuery = true)
   int deleteMember(@Param("communityId") Long communityId, @Param("userId") Long userId);
 
+  @Modifying
+  @Query(value = "INSERT INTO community_members (community_id, user_id) VALUES (:communityId, :userId) ON CONFLICT DO NOTHING", nativeQuery = true)
+  int addMember(@Param("communityId") Long communityId, @Param("userId") Long userId);
+
   @EntityGraph(attributePaths = {"owner"})
   List<Community> findByMembers_id(Long memberId);
 }

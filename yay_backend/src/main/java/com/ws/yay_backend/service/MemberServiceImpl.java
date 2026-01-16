@@ -32,16 +32,14 @@ public class MemberServiceImpl implements MemberService {
   public JoinCommunityResponse joinCommunity(JoinCommunityRequest request) {
     User user = authUtilsComponent.getAuthenticatedUser();
 
-    Community community = communityRepository.findWithMembersById(request.communityId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));
-
-    boolean userAlreadyMember = communityRepository.existsByIdAndMembers_Id(request.communityId(), user.getId());
-    if (!userAlreadyMember) {
-      community.getMembers().add(user);
-      communityRepository.save(community);
+    if (!communityRepository.existsById(request.communityId())) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId());
     }
 
-    return new JoinCommunityResponse(user.getId(), user.getUsername());
+    int rowsInserted = communityRepository.addMember(request.communityId(), user.getId());
+    boolean isNewMember = rowsInserted > 0;
+
+    return new JoinCommunityResponse(user.getId(), user.getUsername(), isNewMember);
   }
 
   @Override
