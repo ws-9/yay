@@ -71,6 +71,7 @@ export default function ChatPane({
             <Inbox ref={inboxRef} channelId={channelId} />
             <MessageField
               channelId={channelId}
+              nodeId={nodeId}
               onMessageSent={() => inboxRef.current?.scrollToBottom()}
             />
           </>

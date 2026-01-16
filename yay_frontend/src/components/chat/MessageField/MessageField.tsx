@@ -1,15 +1,19 @@
-import { useState, useEffect, type KeyboardEvent } from 'react';
+import { useState, useEffect, type KeyboardEvent, Activity } from 'react';
 import { useWebSocketActions } from '../../../store/webSocketStore';
 import type { ChannelMessageEvent } from '../../../types/ChannelMessageEvent';
+import { useIsActivePane } from '../../../store/workspaceStore';
 
 export default function MessageField({
   channelId,
+  nodeId,
   onMessageSent,
 }: {
   channelId: number;
+  nodeId: string;
   onMessageSent?: () => void;
 }) {
   const [message, setMessage] = useState('');
+  const isActive = useIsActivePane(nodeId);
   const { publish } = useWebSocketActions();
 
   // reset message on channel switch
@@ -32,12 +36,14 @@ export default function MessageField({
   }
 
   return (
-    <textarea
-      className="field-sizing-content max-h-[9lh] w-full resize-none border-2"
-      placeholder="Type away..."
-      value={message}
-      onChange={event => setMessage(event.target.value)}
-      onKeyDown={handleEnter}
-    />
+    <Activity mode={isActive ? 'visible' : 'hidden'}>
+      <textarea
+        className="field-sizing-content max-h-[9lh] w-full resize-none border-2"
+        placeholder="Type away..."
+        value={message}
+        onChange={event => setMessage(event.target.value)}
+        onKeyDown={handleEnter}
+      />
+    </Activity>
   );
 }
