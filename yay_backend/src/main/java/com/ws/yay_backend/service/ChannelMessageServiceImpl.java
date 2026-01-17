@@ -38,7 +38,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
   @Transactional
   @PreAuthorize("""
       hasRole('ADMIN') or
-      @channelRepository.existsByIdAndCommunity_Members_Id(#request.channelId, authentication.principal.id) or
+      @channelRepository.existsByIdAndCommunity_Members_User_Id(#request.channelId, authentication.principal.id) or
       @channelRepository.existsByIdAndCommunity_Owner_Id(#request.channelId, authentication.principal.id)
       """)
   public GetChannelMessageResponse createMessage(CreateChannelMessageRequest request) {

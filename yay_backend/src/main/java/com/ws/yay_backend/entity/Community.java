@@ -19,20 +19,14 @@ public class Community {
   @JoinColumn(name = "owner_id", nullable = false)
   private User owner;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "community_members",
-      joinColumns = @JoinColumn(name = "community_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id")
-  )
-  private Set<User> members;
+  @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
+  private Set<CommunityMember> members;
 
   public Community() {}
 
-  public Community(String name, User owner, Set<User> members) {
+  public Community(String name, User owner) {
     this.name = name;
     this.owner = owner;
-    this.members = members;
   }
 
   public Long getId() {
@@ -59,11 +53,11 @@ public class Community {
     this.owner = owner;
   }
 
-  public Set<User> getMembers() {
+  public Set<CommunityMember> getMembers() {
     return members;
   }
 
-  public void setMembers(Set<User> members) {
+  public void setMembers(Set<CommunityMember> members) {
     this.members = members;
   }
 }

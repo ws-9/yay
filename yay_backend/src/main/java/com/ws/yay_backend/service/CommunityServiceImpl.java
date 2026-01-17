@@ -2,10 +2,14 @@ package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.ChannelRepository;
+import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
+import com.ws.yay_backend.dao.CommunityRoleRepository;
 import com.ws.yay_backend.dto.response.GetCommunityWithChannelsResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
+import com.ws.yay_backend.entity.CommunityMember;
+import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
@@ -20,18 +24,29 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class CommunityServiceImpl implements CommunityService {
   private final CommunityRepository communityRepository;
+  private final CommunityMemberRepository communityMemberRepository;
+  private final CommunityRoleRepository communityRoleRepository;
   private final ChannelRepository channelRepository;
   private final AuthUtilsComponent authUtilsComponent;
+  private static final String DEFAULT_MEMBER_ROLE_NAME = "Member";
+  private static final String ADMIN_ROLE_NAME = "Admin";
 
   @Autowired
-  public CommunityServiceImpl(CommunityRepository communityRepository, ChannelRepository channelRepository, AuthUtilsComponent authUtilsComponent) {
+  public CommunityServiceImpl(
+      CommunityRepository communityRepository,
+      CommunityMemberRepository communityMemberRepository,
+      CommunityRoleRepository communityRoleRepository,
+      ChannelRepository channelRepository,
+      AuthUtilsComponent authUtilsComponent
+  ) {
     this.communityRepository = communityRepository;
+    this.communityMemberRepository = communityMemberRepository;
+    this.communityRoleRepository = communityRoleRepository;
     this.channelRepository = channelRepository;
     this.authUtilsComponent = authUtilsComponent;
   }
@@ -53,8 +68,15 @@ public class CommunityServiceImpl implements CommunityService {
   public GetCommunityResponse createCommunity(CreateCommunityRequest request) {
     User owner = authUtilsComponent.getAuthenticatedUser();
 
-    Community community = new Community(request.name(), owner, Set.of(owner));
+    Community community = new Community(request.name(), owner);
     Community saved = communityRepository.save(community);
+
+    // Add owner as a member with Admin role
+    CommunityRole adminRole = communityRoleRepository.findByName(ADMIN_ROLE_NAME)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Admin role not found"));
+    
+    CommunityMember ownerMembership = new CommunityMember(saved, owner, adminRole);
+    communityMemberRepository.save(ownerMembership);
 
     return new GetCommunityResponse(
         saved.getId(),
@@ -86,11 +108,11 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional(readOnly = true)
-  @PreAuthorize("hasRole('ADMIN') or @communityRepository.existsByIdAndMembers_Id(#id, authentication.principal.id)")
+  @PreAuthorize("hasRole('ADMIN') or @communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(#id, authentication.principal.id)")
   public List<GetMemberResponse> getAllMembers(Long id) {
     return communityRepository.findWithMembersById(id)
         .map(c -> c.getMembers().stream()
-            .map(u -> new GetMemberResponse(u.getId(), u.getUsername()))
+            .map(cm -> new GetMemberResponse(cm.getUser().getId(), cm.getUser().getUsername()))
             .collect(Collectors.toList())
         )
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + id));
@@ -101,7 +123,7 @@ public class CommunityServiceImpl implements CommunityService {
   public List<GetCommunityWithChannelsResponse> getUserOwnCommunities() {
     User user = authUtilsComponent.getAuthenticatedUser();
 
-    List<Community> communities = communityRepository.findByMembers_id(user.getId());
+    List<Community> communities = communityRepository.findByMembers_User_id(user.getId());
 
     if (communities.isEmpty()) {
       return List.of();
@@ -135,7 +157,7 @@ public class CommunityServiceImpl implements CommunityService {
   @Transactional(readOnly = true)
   @PreAuthorize("""
       hasRole('ADMIN') or
-      @communityRepository.existsByIdAndMembers_Id(#communityId, authentication.principal.id)
+      @communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(#communityId, authentication.principal.id)
       """)
   public List<GetChannelResponse> getCommunityChannels(Long communityId) {
     return channelRepository.findAllByCommunity_Id(communityId).stream()

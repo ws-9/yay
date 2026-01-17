@@ -17,17 +17,8 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
   @EntityGraph(attributePaths = {"members"})
   Optional<Community> findWithMembersById(Long id);
 
-  boolean existsByIdAndMembers_Id(Long communityId, Long userId);
-
-  // nativeQuery = true as the join table isn't an entity.
-  @Modifying
-  @Query(value = "DELETE FROM community_members WHERE community_id = :communityId AND user_id = :userId", nativeQuery = true)
-  int deleteMember(@Param("communityId") Long communityId, @Param("userId") Long userId);
-
-  @Modifying
-  @Query(value = "INSERT INTO community_members (community_id, user_id) VALUES (:communityId, :userId) ON CONFLICT DO NOTHING", nativeQuery = true)
-  int addMember(@Param("communityId") Long communityId, @Param("userId") Long userId);
+  boolean existsByIdAndMembers_User_Id(Long communityId, Long userId);
 
   @EntityGraph(attributePaths = {"owner"})
-  List<Community> findByMembers_id(Long memberId);
+  List<Community> findByMembers_User_id(Long memberId);
 }

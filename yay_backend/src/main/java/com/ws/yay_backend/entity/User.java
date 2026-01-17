@@ -34,8 +34,8 @@ public class User implements UserDetails {
   )
   private Set<Role> roles;
 
-  @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
-  private Set<Community> communities;
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  private Set<CommunityMember> communityMemberships;
 
   public User() {}
 

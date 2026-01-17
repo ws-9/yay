@@ -44,7 +44,7 @@ public class WebSocketServiceImpl implements  WebSocketService {
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> new RuntimeException("Channel not found: " + channelId));
 
-    boolean isMember = channelRepository.existsByIdAndCommunity_Members_Id(channelId, user.getId());
+    boolean isMember = channelRepository.existsByIdAndCommunity_Members_User_Id(channelId, user.getId());
     if (!isMember) {
       throw new RuntimeException("User is not member");
     }
