@@ -28,4 +28,24 @@ public class AuthUtilsComponent {
             "Authenticated user not found: " + username
         ));
   }
+
+  public Long getAuthenticatedUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Object principal = authentication.getPrincipal();
+    
+    if (principal instanceof User user) {
+      return user.getId();
+    }
+    
+    throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Unable to get authenticated user ID"
+    );
+  }
+
+  public boolean isCurrentUserAdmin() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication.getAuthorities().stream()
+        .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+  }
 }

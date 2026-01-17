@@ -8,6 +8,7 @@ import com.ws.yay_backend.dao.UserRepository;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
+import com.ws.yay_backend.entity.CommunityRoleName;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import com.ws.yay_backend.dto.request.JoinCommunityRequest;
@@ -26,7 +27,6 @@ public class MemberServiceImpl implements MemberService {
   private final CommunityMemberRepository communityMemberRepository;
   private final CommunityRoleRepository communityRoleRepository;
   private final AuthUtilsComponent authUtilsComponent;
-  private static final String DEFAULT_MEMBER_ROLE_NAME = "Member";
 
   public MemberServiceImpl(
       UserRepository userRepository,
@@ -51,14 +51,13 @@ public class MemberServiceImpl implements MemberService {
     Community community = communityRepository.findById(request.communityId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));
 
-    // Check if already a member
     boolean alreadyMember = communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(
         request.communityId(),
         user.getId()
     );
 
     if (!alreadyMember) {
-      CommunityRole memberRole = communityRoleRepository.findByName(DEFAULT_MEMBER_ROLE_NAME)
+      CommunityRole memberRole = communityRoleRepository.findByName(CommunityRoleName.MEMBER.getValue())
           .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Default member role not found"));
 
       CommunityMember communityMember = new CommunityMember(community, user, memberRole);
