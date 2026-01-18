@@ -22,6 +22,7 @@ export default function CommunityTabsList() {
     <CommunityTab
       key={community.id}
       name={community.name}
+      role={community.role!}
       channels={community.channels ?? []}
     />
   ));
@@ -43,9 +44,11 @@ function PlusIcon(props: React.ComponentProps<'svg'>) {
 
 function CommunityTab({
   name,
+  role,
   channels,
 }: {
   name: string;
+  role: string;
   channels: Array<Channel>;
 }) {
   const channelTabs = channels.map(channel => (
@@ -62,7 +65,7 @@ function CommunityTab({
         >
           {name}
           <PlusIcon className="mr-2 size-3 shrink-0 transition-all ease-out group-data-[panel-open]:scale-110 group-data-[panel-open]:rotate-45" />
-          <CommunityMenu />
+          <CommunityMenu role={role} />
         </Accordion.Trigger>
       </Accordion.Header>
       <Accordion.Panel className="h-[var(--accordion-panel-height)] overflow-hidden text-base text-gray-600 transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0">
