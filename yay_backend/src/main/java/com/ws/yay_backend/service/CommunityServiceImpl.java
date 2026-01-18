@@ -50,6 +50,7 @@ public class CommunityServiceImpl implements CommunityService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<GetCommunityResponse> getAll() {
     return communityRepository.findAllWithOwner().stream()
         .map(community -> new GetCommunityResponse(
