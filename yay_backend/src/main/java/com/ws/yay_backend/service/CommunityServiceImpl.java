@@ -5,7 +5,6 @@ import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.response.GetCommunityWithChannelsResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -52,12 +51,16 @@ public class CommunityServiceImpl implements CommunityService {
   @Override
   @Transactional(readOnly = true)
   public List<GetCommunityResponse> getAll() {
-    return communityRepository.findAllWithOwner().stream()
+    List<Community> communities = communityRepository.findAllWithOwner();
+    
+    return communities.stream()
         .map(community -> new GetCommunityResponse(
             community.getId(),
             community.getName(),
             community.getOwner().getId(),
-            community.getOwner().getUsername()
+            community.getOwner().getUsername(),
+            null,
+            null
         ))
         .toList();
   }
@@ -81,20 +84,31 @@ public class CommunityServiceImpl implements CommunityService {
         saved.getId(),
         saved.getName(),
         saved.getOwner().getId(),
-        saved.getOwner().getUsername()
+        saved.getOwner().getUsername(),
+        adminRole.getName(),
+        null
     );
   }
 
   @Override
   @Transactional(readOnly = true)
   public GetCommunityResponse getCommunity(long id) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+    
     Community community = communityRepository.findWithOwnerById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+    
+    String role = communityMemberRepository.findWithRoleByKey_CommunityIdAndKey_UserId(id, userId)
+        .map(cm -> cm.getRole().getName())
+        .orElse(null);
+    
     return new GetCommunityResponse(
         community.getId(),
         community.getName(),
         community.getOwner().getId(),
-        community.getOwner().getUsername()
+        community.getOwner().getUsername(),
+        role,
+        null
     );
   }
 
@@ -141,7 +155,7 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<GetCommunityWithChannelsResponse> getUserOwnCommunities() {
+  public List<GetCommunityResponse> getUserOwnCommunities() {
     User user = authUtilsComponent.getAuthenticatedUser();
 
     List<Community> communities = communityRepository.findAllWithOwnerByMembers_User_id(user.getId());
@@ -163,13 +177,20 @@ public class CommunityServiceImpl implements CommunityService {
         .collect(Collectors.groupingBy(
             GetChannelResponse::communityId
         ));
+    
+    Map<Long, String> communityIdToRole = communityMemberRepository.findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(user.getId(), communityIds).stream()
+        .collect(Collectors.toMap(
+            cm -> cm.getKey().getCommunityId(),
+            cm -> cm.getRole().getName()
+        ));
 
     return communities.stream()
-        .map( c -> new GetCommunityWithChannelsResponse(
+        .map( c -> new GetCommunityResponse(
             c.getId(),
             c.getName(),
             c.getOwner().getId(),
             c.getOwner().getUsername(),
+            communityIdToRole.getOrDefault(c.getId(), null),
             communityIdToChannels.getOrDefault(c.getId(), List.of())
         )).toList();
   }

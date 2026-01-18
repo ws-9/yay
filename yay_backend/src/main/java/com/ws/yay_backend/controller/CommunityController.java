@@ -3,7 +3,6 @@ package com.ws.yay_backend.controller;
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
-import com.ws.yay_backend.dto.response.GetCommunityWithChannelsResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
 import com.ws.yay_backend.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +60,7 @@ public class CommunityController {
 
   @Operation(summary = "Get user's own communities")
   @GetMapping("/my-communities")
-  public List<GetCommunityWithChannelsResponse> getMyCommunities() {
+  public List<GetCommunityResponse> getMyCommunities() {
     return communityService.getUserOwnCommunities();
   }
 
