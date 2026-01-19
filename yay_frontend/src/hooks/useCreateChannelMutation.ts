@@ -1,0 +1,50 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getTokenState } from '../store/authStore';
+import { API_CHANNELS } from '../constants';
+
+type CreateChannelInput = {
+  communityId: number;
+  name: string;
+};
+
+type CreateChannelResponse = {
+  id: number;
+  name: string;
+  communityId: number;
+  communityName: string;
+};
+
+function useCreateChannelMutation() {
+  const queryClient = useQueryClient();
+  const { token } = getTokenState();
+
+  return useMutation<CreateChannelResponse, Error, CreateChannelInput>({
+    mutationFn: async function (data) {
+      const response = await fetch(API_CHANNELS, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        throw new Error(JSON.stringify(json));
+      }
+
+      return json;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['communities', 'my-communities'],
+      });
+    },
+  });
+}
+
+export default function useCreateChannel() {
+  return useCreateChannelMutation();
+}
