@@ -21,6 +21,7 @@ export default function CommunityTabsList() {
   const communityTabs = data?.map(community => (
     <CommunityTab
       key={community.id}
+      communityId={Number.parseInt(community.id)}
       name={community.name}
       role={community.role!}
       channels={community.channels ?? []}
@@ -46,10 +47,12 @@ function CommunityTab({
   name,
   role,
   channels,
+  communityId,
 }: {
   name: string;
   role: string;
   channels: Array<Channel>;
+  communityId: number;
 }) {
   const channelTabs = channels.map(channel => (
     <ChannelTab key={channel.id} name={channel.name} id={channel.id} />
@@ -65,7 +68,7 @@ function CommunityTab({
         >
           {name}
           <PlusIcon className="mr-2 size-3 shrink-0 transition-all ease-out group-data-[panel-open]:scale-110 group-data-[panel-open]:rotate-45" />
-          <CommunityMenu role={role} />
+          <CommunityMenu role={role} communityId={communityId} />
         </Accordion.Trigger>
       </Accordion.Header>
       <Accordion.Panel className="h-[var(--accordion-panel-height)] overflow-hidden text-base text-gray-600 transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0">
