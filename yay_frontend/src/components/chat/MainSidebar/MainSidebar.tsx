@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router';
 import { useAuthActions } from '../../../store/authStore';
 import CommunityTabsList from './CommunityTabsList';
 import CommunityDialog from './CommunityDialog';
-import ChannelDialog from './ChannelDialog';
 import { ScrollArea } from '@base-ui/react/scroll-area';
 import { Separator } from '@base-ui/react/separator';
 
@@ -23,8 +22,6 @@ export default function MainSidebar() {
           <ScrollArea.Thumb className="w-full rounded bg-gray-500" />
         </ScrollArea.Scrollbar>
       </ScrollArea.Root>
-
-      <ChannelDialog />
 
       <Separator orientation="horizontal" className="h-px bg-gray-500" />
       <button

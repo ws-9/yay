@@ -7,6 +7,8 @@ import { useWorkspaceRoot, useActivePane } from '../../store/workspaceStore';
 import BSPChatNodeRender from './BSPChatNodeRender';
 import useMinBreakpoint from '../../hooks/useMinBreakpoint';
 import ChatPane from './Pane/ChatPane';
+import { ErrorHandlingToast } from './MainSidebar/ErrorHandlingToast';
+import ChannelDialog from './MainSidebar/ChannelDialog';
 
 export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -23,6 +25,8 @@ export default function ChatPage() {
       <MainSidebar />
       <SingleActivePaneRenderer />
       <MultiPaneRenderer />
+      <ChannelDialog />
+      <ErrorHandlingToast />
     </div>
   );
 }
