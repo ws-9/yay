@@ -61,6 +61,10 @@ public class ChannelServiceImpl implements ChannelService {
           ));
     }
 
+    if (channelRepository.existsByNameAndCommunity_Id(request.name(), community.getId())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "A channel with this name already exists in the community");
+    }
+
     Channel channel = new Channel(request.name(), community, new ArrayList<>());
     Channel saved = channelRepository.save(channel);
 
