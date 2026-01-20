@@ -4,7 +4,6 @@ import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dao.UserRepository;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -15,27 +14,23 @@ import com.ws.yay_backend.dto.request.JoinCommunityRequest;
 import com.ws.yay_backend.dto.request.RemoveMemberRequest;
 import com.ws.yay_backend.dto.response.JoinCommunityResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class MemberServiceImpl implements MemberService {
-  private final UserRepository userRepository;
   private final CommunityRepository communityRepository;
   private final CommunityMemberRepository communityMemberRepository;
   private final CommunityRoleRepository communityRoleRepository;
   private final AuthUtilsComponent authUtilsComponent;
 
   public MemberServiceImpl(
-      UserRepository userRepository,
       CommunityRepository communityRepository,
       CommunityMemberRepository communityMemberRepository,
       CommunityRoleRepository communityRoleRepository,
       AuthUtilsComponent authUtilsComponent
   ) {
-    this.userRepository = userRepository;
     this.communityRepository = communityRepository;
     this.communityMemberRepository = communityMemberRepository;
     this.communityRoleRepository = communityRoleRepository;
@@ -51,10 +46,8 @@ public class MemberServiceImpl implements MemberService {
     Community community = communityRepository.findById(request.communityId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));
 
-    boolean alreadyMember = communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(
-        request.communityId(),
-        user.getId()
-    );
+    boolean alreadyMember = communityMemberRepository
+        .existsById(new CommunityMemberKey(request.communityId(), user.getId()));
 
     if (!alreadyMember) {
       CommunityRole memberRole = communityRoleRepository.findByName(CommunityRoleName.MEMBER.getValue())
@@ -69,29 +62,81 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   @Transactional
-  @PreAuthorize("""
-      hasRole('ADMIN') or
-      @communityRepository.existsByIdAndOwner_Id(#request.communityId, authentication.principal.id) or
-      (@communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(#request.communityId, authentication.principal.id) and
-      #request.userId() == authentication.principal.id)
-      """)
   public void deleteMember(RemoveMemberRequest request) {
-    if (!userRepository.existsById(request.userId())) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id not found in database: " + request.userId());
+    boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
+
+    if (isAdmin) {
+      Community community = communityRepository.findWithOwnerById(request.communityId())
+          .orElseThrow(() -> new ResponseStatusException(
+              HttpStatus.NOT_FOUND,
+              "Community not found: " + request.communityId()
+          ));
+
+      CommunityMemberKey key = new CommunityMemberKey(request.communityId(), request.userId());
+
+      CommunityMember toBeRemovedMember = communityMemberRepository.findById(key)
+          .orElseThrow(() -> new ResponseStatusException(
+              HttpStatus.NOT_FOUND,
+              "Member not found: " + request.userId()
+          ));
+
+      boolean isCommunityOwner = community.getOwner().getId().equals(request.userId());
+
+      if (isCommunityOwner) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
+      }
+
+      communityMemberRepository.delete(toBeRemovedMember);
+
+      return;
     }
 
-    long communityOwnerId = communityRepository.findById(request.communityId())
-        .map(c -> c.getOwner().getId())
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    // if user is not a member, just throw a NOT FOUND
+    CommunityMember membership = communityMemberRepository.
+        findWithRoleAndCommunityAndOwnerByKey(new CommunityMemberKey(request.communityId(), userId))
         .orElseThrow(() -> new ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "Community id not found in database: " + request.communityId()
         ));
 
-    if (communityOwnerId == request.userId()) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
+    boolean isSelf = userId.equals(request.userId());
+    boolean hasPrivilege = membership.getRole().getCanBanUsers();
+
+    if (!isSelf && !hasPrivilege) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN,
+          "You don't have permission to remove users"
+      );
     }
 
     CommunityMemberKey key = new CommunityMemberKey(request.communityId(), request.userId());
-    communityMemberRepository.deleteById(key);
+
+    CommunityMember toBeRemovedMember = communityMemberRepository
+        .findWithRoleByKey(key)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Member not found: " + request.userId()
+        ));
+
+    boolean isCommunityOwner = membership.getCommunity().getOwner().getId().equals(request.userId());
+
+    if (isCommunityOwner) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
+    }
+
+    if (!isSelf) {
+      boolean hasSufficientHierarchy = toBeRemovedMember.getRole().getHierarchyLevel() > membership.getRole().getHierarchyLevel();
+
+      if (!hasSufficientHierarchy) {
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "You don't have permission to remove users of higher hierarchy"
+        );
+      }
+    }
+
+    communityMemberRepository.delete(toBeRemovedMember);
   }
 }
