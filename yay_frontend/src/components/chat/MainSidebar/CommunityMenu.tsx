@@ -1,5 +1,9 @@
 import { Menu } from '@base-ui/react/menu';
 import { useChannelDialogActions } from '../../../store/uiStore';
+import useRemoveMember from '../../../hooks/useRemoveMemberMutation';
+import { Toast } from '@base-ui/react/toast';
+import { useEffect, useEffectEvent } from 'react';
+import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 export default function CommunityMenu({
   role,
@@ -47,12 +51,42 @@ export default function CommunityMenu({
             <Menu.Item className="flex cursor-default py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900">
               Notification Settings
             </Menu.Item>
-            <Menu.Item className="flex cursor-default py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900">
-              Leave Community
-            </Menu.Item>
+            <LeaveCommunityItem communityId={communityId} />
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
     </Menu.Root>
+  );
+}
+
+function LeaveCommunityItem({ communityId }: { communityId: number }) {
+  const { mutate, error } = useRemoveMember();
+  const { data, isLoading } = useUserInfoQuery();
+  const toastManager = Toast.useToastManager();
+
+  const onError = useEffectEvent(() => {
+    toastManager.add({
+      title: `Leave Community error`,
+      description: 'Something went wrong',
+    });
+  });
+
+  useEffect(() => {
+    if (error) {
+      onError();
+    }
+  }, [error]);
+
+  function handleClick() {
+    mutate({ communityId, userId: data!.id });
+  }
+
+  return (
+    <Menu.Item
+      onClick={handleClick}
+      className="flex cursor-default py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900"
+    >
+      Leave Community
+    </Menu.Item>
   );
 }
