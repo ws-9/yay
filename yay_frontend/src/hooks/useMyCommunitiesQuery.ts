@@ -14,6 +14,24 @@ export default function useMyCommunitiesQuery() {
   return query;
 }
 
+type UseCommunityByIdReturn = Omit<
+  ReturnType<typeof useMyCommunitiesQuery>,
+  'data'
+> & {
+  data: Community | null;
+};
+
+export function useCommunityById(communityId: number): UseCommunityByIdReturn {
+  const query = useMyCommunitiesQuery();
+  const community =
+    query.data?.find(c => String(c.id) === String(communityId)) ?? null;
+
+  return {
+    ...query,
+    data: community,
+  };
+}
+
 async function getMyCommunities(token: string | null) {
   const response = await fetch(API_MY_COMMUNITIES, {
     method: 'GET',
