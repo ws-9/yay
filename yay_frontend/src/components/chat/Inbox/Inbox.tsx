@@ -1,10 +1,10 @@
-import { format } from 'date-fns';
 import { useInfChannelMessagesQuery } from '../../../hooks/useInfChannelMessagesQuery';
 import { useChannelSubscription } from '../../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+
+import ScrollableContainer from './ScrollableContainer';
+import { MessageRender } from './MessageRender';
 
 export type InboxHandle = {
   scrollToBottom: () => void;
@@ -91,91 +91,5 @@ export default function Inbox({
       </div>
       {renderedMessages}
     </ScrollableContainer>
-  );
-}
-
-type ScrollableContainerHandle = {
-  scrollToBottom: () => void;
-  isAtBottom: () => boolean;
-};
-
-const ScrollableContainer = ({
-  children,
-  ref,
-}: {
-  children: React.ReactNode;
-  ref?: React.Ref<ScrollableContainerHandle>;
-}) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
-
-  useImperativeHandle(ref, () => ({
-    scrollToBottom: () => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      }
-    },
-    isAtBottom: () => isScrolledToBottom,
-  }));
-
-  // Add scroll event listener
-  // Updates whether user is at the bottom
-  useEffect(() => {
-    const scrollElement = scrollRef.current;
-    if (!scrollElement) {
-      return;
-    }
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollElement;
-      const atBottom = scrollTop + clientHeight >= scrollHeight - 10;
-      setIsScrolledToBottom(atBottom);
-    };
-
-    scrollElement.addEventListener('scroll', handleScroll);
-    return () => scrollElement.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <div ref={scrollRef} className="overflow-y-auto">
-      {children}
-    </div>
-  );
-};
-
-function MessageRender({
-  username,
-  message,
-  createdAt,
-}: {
-  username: string;
-  message: string;
-  createdAt: string;
-}) {
-  const formattedDate = format(new Date(createdAt), 'MM/dd/yyyy HH:mm:ss');
-  return (
-    <div>
-      {`${formattedDate} ${username}: `}
-      <Markdown
-        remarkPlugins={[remarkGfm]}
-        allowedElements={['em', 'strong', 'p', 'a']}
-        components={{
-          p: ({ children }) => <>{children}</>, // keep inline
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              className="text-blue-500 underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {children}
-            </a>
-          ),
-        }}
-        unwrapDisallowed={true} // preserve content but remove formatting
-      >
-        {message}
-      </Markdown>
-    </div>
   );
 }
