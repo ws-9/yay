@@ -1,7 +1,7 @@
 import type { Channel } from './Channel';
 
 export type Community = {
-  id: string;
+  id: number;
   name: string;
   ownerId: number;
   ownerUsername: string;

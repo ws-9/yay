@@ -21,7 +21,7 @@ export default function CommunityTabsList() {
   const communityTabs = data?.map(community => (
     <CommunityTab
       key={community.id}
-      communityId={Number.parseInt(community.id)}
+      communityId={community.id}
       name={community.name}
       role={community.role!}
       channels={community.channels ?? []}
