@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
   @EntityGraph(attributePaths = {"community"})
@@ -17,4 +18,7 @@ public interface ChannelRepository extends JpaRepository<Channel, Long> {
 
   @EntityGraph(attributePaths = {"community"})
   List<Channel> findAllWithCommunityByCommunity_IdIn(List<Long> communityIds);
+
+  @EntityGraph(attributePaths = {"community"})
+  Optional<Channel> findWithCommunityById(Long id);
 }

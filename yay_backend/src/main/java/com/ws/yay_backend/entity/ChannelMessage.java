@@ -1,6 +1,8 @@
 package com.ws.yay_backend.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 
 import java.time.Instant;
 
@@ -24,6 +26,7 @@ public class ChannelMessage {
   private Channel channel;
 
   @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+  @Generated(event = EventType.INSERT)
   private Instant createdAt;
 
   @Column(name = "updated_at")
