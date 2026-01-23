@@ -6,6 +6,7 @@ import {
 import type { Channel } from '../../../types/Channel';
 import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from './CommunityMenu';
+import type { CommunityRole } from '../../../types/CommunityRole';
 
 export default function CommunityTabsList() {
   const { data, isLoading, error } = useMyCommunitiesQuery();
@@ -50,7 +51,7 @@ function CommunityTab({
   communityId,
 }: {
   name: string;
-  role: string;
+  role: CommunityRole;
   channels: Array<Channel>;
   communityId: number;
 }) {

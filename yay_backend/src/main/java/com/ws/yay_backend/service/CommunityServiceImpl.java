@@ -12,6 +12,7 @@ import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.CommunityRoleName;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.response.CommunityRoleResponse;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
@@ -85,7 +86,7 @@ public class CommunityServiceImpl implements CommunityService {
         saved.getName(),
         saved.getOwner().getId(),
         saved.getOwner().getUsername(),
-        adminRole.getName(),
+        CommunityRoleResponse.fromEntity(adminRole),
         null
     );
   }
@@ -98,8 +99,8 @@ public class CommunityServiceImpl implements CommunityService {
     Community community = communityRepository.findWithOwnerById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
     
-    String role = communityMemberRepository.findWithRoleByKey_CommunityIdAndKey_UserId(id, userId)
-        .map(cm -> cm.getRole().getName())
+    CommunityRoleResponse role = communityMemberRepository.findWithRoleByKey_CommunityIdAndKey_UserId(id, userId)
+        .map(cm -> CommunityRoleResponse.fromEntity(cm.getRole()))
         .orElse(null);
     
     return new GetCommunityResponse(
@@ -178,10 +179,10 @@ public class CommunityServiceImpl implements CommunityService {
             GetChannelResponse::communityId
         ));
     
-    Map<Long, String> communityIdToRole = communityMemberRepository.findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(user.getId(), communityIds).stream()
+    Map<Long, CommunityRoleResponse> communityIdToRole = communityMemberRepository.findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(user.getId(), communityIds).stream()
         .collect(Collectors.toMap(
             cm -> cm.getKey().getCommunityId(),
-            cm -> cm.getRole().getName()
+            cm -> CommunityRoleResponse.fromEntity(cm.getRole())
         ));
 
     return communities.stream()

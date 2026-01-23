@@ -9,7 +9,7 @@ public record GetCommunityResponse(
     @NotNull String name,
     @NotNull long ownerId,
     @NotNull String ownerUsername,
-    String role,
+    CommunityRoleResponse role,
     List<GetChannelResponse> channels
 ) {
 }
