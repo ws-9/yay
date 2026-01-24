@@ -13,6 +13,8 @@ function useCreateChannelMessageMutation() {
 
   return useMutation<ChannelMessage, Error, CreateChannelMessageInput>({
     mutationFn: async function (data) {
+      // Artificial 2-second delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const response = await fetch(API_MESSAGES, {
         method: 'POST',
         headers: {
@@ -37,5 +39,5 @@ function useCreateChannelMessageMutation() {
 }
 
 export default function useCreateChannelMessage() {
-  return useCreateChannelMessageMutation;
+  return useCreateChannelMessageMutation();
 }
