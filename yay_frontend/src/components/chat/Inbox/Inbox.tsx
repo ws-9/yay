@@ -83,6 +83,8 @@ export default function Inbox({
       username={message.username}
       message={message.message}
       createdAt={message.createdAt}
+      updatedAt={message.updatedAt}
+      deletedAt={message.deletedAt}
     />
   ));
 
