@@ -3,6 +3,7 @@ package com.ws.yay_backend.service;
 import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dto.response.UserInfoResponse;
 import com.ws.yay_backend.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserInfoServiceImpl implements UserInfoService {
   private final AuthUtilsComponent authUtilsComponent;
 
+  @Autowired
   public UserInfoServiceImpl(AuthUtilsComponent authUtilsComponent) {
     this.authUtilsComponent = authUtilsComponent;
   }

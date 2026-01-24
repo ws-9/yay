@@ -75,17 +75,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
     GetChannelMessageResponse response = new GetChannelMessageResponse(saved);
     
-    // Broadcast to WebSocket subscribers
-    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(
-        response.id(),
-        response.message(),
-        response.userId(),
-        response.username(),
-        response.channelId(),
-        response.createdAt(),
-        response.updatedAt(),
-        response.deletedAt()
-    );
+    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(saved);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
     
     return response;

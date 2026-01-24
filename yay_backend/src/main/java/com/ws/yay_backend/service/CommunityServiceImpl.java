@@ -16,6 +16,7 @@ import com.ws.yay_backend.dto.response.CommunityRoleResponse;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
+import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -99,7 +100,7 @@ public class CommunityServiceImpl implements CommunityService {
     Community community = communityRepository.findWithOwnerById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
     
-    CommunityRoleResponse role = communityMemberRepository.findWithRoleByKey_CommunityIdAndKey_UserId(id, userId)
+    CommunityRoleResponse role = communityMemberRepository.findWithRoleByKey(new CommunityMemberKey(id, userId))
         .map(cm -> CommunityRoleResponse.fromEntity(cm.getRole()))
         .orElse(null);
     
@@ -179,7 +180,8 @@ public class CommunityServiceImpl implements CommunityService {
             GetChannelResponse::communityId
         ));
     
-    Map<Long, CommunityRoleResponse> communityIdToRole = communityMemberRepository.findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(user.getId(), communityIds).stream()
+    Map<Long, CommunityRoleResponse> communityIdToRole = communityMemberRepository
+        .findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(user.getId(), communityIds).stream()
         .collect(Collectors.toMap(
             cm -> cm.getKey().getCommunityId(),
             cm -> CommunityRoleResponse.fromEntity(cm.getRole())

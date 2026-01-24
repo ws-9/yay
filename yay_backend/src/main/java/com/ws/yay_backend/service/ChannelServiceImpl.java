@@ -9,6 +9,7 @@ import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.dto.request.CreateChannelRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.entity.CommunityMember;
+import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,8 @@ public class ChannelServiceImpl implements ChannelService {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
 
-    Optional<CommunityMember> membership = communityMemberRepository.findWithRoleAndCommunityByKey_CommunityIdAndKey_UserId(request.communityId(), userId);
+    Optional<CommunityMember> membership = communityMemberRepository
+        .findWithRoleAndCommunityByKey(new CommunityMemberKey(request.communityId(), userId));
 
     if (membership.isEmpty() && !isAdmin) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found");
