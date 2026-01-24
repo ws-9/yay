@@ -10,6 +10,7 @@ import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
+import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,37 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     GetChannelMessageResponse response = new GetChannelMessageResponse(saved);
     
     ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(saved);
+    simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
+    
+    return response;
+  }
+
+  @Override
+  @Transactional
+  public GetChannelMessageResponse editMessage(EditChannelMessageRequest request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+    boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
+
+    ChannelMessage channelMessage = channelMessageRepository.findById(request.id())
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Message not found: " + request.id()
+        ));
+
+    boolean isAuthor = channelMessage.getUser().getId().equals(userId);
+
+    if (!isAuthor && !isAdmin) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN,
+          "You don't have permission to edit this message"
+      );
+    }
+
+    channelMessage.setMessage(request.message());
+
+    GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
+    
+    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
     
     return response;
