@@ -1,6 +1,6 @@
 import { useRef, useState, useImperativeHandle, useEffect } from 'react';
 
-type ScrollableContainerHandle = {
+export type ScrollableContainerHandle = {
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
 };

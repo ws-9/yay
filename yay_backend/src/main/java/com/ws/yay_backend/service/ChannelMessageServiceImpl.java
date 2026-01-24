@@ -104,6 +104,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     }
 
     channelMessage.setMessage(request.message());
+    channelMessage.setUpdatedAt(Instant.now());
 
     GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
     

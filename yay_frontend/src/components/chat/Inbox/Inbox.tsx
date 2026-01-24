@@ -3,7 +3,9 @@ import { useChannelSubscription } from '../../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 
-import ScrollableContainer from './ScrollableContainer';
+import ScrollableContainer, {
+  type ScrollableContainerHandle,
+} from './ScrollableContainer';
 import { MessageRender } from './MessageRender';
 
 export type InboxHandle = {
