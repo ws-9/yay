@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChannelMessageRepository extends JpaRepository<ChannelMessage, Long> {
-  @EntityGraph(attributePaths = {"user", "channel", "channel.community"})
+  @EntityGraph(attributePaths = {"user", "channel"})
   Optional<ChannelMessage> findWithUserAndChannelById(Long id);
+
+  @EntityGraph(attributePaths = {"user", "channel", "channel.community"})
+  Optional<ChannelMessage> findWithUserAndChannelAndCommunityById(Long id);
 
   // Initial load wo cursor
   @EntityGraph(attributePaths = {"user", "channel"})

@@ -91,7 +91,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
 
-    ChannelMessage channelMessage = channelMessageRepository.findById(request.id())
+    ChannelMessage channelMessage = channelMessageRepository.findWithUserAndChannelAndCommunityById(request.id())
         .orElseThrow(() -> new ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "Message not found: " + request.id()
