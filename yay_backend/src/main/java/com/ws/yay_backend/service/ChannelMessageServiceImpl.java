@@ -8,8 +8,11 @@ import com.ws.yay_backend.dto.broadcast.ChannelMessageBroadcast;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
+import com.ws.yay_backend.entity.CommunityMember;
+import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
+import com.ws.yay_backend.dto.request.DeleteChannelMessageRequest;
 import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
@@ -105,6 +108,79 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
     channelMessage.setMessage(request.message());
     channelMessage.setUpdatedAt(Instant.now());
+
+    GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
+    
+    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
+    simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
+    
+    return response;
+  }
+
+  @Override
+  @Transactional
+  public GetChannelMessageResponse deleteMessage(DeleteChannelMessageRequest request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    ChannelMessage channelMessage = channelMessageRepository.findWithUserAndChannelById(request.messageId())
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Message not found: " + request.messageId()
+        ));
+
+    boolean isAuthor = channelMessage.getUser().getId().equals(userId);
+    boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
+
+    if (isAuthor || isAdmin) {
+      channelMessage.setDeletedAt(Instant.now());
+
+      GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
+      
+      ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
+      simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
+      
+      return response;
+    }
+
+    // Non-author, non-admin: check role-based permissions
+    Channel channel = channelMessage.getChannel();
+    Long communityId = channel.getCommunity().getId();
+    
+    // Get current user's community member role
+    CommunityMember currentUserMember = communityMemberRepository
+        .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "You are not a member of this community"
+        ));
+    
+    // Get message author's community member role
+    CommunityMember authorMember = communityMemberRepository
+        .findWithRoleByKey(new CommunityMemberKey(communityId, channelMessage.getUser().getId()))
+        .orElse(null);
+    
+    CommunityRole currentUserRole = currentUserMember.getRole();
+    
+    // Check if user has delete message privilege
+    if (!currentUserRole.getCanDeleteMessages()) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN,
+          "You don't have permission to delete messages"
+      );
+    }
+    
+    // Check hierarchy level (lower is more powerful)
+    if (authorMember != null) {
+      CommunityRole authorRole = authorMember.getRole();
+      if (currentUserRole.getHierarchyLevel() >= authorRole.getHierarchyLevel()) {
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "You cannot delete messages from users with equal or higher authority"
+        );
+      }
+    }
+
+    channelMessage.setDeletedAt(Instant.now());
 
     GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
     

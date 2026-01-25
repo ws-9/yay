@@ -9,8 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface ChannelMessageRepository extends JpaRepository<ChannelMessage, Long> {
+  @EntityGraph(attributePaths = {"user", "channel", "channel.community"})
+  Optional<ChannelMessage> findWithUserAndChannelById(Long id);
+
   // Initial load wo cursor
   @EntityGraph(attributePaths = {"user", "channel"})
   List<ChannelMessage> findByChannel_IdOrderByCreatedAtDescIdDesc(long channelId, Pageable pageable);
