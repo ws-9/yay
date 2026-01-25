@@ -122,10 +122,10 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
   public GetChannelMessageResponse deleteMessage(DeleteChannelMessageRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
-    ChannelMessage channelMessage = channelMessageRepository.findWithUserAndChannelById(request.messageId())
+    ChannelMessage channelMessage = channelMessageRepository.findWithUserAndChannelById(request.id())
         .orElseThrow(() -> new ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            "Message not found: " + request.messageId()
+            "Message not found: " + request.id()
         ));
 
     boolean isAuthor = channelMessage.getUser().getId().equals(userId);

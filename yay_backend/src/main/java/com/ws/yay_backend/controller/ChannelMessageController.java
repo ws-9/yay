@@ -1,6 +1,7 @@
 package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
+import com.ws.yay_backend.dto.request.DeleteChannelMessageRequest;
 import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.service.ChannelMessageService;
@@ -34,5 +35,12 @@ public class ChannelMessageController {
   @ResponseStatus(HttpStatus.OK)
   public GetChannelMessageResponse editChannelMessage(@RequestBody @Valid EditChannelMessageRequest request) {
     return channelMessageService.editMessage(request);
+  }
+
+  @Operation(summary = "Delete a channel message")
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteChannelMessage(@RequestBody @Valid DeleteChannelMessageRequest request) {
+    channelMessageService.deleteMessage(request);
   }
 }
