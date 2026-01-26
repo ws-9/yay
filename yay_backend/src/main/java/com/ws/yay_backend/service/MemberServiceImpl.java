@@ -184,10 +184,9 @@ public class MemberServiceImpl implements MemberService {
             m -> CommunityRoleResponse.fromEntity(m.getRole())
         ));
 
-    List<Long> notFound = userIds.stream()
-        .filter(id -> !foundUserIds.contains(id))
-        .toList();
+    // for not found users, set null
+    userIds.forEach(id -> rolesMap.putIfAbsent(id, null));
 
-    return new GetMembersRolesResponse(rolesMap, notFound);
+    return new GetMembersRolesResponse(rolesMap);
   }
 }

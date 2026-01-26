@@ -1,4 +1,4 @@
-import { create, keyResolver, windowScheduler } from '@yornaath/batshit';
+import { create, windowScheduler } from '@yornaath/batshit';
 import { getTokenState } from '../store/authStore';
 import type { CommunityRole } from '../types/CommunityRole';
 import { API_COMMUNITIES } from '../constants';
@@ -10,19 +10,18 @@ export type MemberRoleQuery = {
 
 function isValidMemberRolesResponse(
   data: unknown,
-): data is { roles: Record<string, CommunityRole>; notFound: number[] } {
+): data is { roles: Record<string, CommunityRole | null> } {
   if (typeof data !== 'object' || data === null) return false;
   const obj = data as Record<string, unknown>;
   if (typeof obj.roles !== 'object' || obj.roles === null) return false;
-  if (!Array.isArray(obj.notFound)) return false;
-  return obj.notFound.every(id => typeof id === 'number');
+  return true;
 }
 
 const memberRolesBatcher = create({
   fetcher: async (
     queries: MemberRoleQuery[],
     signal: AbortSignal,
-  ): Promise<CommunityRole[]> => {
+  ): Promise<(CommunityRole | null)[]> => {
     const { token } = getTokenState();
 
     // Group queries by community ID, mapping to user IDs
@@ -35,7 +34,7 @@ const memberRolesBatcher = create({
     });
 
     // Fetch all communities' member roles
-    const fetchedCommunityRoles: CommunityRole[] = [];
+    const fetchedCommunityRoles: (CommunityRole | null)[] = [];
 
     for (const [communityId, userIds] of communityIdToUserIds) {
       const response = await fetch(
@@ -63,30 +62,24 @@ const memberRolesBatcher = create({
         throw new Error(`Invalid response format for community ${communityId}`);
       }
 
-      if (data.notFound.length > 0) {
-        throw new Error(
-          `Some users not found in community ${communityId}: ${data.notFound.join(', ')}`,
-        );
-      }
-
-      // Add user IDs back to the role responses so keyResolver can match them
-      const rolesWithIds = Object.entries(data.roles).map(([userId, role]) => ({
-        ...role,
-        id: Number(userId),
-      }));
+      // Add user IDs back to the role responses so the resolver can match them
+      const rolesWithIds = Object.entries(data.roles).map(([userId, role]) =>
+        role === null ? null : { ...role, id: Number(userId) },
+      );
 
       fetchedCommunityRoles.push(...rolesWithIds);
     }
 
     return fetchedCommunityRoles;
   },
-  resolver: keyResolver('id'),
+  resolver: (results, query) =>
+    results.find(r => (r === null ? false : r.id === query.userId)) || null,
   scheduler: windowScheduler(50),
 });
 
 export function getMemberRole(
   communityId: number,
   userId: number,
-): Promise<CommunityRole> {
+): Promise<CommunityRole | null> {
   return memberRolesBatcher.fetch({ communityId, userId });
 }

@@ -7,7 +7,7 @@ export function useMemberRole(
   communityId: number | null,
   userId: number | null,
 ) {
-  return useQuery<CommunityRole>({
+  return useQuery<CommunityRole | null>({
     queryKey: ['communities', communityId, 'members', userId, 'role'],
     queryFn: async () => {
       return getMemberRole(communityId!, userId!);
