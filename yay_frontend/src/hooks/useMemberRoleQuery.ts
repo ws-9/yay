@@ -1,7 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { create, windowScheduler } from '@yornaath/batshit';
+import { API_COMMUNITIES } from '../constants';
 import { getTokenState } from '../store/authStore';
 import type { CommunityRole } from '../types/CommunityRole';
-import { API_COMMUNITIES } from '../constants';
 
 export type MemberRoleQuery = {
   communityId: number;
@@ -77,9 +78,24 @@ const memberRolesBatcher = create({
   scheduler: windowScheduler(50),
 });
 
-export function getMemberRole(
-  communityId: number,
-  userId: number,
-): Promise<CommunityRole | null> {
-  return memberRolesBatcher.fetch({ communityId, userId });
+// Uses batching so that each query within a timeframe gets combined into a single one
+function useMemberRoleQuery(communityId: number | null, userId: number | null) {
+  return useQuery<CommunityRole | null>({
+    queryKey: ['communities', communityId, 'members', userId, 'role'],
+    queryFn: async () => {
+      return memberRolesBatcher.fetch({
+        communityId: communityId!,
+        userId: userId!,
+      });
+    },
+    enabled: communityId !== null && userId !== null,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useMemberRole(
+  communityId: number | null,
+  userId: number | null,
+) {
+  return useMemberRoleQuery(communityId, userId);
 }
