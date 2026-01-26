@@ -22,4 +22,7 @@ public interface CommunityMemberRepository extends JpaRepository<CommunityMember
   
   @EntityGraph(attributePaths = {"role"})
   List<CommunityMember> findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(Long userId, List<Long> communityIds);
+
+  @EntityGraph(attributePaths = {"role"})
+  List<CommunityMember> findAllWithRoleByKey_CommunityIdAndKey_UserIdIn(Long communityId, List<Long> userIds);
 }

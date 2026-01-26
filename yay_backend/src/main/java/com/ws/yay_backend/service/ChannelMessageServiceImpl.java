@@ -96,7 +96,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
             HttpStatus.NOT_FOUND,
             "Message not found: " + request.id()
         ));
-
+    // TODO: check if user is still member
     boolean isAuthor = channelMessage.getUser().getId().equals(userId);
 
     if (!isAuthor && !isAdmin) {

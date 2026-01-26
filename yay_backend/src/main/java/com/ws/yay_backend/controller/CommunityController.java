@@ -4,7 +4,9 @@ import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
+import com.ws.yay_backend.dto.response.GetMembersRolesResponse;
 import com.ws.yay_backend.service.CommunityService;
+import com.ws.yay_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,10 +22,12 @@ import java.util.List;
 @RequestMapping("/api/communities")
 public class CommunityController {
   private final CommunityService communityService;
+  private final MemberService memberService;
 
   @Autowired
-  public CommunityController(CommunityService communityService) {
+  public CommunityController(CommunityService communityService, MemberService memberService) {
     this.communityService = communityService;
+    this.memberService = memberService;
   }
 
   @Operation(summary = "Get all existing communities")
@@ -68,5 +72,14 @@ public class CommunityController {
   @GetMapping("{id}/channels")
   public List<GetChannelResponse> getChannels(@PathVariable @Min(value = 1) Long id) {
     return communityService.getCommunityChannels(id);
+  }
+
+  @Operation(summary = "Get member roles for a community")
+  @GetMapping("/{id}/members/roles")
+  public GetMembersRolesResponse getMembersRoles(
+      @PathVariable Long id,
+      @RequestParam List<Long> userIds
+  ) {
+    return memberService.getRolesByUserIds(id, userIds);
   }
 }
