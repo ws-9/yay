@@ -1,6 +1,7 @@
 package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.request.GetMemberRolesRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
@@ -75,11 +76,11 @@ public class CommunityController {
   }
 
   @Operation(summary = "Get member roles for a community")
-  @GetMapping("/{id}/members/roles")
+  @PostMapping("/{id}/members/roles")
   public GetMembersRolesResponse getMembersRoles(
       @PathVariable Long id,
-      @RequestParam List<Long> userIds
+      @RequestBody @Valid GetMemberRolesRequest request
   ) {
-    return memberService.getRolesByUserIds(id, userIds);
+    return memberService.getRolesByUserIds(id, request.userIds());
   }
 }
