@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTokenState } from '../store/authStore';
+import type { Community } from '../types/Community';
 import { API_CHANNELS } from '../constants';
 
 type CreateChannelInput = {
@@ -37,10 +38,55 @@ function useCreateChannelMutation() {
 
       return json;
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['communities', 'my-communities'],
-      });
+    onSuccess: newChannel => {
+      // Optimistically update the communities cache
+      queryClient.setQueryData(
+        ['communities', 'my-communities'],
+        (old: Community[] | undefined) => {
+          if (!old) {
+            return [newChannel];
+          }
+          // Find the community and add the channel to it
+          return old.map(community => {
+            if (community.id === newChannel.communityId) {
+              return {
+                ...community,
+                channels: [
+                  ...(community.channels || []),
+                  {
+                    id: newChannel.id,
+                    name: newChannel.name,
+                    communityId: newChannel.communityId,
+                    communityName: newChannel.communityName,
+                  },
+                ],
+              };
+            }
+            return community;
+          });
+        },
+      );
+      // Also update the individual community cache
+      queryClient.setQueryData(
+        ['communities', newChannel.communityId],
+        (old: Community | undefined) => {
+          if (!old) {
+            return old;
+          }
+          return {
+            ...old,
+            channels: [
+              ...(old.channels || []),
+              {
+                id: newChannel.id,
+                name: newChannel.name,
+                communityId: newChannel.communityId,
+                communityName: newChannel.communityName,
+              },
+            ],
+          };
+        },
+      );
     },
   });
 }
