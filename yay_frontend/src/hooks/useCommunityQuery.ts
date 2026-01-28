@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_CHANNELS } from '../constants';
+import { API_COMMUNITIES } from '../constants';
 import { getTokenState } from '../store/authStore';
-import type { Channel } from '../types/Channel';
+import type { Community } from '../types/Community';
 
-export function useChannelQuery(channelId: number | null) {
+export function useCommunityQuery(communityId: number | null) {
   const { token } = getTokenState();
 
-  const query = useQuery<Channel>({
-    queryKey: ['channels', channelId],
-    queryFn: () => getChannel(channelId!, token!),
-    enabled: channelId !== null && token !== null,
+  const query = useQuery<Community>({
+    queryKey: ['communities', communityId],
+    queryFn: () => getCommunity(communityId!, token!),
+    enabled: communityId !== null && token !== null,
     staleTime: Infinity, // Always use cache, never auto-refetch
     gcTime: Infinity, // Keep cache permanently
   });
@@ -21,8 +21,8 @@ export function useChannelQuery(channelId: number | null) {
   };
 }
 
-async function getChannel(channelId: number, token: string) {
-  const response = await fetch(`${API_CHANNELS}/${channelId}`, {
+async function getCommunity(communityId: number, token: string) {
+  const response = await fetch(`${API_COMMUNITIES}/${communityId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

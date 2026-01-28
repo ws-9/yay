@@ -7,6 +7,7 @@ import AuthPage from './components/AuthPage';
 import Register from './components/AuthPage/Register';
 import Login from './components/AuthPage/Login';
 import { ChatPage } from './components/chat';
+import AppDataProvider from './components/providers/AppDataProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toast } from '@base-ui/react/toast';
 
@@ -27,7 +28,13 @@ const router = createBrowserRouter([
   },
   {
     path: 'chat',
-    Component: ChatPage,
+    Component: AppDataProvider,
+    children: [
+      {
+        index: true,
+        Component: ChatPage,
+      },
+    ],
   },
 ]);
 

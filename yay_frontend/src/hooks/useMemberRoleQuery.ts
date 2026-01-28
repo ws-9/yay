@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { create, windowScheduler } from '@yornaath/batshit';
 import { API_COMMUNITIES } from '../constants';
 import { getTokenState } from '../store/authStore';
+import { useUserInfoQuery } from './useUserInfoQuery';
 import type { CommunityRole } from '../types/CommunityRole';
 
 export type MemberRoleQuery = {
@@ -78,8 +79,15 @@ const memberRolesBatcher = create({
   scheduler: windowScheduler(50),
 });
 
-// Uses batching so that each query within a timeframe gets combined into a single one
+/**
+ * Fetch member roles. Intelligently handles two cases:
+ * - If userId is the current user: reads from cache only (seeded by initial load)
+ * - If userId is another user: batches requests with reasonable cache times (5m staleTime, 10m gcTime)
+ */
 function useMemberRoleQuery(communityId: number | null, userId: number | null) {
+  const { data: userInfo } = useUserInfoQuery();
+  const isCurrentUser = userInfo?.id === userId;
+
   return useQuery<CommunityRole | null>({
     queryKey: ['communities', communityId, 'members', userId, 'role'],
     queryFn: async () => {
@@ -88,8 +96,9 @@ function useMemberRoleQuery(communityId: number | null, userId: number | null) {
         userId: userId!,
       });
     },
-    enabled: communityId !== null && userId !== null,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !isCurrentUser && communityId !== null && userId !== null,
+    staleTime: isCurrentUser ? Infinity : 5 * 60 * 1000,
+    gcTime: isCurrentUser ? Infinity : 10 * 60 * 1000,
   });
 }
 
