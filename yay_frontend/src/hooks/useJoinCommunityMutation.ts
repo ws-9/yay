@@ -40,7 +40,7 @@ function useJoinCommunityMutation() {
     onSuccess: async data => {
       if (data.isNewMember) {
         await queryClient.invalidateQueries({
-          queryKey: ['communities', 'my-communities'],
+          queryKey: ['bootstrap'],
         });
       }
     },

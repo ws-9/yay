@@ -9,7 +9,7 @@ import type { Community } from '../types/Community';
 import type { UserInfoResponse } from './useUserInfoQuery';
 import { useEffect } from 'react';
 
-type BootstrapResponse = {
+export type BootstrapResponse = {
   communities: Array<Community>;
   user: UserInfoResponse;
 };

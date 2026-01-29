@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTokenState } from '../store/authStore';
 import { API_MEMBERS } from '../constants';
+import { useUserInfoQuery } from './useUserInfoQuery';
+import { useRemoveCommunityOptimistically } from './cacheHelpers';
 
 type RemoveMemberInput = {
   communityId: number;
@@ -10,6 +12,8 @@ type RemoveMemberInput = {
 function useRemoveMemberMutation() {
   const queryClient = useQueryClient();
   const { token } = getTokenState();
+  const { data: userInfo } = useUserInfoQuery();
+  const removeCommunityOptimistically = useRemoveCommunityOptimistically();
 
   return useMutation<void, Error, RemoveMemberInput>({
     mutationFn: async function (data) {
@@ -30,10 +34,16 @@ function useRemoveMemberMutation() {
         throw new Error(JSON.stringify(json));
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['communities', 'my-communities'],
-      });
+    onSuccess: async (_, variables) => {
+      if (variables.userId === userInfo?.id) {
+        // If removing self, optimistically remove the community from bootstrap
+        removeCommunityOptimistically(variables.communityId);
+      } else {
+        // Otherwise, invalidate bootstrap to refetch
+        await queryClient.invalidateQueries({
+          queryKey: ['bootstrap'],
+        });
+      }
     },
   });
 }
