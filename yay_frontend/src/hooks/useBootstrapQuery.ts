@@ -8,6 +8,7 @@ import { getTokenState } from '../store/authStore';
 import type { Community } from '../types/Community';
 import type { UserInfoResponse } from './useUserInfoQuery';
 import { useEffect } from 'react';
+import { queryKeys } from './queryKeys';
 
 export type BootstrapResponse = {
   communities: Array<Community>;
@@ -33,7 +34,7 @@ export function useBootstrapQuery<T = BootstrapResponse>(
   const queryClient = useQueryClient();
 
   const query = useQuery<BootstrapResponse, Error, T>({
-    queryKey: ['bootstrap'],
+    queryKey: queryKeys.bootstrap,
     queryFn: () => getBootstrap(token),
     refetchInterval: 30 * 1000, // Refetch every 30 seconds
     ...options,
@@ -45,22 +46,28 @@ export function useBootstrapQuery<T = BootstrapResponse>(
       const { communities, user } = query.data;
 
       // Seed the /me cache with user info
-      queryClient.setQueryData(['me'], user);
+      queryClient.setQueryData(queryKeys.me, user);
 
       // Seed individual community, channel, and member role caches
       communities.forEach((community: Community) => {
         // Seed individual community cache
-        queryClient.setQueryData(['communities', community.id], community);
+        queryClient.setQueryData(
+          queryKeys.communities.detail(community.id),
+          community,
+        );
 
         // Seed channel cache for each channel in the community
         community.channels?.forEach(channel => {
-          queryClient.setQueryData(['channels', channel.id], channel);
+          queryClient.setQueryData(
+            queryKeys.channels.detail(channel.id),
+            channel,
+          );
         });
 
         // Seed member role cache for current user in each community
         if (community.role) {
           queryClient.setQueryData(
-            ['communities', community.id, 'members', user.id, 'role'],
+            queryKeys.communities.members.role(community.id, user.id),
             community.role,
           );
         }

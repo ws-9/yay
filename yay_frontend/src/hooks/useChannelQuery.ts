@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { API_CHANNELS } from '../constants';
 import { getTokenState } from '../store/authStore';
 import type { Channel } from '../types/Channel';
+import { queryKeys } from './queryKeys';
 
 export function useChannelQuery(channelId: number | null) {
   const { token } = getTokenState();
 
   const query = useQuery<Channel>({
-    queryKey: ['channels', channelId],
+    queryKey: queryKeys.channels.detail(channelId!),
     queryFn: () => getChannel(channelId!, token!),
     enabled: channelId !== null && token !== null,
     staleTime: Infinity, // Always use cache, never auto-refetch

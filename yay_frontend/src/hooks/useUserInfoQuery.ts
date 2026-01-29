@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_ME } from '../constants';
 import { getTokenState } from '../store/authStore';
+import { queryKeys } from './queryKeys';
 
 export type UserInfoResponse = {
   username: string;
@@ -11,7 +12,7 @@ export function useUserInfoQuery() {
   const { token } = getTokenState();
 
   const query = useQuery<UserInfoResponse>({
-    queryKey: ['me'],
+    queryKey: queryKeys.me,
     queryFn: () => getMe(token!),
     staleTime: Infinity, // Always use cache, never auto-refetch
     gcTime: Infinity, // Keep cache permanently

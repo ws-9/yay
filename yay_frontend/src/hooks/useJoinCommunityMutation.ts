@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTokenState } from '../store/authStore';
 import { API_MEMBERS } from '../constants';
+import { queryKeys } from './queryKeys';
 
 type JoinCommunityInput = {
   communityId: number;
@@ -40,7 +41,7 @@ function useJoinCommunityMutation() {
     onSuccess: async data => {
       if (data.isNewMember) {
         await queryClient.invalidateQueries({
-          queryKey: ['bootstrap'],
+          queryKey: queryKeys.bootstrap,
         });
       }
     },

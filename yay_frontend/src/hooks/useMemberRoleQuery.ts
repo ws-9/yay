@@ -4,6 +4,7 @@ import { API_COMMUNITIES } from '../constants';
 import { getTokenState } from '../store/authStore';
 import { useUserInfoQuery } from './useUserInfoQuery';
 import type { CommunityRole } from '../types/CommunityRole';
+import { queryKeys } from './queryKeys';
 
 export type MemberRoleQuery = {
   communityId: number;
@@ -89,7 +90,7 @@ function useMemberRoleQuery(communityId: number | null, userId: number | null) {
   const isCurrentUser = userInfo?.id === userId;
 
   return useQuery<CommunityRole | null>({
-    queryKey: ['communities', communityId, 'members', userId, 'role'],
+    queryKey: queryKeys.communities.members.role(communityId!, userId!),
     queryFn: async () => {
       return memberRolesBatcher.fetch({
         communityId: communityId!,

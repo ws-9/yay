@@ -3,6 +3,7 @@ import { getTokenState } from '../store/authStore';
 import { API_MEMBERS } from '../constants';
 import { useUserInfoQuery } from './useUserInfoQuery';
 import { useRemoveCommunityOptimistically } from './cacheHelpers';
+import { queryKeys } from './queryKeys';
 
 type RemoveMemberInput = {
   communityId: number;
@@ -41,7 +42,7 @@ function useRemoveMemberMutation() {
       } else {
         // Otherwise, invalidate bootstrap to refetch
         await queryClient.invalidateQueries({
-          queryKey: ['bootstrap'],
+          queryKey: queryKeys.bootstrap,
         });
       }
     },

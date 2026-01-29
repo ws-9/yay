@@ -3,6 +3,7 @@ import type { CursorPaginatedChannelMessages } from '../types/CursorPaginatedCha
 import type { ChannelMessagePageParam } from '../types/ChannelMessagePageParam';
 import { getTokenState } from '../store/authStore';
 import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../constants';
+import { queryKeys } from './queryKeys';
 
 export function useInfChannelMessagesQuery(channelId: number) {
   const {
@@ -13,8 +14,8 @@ export function useInfChannelMessagesQuery(channelId: number) {
     fetchNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['channels', channelId, 'messages'],
-    queryFn: fetchMessages,
+    queryKey: queryKeys.channels.messages(channelId),
+    queryFn: fetchMessages, // TODO: fix
     initialPageParam: {
       id: channelId,
       size: CHANNEL_MESSAGES_PAGE_SIZE,
@@ -50,10 +51,10 @@ async function fetchMessages({
   queryKey,
 }: {
   pageParam: ChannelMessagePageParam;
-  queryKey: (string | number)[];
+  queryKey: readonly unknown[];
 }): Promise<CursorPaginatedChannelMessages> {
   const { token } = getTokenState();
-  const [, channelId] = queryKey;
+  const [, channelId] = queryKey as readonly [string, number, string];
 
   const params = new URLSearchParams({
     size: CHANNEL_MESSAGES_PAGE_SIZE.toString(),

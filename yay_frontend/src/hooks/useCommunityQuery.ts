@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { API_COMMUNITIES } from '../constants';
 import { getTokenState } from '../store/authStore';
 import type { Community } from '../types/Community';
+import { queryKeys } from './queryKeys';
 
 export function useCommunityQuery(communityId: number | null) {
   const { token } = getTokenState();
 
   const query = useQuery<Community>({
-    queryKey: ['communities', communityId],
+    queryKey: queryKeys.communities.detail(communityId!),
     queryFn: () => getCommunity(communityId!, token!),
     enabled: communityId !== null && token !== null,
     staleTime: Infinity, // Always use cache, never auto-refetch
