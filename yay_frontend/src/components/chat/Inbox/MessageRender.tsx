@@ -2,6 +2,8 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { format } from 'date-fns';
 import MessageMenu from './MessageMenu';
+import useEditChannelMessage from '../../../hooks/useEditChannelMessageMutation';
+import { useInlineEdit } from '../../../hooks/useInlineEdit';
 import type { ChannelMessage } from '../../../types/ChannelMessage';
 
 export function MessageRender({
@@ -11,6 +13,29 @@ export function MessageRender({
   message: ChannelMessage;
   channelId: number;
 }) {
+  const editMutation = useEditChannelMessage();
+  const {
+    isEditing,
+    editValue,
+    textareaRef,
+    handleEdit,
+    handleSaveSuccess,
+    handleTextareaChange,
+    handleKeyDown,
+  } = useInlineEdit({
+    initialValue: message.message,
+    onSave: value => {
+      editMutation.mutate(
+        { id: message.id, message: value },
+        {
+          onSuccess: () => {
+            handleSaveSuccess();
+          },
+        },
+      );
+    },
+  });
+
   const formattedDate = format(
     new Date(message.createdAt),
     'MM/dd/yyyy HH:mm:ss',
@@ -50,16 +75,37 @@ export function MessageRender({
 
   return (
     <div className="group relative pr-8 hover:bg-gray-100">
-      {`${formattedDate} ${message.username}: `}
-      {message.deletedAt ? (
-        'DELETED'
+      {isEditing ? (
+        <div className="flex items-start">
+          <span className="mr-2 shrink-0">{`${formattedDate} ${message.username}: `}</span>
+          <textarea
+            ref={textareaRef}
+            value={editValue}
+            onChange={handleTextareaChange}
+            onKeyDown={handleKeyDown}
+            className="font-inherit leading-inherit m-0 min-w-0 flex-1 resize-none overflow-hidden border-none bg-transparent p-0 text-inherit outline-none"
+            rows={1}
+            style={{ minHeight: '1.5em' }}
+          />
+        </div>
       ) : (
         <>
-          {markdown}
-          {formattedEditDate}
+          {`${formattedDate} ${message.username}: `}
+          {message.deletedAt ? (
+            'DELETED'
+          ) : (
+            <>
+              {markdown}
+              {formattedEditDate}
+            </>
+          )}
+          <MessageMenu
+            message={message}
+            channelId={channelId}
+            onEdit={handleEdit}
+          />
         </>
       )}
-      <MessageMenu message={message} channelId={channelId} />
     </div>
   );
 }

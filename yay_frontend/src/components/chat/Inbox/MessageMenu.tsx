@@ -10,9 +10,14 @@ import type { CommunityRole } from '../../../types/CommunityRole';
 type MessageMenuProps = {
   message: ChannelMessage;
   channelId: number;
+  onEdit?: () => void;
 };
 
-export default function MessageMenu({ message, channelId }: MessageMenuProps) {
+export default function MessageMenu({
+  message,
+  channelId,
+  onEdit,
+}: MessageMenuProps) {
   const { data: userInfo } = useUserInfoQuery();
   const { data: channel } = useChannelQuery(channelId);
   const { data: community } = useCommunityQuery(channel?.communityId ?? null);
@@ -39,13 +44,21 @@ export default function MessageMenu({ message, channelId }: MessageMenuProps) {
     message.userId,
     authorRole,
     isCurrentUserOwner,
+    !!message.deletedAt,
   );
+
+  const canEdit =
+    userInfo?.id === message.userId && !message.deletedAt && !!currentUserRole;
+
+  function handleEdit() {
+    onEdit?.();
+  }
 
   function handleDelete() {
     deleteMutation.mutate({ id: message.id });
   }
 
-  if (!canDelete) {
+  if (!canDelete && !canEdit) {
     return null;
   }
 
@@ -64,12 +77,22 @@ export default function MessageMenu({ message, channelId }: MessageMenuProps) {
             onClick={event => event.stopPropagation()}
             className="origin-(--transform-origin) rounded-md bg-[canvas] py-1 text-gray-900 shadow-lg shadow-gray-200 outline outline-gray-200 transition-[transform,scale,opacity] data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0 dark:shadow-none dark:-outline-offset-1 dark:outline-gray-300"
           >
-            <Menu.Item
-              onClick={handleDelete}
-              className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900"
-            >
-              Delete Message
-            </Menu.Item>
+            {canEdit && (
+              <Menu.Item
+                onClick={handleEdit}
+                className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900"
+              >
+                Edit Message
+              </Menu.Item>
+            )}
+            {canDelete && (
+              <Menu.Item
+                onClick={handleDelete}
+                className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900"
+              >
+                Delete Message
+              </Menu.Item>
+            )}
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
@@ -83,8 +106,10 @@ function canUserDeleteMessage(
   messageUserId: number,
   authorRole: CommunityRole | null | undefined,
   isCurrentUserOwner: boolean,
+  isDeleted: boolean,
 ): boolean {
-  if (!currentUserId) {
+  // Can't delete already deleted messages
+  if (isDeleted) {
     return false;
   }
 
