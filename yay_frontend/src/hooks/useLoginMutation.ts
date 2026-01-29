@@ -35,14 +35,8 @@ function useLoginMutation() {
 
       return json;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       login(data.jwtToken);
-
-      // Seed user info cache with login response data
-      queryClient.setQueryData(['me'], {
-        username: data.username,
-        id: data.id,
-      });
     },
   });
 }

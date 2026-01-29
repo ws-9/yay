@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { API_ME } from '../constants';
 import { getTokenState } from '../store/authStore';
 
-type UserInfoResponse = {
+export type UserInfoResponse = {
   username: string;
   id: number;
 };
@@ -13,6 +13,8 @@ export function useUserInfoQuery() {
   const query = useQuery<UserInfoResponse>({
     queryKey: ['me'],
     queryFn: () => getMe(token!),
+    staleTime: Infinity, // Always use cache, never auto-refetch
+    gcTime: Infinity, // Keep cache permanently
   });
 
   return query;
