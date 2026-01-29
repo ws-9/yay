@@ -2,21 +2,19 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { format } from 'date-fns';
 import MessageMenu from './MessageMenu';
+import type { ChannelMessage } from '../../../types/ChannelMessage';
 
 export function MessageRender({
-  username,
   message,
-  createdAt,
-  updatedAt,
-  deletedAt,
+  channelId,
 }: {
-  username: string;
-  message: string;
-  createdAt: string;
-  updatedAt: string | null;
-  deletedAt: string | null;
+  message: ChannelMessage;
+  channelId: number;
 }) {
-  const formattedDate = format(new Date(createdAt), 'MM/dd/yyyy HH:mm:ss');
+  const formattedDate = format(
+    new Date(message.createdAt),
+    'MM/dd/yyyy HH:mm:ss',
+  );
 
   const markdown = (
     <Markdown
@@ -37,23 +35,23 @@ export function MessageRender({
       }}
       unwrapDisallowed={true} // preserve content but remove formatting
     >
-      {message}
+      {message.message}
     </Markdown>
   );
 
-  const formattedEditDate = updatedAt && (
+  const formattedEditDate = message.updatedAt && (
     <>
       {' '}
       <span>
-        (Updated: {format(new Date(updatedAt), 'MM/dd/yyyy HH:mm:ss')})
+        (Updated: {format(new Date(message.updatedAt), 'MM/dd/yyyy HH:mm:ss')})
       </span>
     </>
   );
 
   return (
     <div className="group relative pr-8 hover:bg-gray-100">
-      {`${formattedDate} ${username}: `}
-      {deletedAt ? (
+      {`${formattedDate} ${message.username}: `}
+      {message.deletedAt ? (
         'DELETED'
       ) : (
         <>
@@ -61,7 +59,7 @@ export function MessageRender({
           {formattedEditDate}
         </>
       )}
-      <MessageMenu />
+      <MessageMenu message={message} channelId={channelId} />
     </div>
   );
 }

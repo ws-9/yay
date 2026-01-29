@@ -78,14 +78,7 @@ export default function Inbox({
   }, [allMessages, isInitialLoad]);
 
   const renderedMessages = allMessages.map(message => (
-    <MessageRender
-      key={message.id}
-      username={message.username}
-      message={message.message}
-      createdAt={message.createdAt}
-      updatedAt={message.updatedAt}
-      deletedAt={message.deletedAt}
-    />
+    <MessageRender key={message.id} message={message} channelId={channelId} />
   ));
 
   return (
