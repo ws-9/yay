@@ -11,7 +11,7 @@ import { MessageRender } from './MessageRender';
 export type InboxHandle = {
   scrollToBottom: () => void;
 };
-
+// TODO: fix sticky top
 export default function Inbox({
   channelId,
   ref,
@@ -90,9 +90,11 @@ export default function Inbox({
 
   return (
     <ScrollableContainer ref={scrollContainerRef}>
-      <div ref={endOfInboxRef} className="bg-amber-200">
-        End
-      </div>
+      {data && (
+        <div ref={endOfInboxRef} className="bg-amber-200">
+          End
+        </div>
+      )}
       {renderedMessages}
     </ScrollableContainer>
   );
