@@ -21,6 +21,7 @@ function useLoginMutation() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies for refresh token
         body: JSON.stringify(data),
       });
 
