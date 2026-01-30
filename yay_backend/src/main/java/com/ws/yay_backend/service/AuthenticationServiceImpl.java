@@ -7,14 +7,17 @@ import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.AuthenticationRequest;
 import com.ws.yay_backend.dto.request.RegisterRequest;
 import com.ws.yay_backend.dto.response.AuthenticationResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -23,6 +26,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final RoleRepository roleRepository;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
+
+  @Value("${spring.refresh-token.expiration}")
+  private long REFRESH_TOKEN_EXPIRATION_MS;
 
   @Autowired
   public AuthenticationServiceImpl(
@@ -48,27 +54,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   @Transactional(readOnly = true)
-  public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
+  public AuthenticationResponse login(AuthenticationRequest authenticationRequest, HttpServletResponse response) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             authenticationRequest.username(), authenticationRequest.password()
         )
     );
 
-    User user = userRepository.findByUsernameWithRoles(authenticationRequest.username())
+    User user = userRepository.findByUsername(authenticationRequest.username())
         .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
-    List<String> roles = user.getRoles().stream()
-        .map(role -> role.getName())
-        .toList();
 
-    String jwtToken = jwtService.generateToken(new HashMap<>(), user);
+    String jwtToken = jwtService.generateAccessToken(new HashMap<>(), user);
+    String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
-    return new AuthenticationResponse(
-        jwtToken,
-        user.getUsername(),
-        user.getId(),
-        roles);
+    setRefreshTokenCookie(response, refreshToken);
+
+    return new AuthenticationResponse(jwtToken);
   }
 
   private boolean isUsernameTaken(String username) {
@@ -88,5 +90,62 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         true,
         Set.of(defaultRole)
     );
+  }
+
+  private void setRefreshTokenCookie(HttpServletResponse response, String token) {
+    Cookie cookie = new Cookie("refreshToken", token);
+    cookie.setHttpOnly(true);
+    cookie.setSecure(false); // set to true in production with HTTPS
+    cookie.setPath("/");
+    cookie.setMaxAge((int) (REFRESH_TOKEN_EXPIRATION_MS / 1000));
+    response.addCookie(cookie);
+  }
+
+  private void clearRefreshTokenCookie(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setHttpOnly(true);
+    cookie.setSecure(false);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  @Override
+  public AuthenticationResponse refresh(HttpServletRequest request, HttpServletResponse response) {
+    Cookie[] cookies = request.getCookies();
+    String refreshToken = null;
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("refreshToken".equals(cookie.getName())) {
+          refreshToken = cookie.getValue();
+          break;
+        }
+      }
+    }
+
+    if (refreshToken == null) {
+      throw new IllegalArgumentException("Refresh token not found");
+    }
+
+    String username = jwtService.extractUsername(refreshToken);
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+    if (!jwtService.isTokenValid(refreshToken, user)) {
+      clearRefreshTokenCookie(response);
+      throw new IllegalArgumentException("Invalid refresh token");
+    }
+
+    String newAccessToken = jwtService.generateAccessToken(new HashMap<>(), user);
+    String newRefreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+
+    setRefreshTokenCookie(response, newRefreshToken);
+
+    return new AuthenticationResponse(newAccessToken);
+  }
+
+  @Override
+  public void logout(HttpServletResponse response) {
+    clearRefreshTokenCookie(response);
   }
 }

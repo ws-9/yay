@@ -19,8 +19,11 @@ public class JwtServiceImpl implements JwtService {
   @Value("${spring.jwt.secret}")
   private String SECRET_KEY;
 
-  @Value("${spring.jwt.expiration}")
-  private long JWT_EXPIRATION_MS;
+  @Value("${spring.access-token.expiration}")
+  private long ACCESS_TOKEN_EXPIRATION_MS;
+
+  @Value("${spring.refresh-token.expiration}")
+  private long REFRESH_TOKEN_EXPIRATION_MS;
 
   @Override
   public String extractUsername(String token) {
@@ -55,13 +58,25 @@ public class JwtServiceImpl implements JwtService {
   }
 
   @Override
-  public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
+  public String generateAccessToken(Map<String, Object> claims, UserDetails userDetails) {
     return Jwts.builder()
         .claims().add(claims)
         .and()
         .subject(userDetails.getUsername())
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_MS))
+        .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_MS))
+        .signWith(getSigningKey())
+        .compact();
+  }
+
+  @Override
+  public String generateRefreshToken(Map<String, Object> claims, UserDetails userDetails) {
+    return Jwts.builder()
+        .claims().add(claims)
+        .and()
+        .subject(userDetails.getUsername())
+        .issuedAt(new Date(System.currentTimeMillis()))
+        .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_MS))
         .signWith(getSigningKey())
         .compact();
   }

@@ -9,5 +9,7 @@ public interface JwtService {
 
   boolean isTokenValid(String token, UserDetails userDetails);
 
-  String generateToken(Map<String, Object> claims, UserDetails userDetails);
+  String generateAccessToken(Map<String, Object> claims, UserDetails userDetails);
+
+  String generateRefreshToken(Map<String, Object> claims, UserDetails userDetails);
 }

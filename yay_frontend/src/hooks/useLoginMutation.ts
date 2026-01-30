@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useAuthActions } from '../store/authStore';
 import { API_LOGIN_URL } from '../constants';
 
@@ -9,13 +9,10 @@ type LoginInput = {
 
 type LoginResponse = {
   jwtToken: string;
-  username: string;
-  id: number;
 };
 
 function useLoginMutation() {
   const { login } = useAuthActions();
-  const queryClient = useQueryClient();
 
   return useMutation<LoginResponse, Error, LoginInput>({
     mutationFn: async function (data) {

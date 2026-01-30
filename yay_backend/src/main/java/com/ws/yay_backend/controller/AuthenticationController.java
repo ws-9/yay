@@ -6,6 +6,8 @@ import com.ws.yay_backend.dto.response.AuthenticationResponse;
 import com.ws.yay_backend.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,21 @@ public class AuthenticationController {
   @Operation(summary = "Retrieve access token and user info")
   @PostMapping("/login")
   @ResponseStatus(HttpStatus.OK)
-  public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest request) {
-    return authenticationService.login(request);
+  public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
+    return authenticationService.login(request, response);
+  }
+
+  @Operation(summary = "Refresh access token using refresh token cookie")
+  @PostMapping("/refresh")
+  @ResponseStatus(HttpStatus.OK)
+  public AuthenticationResponse refresh(HttpServletRequest request, HttpServletResponse response) {
+    return authenticationService.refresh(request, response);
+  }
+
+  @Operation(summary = "Logout and clear refresh token cookie")
+  @PostMapping("/logout")
+  @ResponseStatus(HttpStatus.OK)
+  public void logout(HttpServletResponse response) {
+    authenticationService.logout(response);
   }
 }
