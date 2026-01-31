@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getTokenState } from '../store/authStore';
 import { API_MEMBERS } from '../constants';
 import { useUserInfoQuery } from './useUserInfoQuery';
 import { useRemoveCommunityOptimistically } from './cacheHelpers';
 import { queryKeys } from './queryKeys';
+import useFetchWithAuth from './useFetchWithAuth';
 
 type RemoveMemberInput = {
   communityId: number;
@@ -11,17 +11,16 @@ type RemoveMemberInput = {
 };
 
 function useRemoveMemberMutation() {
+  const fetchWithAuth = useFetchWithAuth();
   const queryClient = useQueryClient();
-  const { token } = getTokenState();
   const { data: userInfo } = useUserInfoQuery();
   const removeCommunityOptimistically = useRemoveCommunityOptimistically();
 
   return useMutation<void, Error, RemoveMemberInput>({
     mutationFn: async function (data) {
-      const response = await fetch(API_MEMBERS, {
+      const response = await fetchWithAuth(API_MEMBERS, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),

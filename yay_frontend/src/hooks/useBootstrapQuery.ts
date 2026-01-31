@@ -4,11 +4,11 @@ import {
   type UseQueryOptions,
 } from '@tanstack/react-query';
 import { API_BOOTSTRAP } from '../constants';
-import { getTokenState } from '../store/authStore';
 import type { Community } from '../types/Community';
 import type { UserInfoResponse } from './useUserInfoQuery';
 import { useEffect } from 'react';
 import { queryKeys } from './queryKeys';
+import useFetchWithAuth from './useFetchWithAuth';
 
 export type BootstrapResponse = {
   communities: Array<Community>;
@@ -30,12 +30,12 @@ export function useBootstrapQuery<T = BootstrapResponse>(
     'queryKey' | 'queryFn'
   >,
 ) {
-  const { token } = getTokenState();
   const queryClient = useQueryClient();
+  const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<BootstrapResponse, Error, T>({
     queryKey: queryKeys.bootstrap,
-    queryFn: () => getBootstrap(token),
+    queryFn: () => getBootstrap(fetchWithAuth),
     refetchInterval: 30 * 1000, // Refetch every 30 seconds
     ...options,
   });
@@ -78,11 +78,12 @@ export function useBootstrapQuery<T = BootstrapResponse>(
   return query;
 }
 
-async function getBootstrap(token: string | null) {
-  const response = await fetch(API_BOOTSTRAP, {
+async function getBootstrap(
+  fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
+) {
+  const response = await fetchWithAuth(API_BOOTSTRAP, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });

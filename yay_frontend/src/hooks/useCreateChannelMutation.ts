@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { getTokenState } from '../store/authStore';
 import { API_CHANNELS } from '../constants';
 import { useCreateChannelOptimistically } from './cacheHelpers';
+import useFetchWithAuth from './useFetchWithAuth';
 
 type CreateChannelInput = {
   communityId: number;
@@ -16,15 +16,14 @@ type CreateChannelResponse = {
 };
 
 function useCreateChannelMutation() {
-  const { token } = getTokenState();
+  const fetchWithAuth = useFetchWithAuth();
   const createChannelOptimistically = useCreateChannelOptimistically();
 
   return useMutation<CreateChannelResponse, Error, CreateChannelInput>({
     mutationFn: async function (data) {
-      const response = await fetch(API_CHANNELS, {
+      const response = await fetchWithAuth(API_CHANNELS, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),

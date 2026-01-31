@@ -44,7 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // Skip the "Bearer " substring.
     jwt = authHeader.substring(7);
-    username = jwtService.extractUsername(jwt);
+    if (jwt.isEmpty()) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    try {
+      username = jwtService.extractUsername(jwt);
+    } catch (Exception e) {
+      // Invalid JWT: skip authentication, let request proceed (will 401 if auth required)
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails = userDetailsService.loadUserByUsername(username);

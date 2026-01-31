@@ -12,8 +12,6 @@ type LoginResponse = {
 };
 
 function useLoginMutation() {
-  const { login } = useAuthActions();
-
   return useMutation<LoginResponse, Error, LoginInput>({
     mutationFn: async function (data) {
       const response = await fetch(API_LOGIN_URL, {
@@ -33,9 +31,6 @@ function useLoginMutation() {
 
       return json;
     },
-    onSuccess: data => {
-      login(data.jwtToken);
-    },
   });
 }
 
@@ -43,9 +38,14 @@ function useLoginMutation() {
 
 export function useLogin() {
   const { mutate, isPending, error } = useLoginMutation();
+  const { login: setToken } = useAuthActions();
 
   function login(input: LoginInput): void {
-    mutate(input);
+    mutate(input, {
+      onSuccess: data => {
+        setToken(data.jwtToken);
+      },
+    });
   }
 
   return {

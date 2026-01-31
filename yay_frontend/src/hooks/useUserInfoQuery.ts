@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_ME } from '../constants';
-import { getTokenState } from '../store/authStore';
 import { queryKeys } from './queryKeys';
+import useFetchWithAuth from './useFetchWithAuth';
 
 export type UserInfoResponse = {
   username: string;
@@ -9,11 +9,11 @@ export type UserInfoResponse = {
 };
 
 export function useUserInfoQuery() {
-  const { token } = getTokenState();
+  const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<UserInfoResponse>({
     queryKey: queryKeys.me,
-    queryFn: () => getMe(token!),
+    queryFn: () => getMe(fetchWithAuth),
     staleTime: Infinity, // Always use cache, never auto-refetch
     gcTime: Infinity, // Keep cache permanently
   });
@@ -21,11 +21,12 @@ export function useUserInfoQuery() {
   return query;
 }
 
-async function getMe(token: string) {
-  const response = await fetch(API_ME, {
+async function getMe(
+  fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
+) {
+  const response = await fetchWithAuth(API_ME, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { getTokenState } from '../store/authStore';
 import { API_MESSAGES } from '../constants';
 import type { ChannelMessage } from '../types/ChannelMessage';
+import useFetchWithAuth from './useFetchWithAuth';
 
 type EditChannelMessageInput = {
   id: number;
@@ -9,14 +9,13 @@ type EditChannelMessageInput = {
 };
 
 function useEditChannelMessageMutation() {
-  const { token } = getTokenState();
+  const fetchWithAuth = useFetchWithAuth();
 
   return useMutation<ChannelMessage, Error, EditChannelMessageInput>({
     mutationFn: async function (data) {
-      const response = await fetch(API_MESSAGES, {
+      const response = await fetchWithAuth(API_MESSAGES, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

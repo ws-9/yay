@@ -1,11 +1,13 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import type { CursorPaginatedChannelMessages } from '../types/CursorPaginatedChannelMessages';
 import type { ChannelMessagePageParam } from '../types/ChannelMessagePageParam';
-import { getTokenState } from '../store/authStore';
 import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../constants';
 import { queryKeys } from './queryKeys';
+import useFetchWithAuth from './useFetchWithAuth';
 
 export function useInfChannelMessagesQuery(channelId: number) {
+  const fetchWithAuth = useFetchWithAuth();
+
   const {
     data,
     error,
@@ -15,7 +17,7 @@ export function useInfChannelMessagesQuery(channelId: number) {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: queryKeys.channels.messages(channelId),
-    queryFn: fetchMessages, // TODO: fix
+    queryFn: params => fetchMessages(params, fetchWithAuth),
     initialPageParam: {
       id: channelId,
       size: CHANNEL_MESSAGES_PAGE_SIZE,
@@ -46,14 +48,16 @@ export function useInfChannelMessagesQuery(channelId: number) {
   };
 }
 
-async function fetchMessages({
-  pageParam,
-  queryKey,
-}: {
-  pageParam: ChannelMessagePageParam;
-  queryKey: readonly unknown[];
-}): Promise<CursorPaginatedChannelMessages> {
-  const { token } = getTokenState();
+async function fetchMessages(
+  {
+    pageParam,
+    queryKey,
+  }: {
+    pageParam: ChannelMessagePageParam;
+    queryKey: readonly unknown[];
+  },
+  fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
+): Promise<CursorPaginatedChannelMessages> {
   const [, channelId] = queryKey as readonly [string, number, string];
 
   const params = new URLSearchParams({
@@ -67,14 +71,12 @@ async function fetchMessages({
     params.append('cursorId', pageParam.cursorId.toString());
   }
 
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_CHANNELS}/${channelId}/messages?${params}`,
     {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
+
   return response.json();
 }

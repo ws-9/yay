@@ -1,16 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_COMMUNITIES } from '../constants';
-import { getTokenState } from '../store/authStore';
 import type { Community } from '../types/Community';
 import { queryKeys } from './queryKeys';
+import useFetchWithAuth from './useFetchWithAuth';
 
 export function useCommunityQuery(communityId: number | null) {
-  const { token } = getTokenState();
+  const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<Community>({
     queryKey: queryKeys.communities.detail(communityId!),
-    queryFn: () => getCommunity(communityId!, token!),
-    enabled: communityId !== null && token !== null,
+    queryFn: () => getCommunity(communityId!, fetchWithAuth),
+    enabled: communityId !== null,
     staleTime: Infinity, // Always use cache, never auto-refetch
     gcTime: Infinity, // Keep cache permanently
   });
@@ -22,11 +22,13 @@ export function useCommunityQuery(communityId: number | null) {
   };
 }
 
-async function getCommunity(communityId: number, token: string) {
-  const response = await fetch(`${API_COMMUNITIES}/${communityId}`, {
+async function getCommunity(
+  communityId: number,
+  fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
+) {
+  const response = await fetchWithAuth(`${API_COMMUNITIES}/${communityId}`, {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   });

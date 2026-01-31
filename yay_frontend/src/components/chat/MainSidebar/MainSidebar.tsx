@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router';
-import { useAuthActions } from '../../../store/authStore';
+import { useLogout } from '../../../hooks/useLogoutMutation';
 import CommunityTabsList from './CommunityTabsList';
 import CommunityDialog from './CommunityDialog';
 import { ScrollArea } from '@base-ui/react/scroll-area';
 import { Separator } from '@base-ui/react/separator';
 
 export default function MainSidebar() {
-  const { logout } = useAuthActions();
+  const { logout } = useLogout();
   const navigate = useNavigate();
 
   return (
