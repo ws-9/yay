@@ -1,10 +1,7 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { useEffect, useEffectEvent, useState } from 'react';
 import useCreateChannel from '../../../hooks/useCreateChannelMutation';
-import {
-  useChannelDialog,
-  useChannelDialogActions,
-} from '../../../store/uiStore';
+import { useChannelDialog, useUiStoreActions } from '../../../store/uiStore';
 import { Toast } from '@base-ui/react/toast';
 import { Button } from '@base-ui/react/button';
 import { Form } from '@base-ui/react/form';
@@ -12,7 +9,7 @@ import { Field } from '@base-ui/react/field';
 
 export default function ChannelDialog() {
   const channelDialog = useChannelDialog();
-  const { closeChannelDialog } = useChannelDialogActions();
+  const { closeChannelDialog } = useUiStoreActions();
 
   return (
     <Dialog.Root

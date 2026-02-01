@@ -1,5 +1,5 @@
 import { Menu } from '@base-ui/react/menu';
-import { useChannelDialogActions } from '../../../store/uiStore';
+import { useUiStoreActions } from '../../../store/uiStore';
 import useRemoveMember from '../../../hooks/useRemoveMemberMutation';
 import { Toast } from '@base-ui/react/toast';
 import { useEffect, useEffectEvent } from 'react';
@@ -13,7 +13,7 @@ export default function CommunityMenu({
   role: CommunityRole;
   communityId: number;
 }) {
-  const { openChannelDialog } = useChannelDialogActions();
+  const { openChannelDialog } = useUiStoreActions();
 
   return (
     <Menu.Root>

@@ -5,9 +5,21 @@ type UIStore = {
     isOpen: boolean;
     communityId: number | null;
   };
+  communitySettingsDialog: {
+    isOpen: boolean;
+    communityId: number | null;
+  };
+  channelSettingsDialog: {
+    isOpen: boolean;
+    channelId: number | null;
+  };
   actions: {
     openChannelDialog: (communityId: number) => void;
     closeChannelDialog: () => void;
+    openCommunitySettingsDialog: (communityId: number) => void;
+    closeCommunitySettingsDialog: () => void;
+    openChannelSettingsDialog: (channelId: number) => void;
+    closeChannelSettingsDialog: () => void;
   };
 };
 
@@ -15,6 +27,14 @@ export const useUIStore = create<UIStore>(set => ({
   channelDialog: {
     isOpen: false,
     communityId: null,
+  },
+  communitySettingsDialog: {
+    isOpen: false,
+    communityId: null,
+  },
+  channelSettingsDialog: {
+    isOpen: false,
+    channelId: null,
   },
   actions: {
     openChannelDialog: (communityId: number) =>
@@ -31,8 +51,43 @@ export const useUIStore = create<UIStore>(set => ({
           communityId: null,
         },
       }),
+    openCommunitySettingsDialog: (communityId: number) =>
+      set({
+        communitySettingsDialog: {
+          isOpen: true,
+          communityId,
+        },
+      }),
+    closeCommunitySettingsDialog: () =>
+      set({
+        communitySettingsDialog: {
+          isOpen: false,
+          communityId: null,
+        },
+      }),
+    openChannelSettingsDialog: (channelId: number) =>
+      set({
+        channelSettingsDialog: {
+          isOpen: true,
+          channelId,
+        },
+      }),
+    closeChannelSettingsDialog: () =>
+      set({
+        channelSettingsDialog: {
+          isOpen: false,
+          channelId: null,
+        },
+      }),
   },
 }));
 
-export const useChannelDialogActions = () => useUIStore(state => state.actions);
+export const useUiStoreActions = () => useUIStore(state => state.actions);
+
 export const useChannelDialog = () => useUIStore(state => state.channelDialog);
+
+export const useCommunitySettingsDialog = () =>
+  useUIStore(state => state.communitySettingsDialog);
+
+export const useChannelSettingsDialog = () =>
+  useUIStore(state => state.channelSettingsDialog);
