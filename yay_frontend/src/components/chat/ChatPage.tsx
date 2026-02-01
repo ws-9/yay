@@ -9,6 +9,8 @@ import useMinBreakpoint from '../../hooks/useMinBreakpoint';
 import ChatPane from './Pane/ChatPane';
 import { ErrorHandlingToast } from './MainSidebar/ErrorHandlingToast';
 import ChannelDialog from './MainSidebar/ChannelDialog';
+import ChannelSettingDialog from './MainSidebar/ChannelSettingDialog';
+import CommunitySettingDialog from './MainSidebar/CommunitySettingsDialog/CommunitySettingDialog';
 
 export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -26,6 +28,8 @@ export default function ChatPage() {
       <SingleActivePaneRenderer />
       <MultiPaneRenderer />
       <ChannelDialog />
+      <ChannelSettingDialog />
+      <CommunitySettingDialog />
       <ErrorHandlingToast />
     </div>
   );
