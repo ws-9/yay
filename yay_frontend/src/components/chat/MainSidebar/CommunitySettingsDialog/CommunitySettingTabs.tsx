@@ -1,6 +1,7 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { useCommunityQuery } from '../../../../hooks/useCommunityQuery';
 import { Separator } from '@base-ui/react/separator';
+import MembersPanel from './MembersPanel';
 
 export default function CommunitySettingTabs({
   communityId,
@@ -9,7 +10,7 @@ export default function CommunitySettingTabs({
 }) {
   const { data } = useCommunityQuery(communityId);
 
-  if (!data) {
+  if (!communityId || !data) {
     return null;
   }
 
@@ -46,10 +47,7 @@ export default function CommunitySettingTabs({
         <h2 className="text-2xl font-bold">General</h2>
         <p className="text-gray-600">General community settings.</p>
       </Tabs.Panel>
-      <Tabs.Panel className="flex-1 space-y-4 p-6" value="members">
-        <h2 className="text-2xl font-bold">Members</h2>
-        <p className="text-gray-600">View and manage community members.</p>
-      </Tabs.Panel>
+      <MembersPanel communityId={communityId} />
       <Tabs.Panel className="flex-1 space-y-4 p-6" value="advanced">
         <h2 className="text-2xl font-bold">Advanced</h2>
         <p className="text-gray-600">Advanced settings and configurations.</p>
