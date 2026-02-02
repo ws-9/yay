@@ -1,6 +1,8 @@
 package com.ws.yay_backend.entity;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 import java.util.Set;
 
@@ -22,11 +24,18 @@ public class Community {
   @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
   private Set<CommunityMember> members;
 
-  public Community() {}
+  @Type(JsonBinaryType.class)
+  @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
+  private CommunitySettings settings;
+
+  public Community() {
+    this.settings = new CommunitySettings();
+  }
 
   public Community(String name, User owner) {
     this.name = name;
     this.owner = owner;
+    this.settings = new CommunitySettings();
   }
 
   public Long getId() {
@@ -59,5 +68,13 @@ public class Community {
 
   public void setMembers(Set<CommunityMember> members) {
     this.members = members;
+  }
+
+  public CommunitySettings getSettings() {
+    return settings;
+  }
+
+  public void setSettings(CommunitySettings settings) {
+    this.settings = settings;
   }
 }
