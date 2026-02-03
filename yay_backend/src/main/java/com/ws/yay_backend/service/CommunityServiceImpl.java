@@ -137,9 +137,8 @@ public class CommunityServiceImpl implements CommunityService {
   public List<GetMemberResponse> getAllMembers(Long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     
-    if (!communityRepository.existsById(id)) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + id);
-    }
+    Community community = communityRepository.findWithOwnerById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + id));
     
     boolean isMember = communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(id, userId);
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
@@ -148,11 +147,17 @@ public class CommunityServiceImpl implements CommunityService {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You must be a member to view members");
     }
     
-    return communityRepository.findWithMembersAndUsersById(id)
-        .map(c -> c.getMembers().stream()
-            .map(cm -> new GetMemberResponse(cm.getUser().getId(), cm.getUser().getUsername()))
-            .collect(Collectors.toList()))
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + id));
+    List<CommunityMember> members = communityMemberRepository.findAllWithUserAndRoleByKey_CommunityId(id);
+    
+    return members.stream()
+        .map(cm -> new GetMemberResponse(
+            cm.getUser().getId(),
+            cm.getUser().getUsername(),
+            community.getId(),
+            community.getName(),
+            CommunityRoleResponse.fromEntity(cm.getRole())
+        ))
+        .toList();
   }
 
   @Override
