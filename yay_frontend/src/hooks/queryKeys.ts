@@ -8,6 +8,8 @@ export const queryKeys = {
     members: {
       role: (communityId: number, userId: number) =>
         ['communities', communityId, 'members', userId, 'role'] as const,
+      detail: (communityId: number) =>
+        ['communities', communityId, 'members'] as const,
     },
   },
   channels: {
