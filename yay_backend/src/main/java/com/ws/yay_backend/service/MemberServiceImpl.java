@@ -4,6 +4,8 @@ import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
+import com.ws.yay_backend.dto.request.UpdateRoleRequest;
+import com.ws.yay_backend.dto.response.GetMemberResponse;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -22,7 +24,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -162,7 +163,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
-    boolean isMember = communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(communityId, userId);
+    boolean isMember = communityMemberRepository.existsById(
+        new CommunityMemberKey(communityId, userId)
+    );
 
     if (!isAdmin && !isMember) {
       throw new ResponseStatusException(
@@ -174,10 +177,6 @@ public class MemberServiceImpl implements MemberService {
     List<CommunityMember> members = communityMemberRepository
         .findAllWithRoleByKey_CommunityIdAndKey_UserIdIn(communityId, userIds);
 
-    Set<Long> foundUserIds = members.stream()
-        .map(m -> m.getKey().getUserId())
-        .collect(Collectors.toSet());
-
     Map<Long, CommunityRoleResponse> rolesMap = members.stream()
         .collect(Collectors.toMap(
             m -> m.getKey().getUserId(),
@@ -188,5 +187,105 @@ public class MemberServiceImpl implements MemberService {
     userIds.forEach(id -> rolesMap.putIfAbsent(id, null));
 
     return new GetMembersRolesResponse(rolesMap);
+  }
+
+  @Override
+  @Transactional
+  public GetMemberResponse updateRole(UpdateRoleRequest request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    CommunityMember membership = communityMemberRepository
+        .findWithUserAndRoleAndCommunityAndOwnerByKey(new CommunityMemberKey(request.communityId(), userId))
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Community not found with id: " + request.communityId()
+        ));
+
+    Community community = membership.getCommunity();
+
+    CommunityRole newRole = communityRoleRepository.findByName(request.role())
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Role not found with name: " + request.role()
+        ));
+
+    boolean isOwner = userId.equals(community.getOwner().getId());
+    boolean isTargetOwner = community.getOwner().getId().equals(request.userId());
+    boolean isTargetSelf = userId.equals(request.userId());
+
+    if (isTargetOwner) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot change role of community owner");
+    }
+
+    // Owner should be able to change anyone's role without question.
+    if (isOwner) {
+      CommunityMember targetMembership = communityMemberRepository
+          .findWithUserByKey(new CommunityMemberKey(request.communityId(), request.userId()))
+          .orElseThrow(() -> new ResponseStatusException(
+             HttpStatus.NOT_FOUND, "User not found with id: " + request.userId()
+          ));
+
+      targetMembership.setRole(newRole);
+
+      return new GetMemberResponse(
+          targetMembership.getUser().getId(),
+          targetMembership.getUser().getUsername(),
+          community.getId(),
+          community.getName(),
+          CommunityRoleResponse.fromEntity(newRole)
+      );
+    }
+
+    // You should always be able to demote yourself
+    if (isTargetSelf) {
+      if (newRole.getHierarchyLevel() <= membership.getRole().getHierarchyLevel()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only demote yourself, not promote or stay at the same role");
+      }
+
+      membership.setRole(newRole);
+
+      return new GetMemberResponse(
+          membership.getUser().getId(),
+          membership.getUser().getUsername(),
+          community.getId(),
+          community.getName(),
+          CommunityRoleResponse.fromEntity(newRole)
+      );
+    }
+
+    // Otherwise, compare hierarchy levels
+
+    CommunityMember targetMembership = communityMemberRepository
+        .findWithUserByKey(new CommunityMemberKey(request.communityId(), request.userId()))
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "User not found with id: " + request.userId()
+        ));
+
+    boolean canManageRoles = membership.getRole().getCanManageRoles();
+    if (!canManageRoles) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot change roles");
+    }
+
+    // Can only change roles of users with lower authority (higher hierarchy level)
+    boolean targetHasLowerAuthority = targetMembership.getRole().getHierarchyLevel() > membership.getRole().getHierarchyLevel();
+    if (!targetHasLowerAuthority) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot change role of user with equal or higher authority");
+    }
+
+    // Can only assign roles weaker than their own (higher hierarchy level)
+    boolean newRoleIsWeaker = newRole.getHierarchyLevel() > membership.getRole().getHierarchyLevel();
+    if (!newRoleIsWeaker) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot assign role equal to or stronger than your own");
+    }
+
+    targetMembership.setRole(newRole);
+
+    return new GetMemberResponse(
+        targetMembership.getUser().getId(),
+        targetMembership.getUser().getUsername(),
+        community.getId(),
+        community.getName(),
+        CommunityRoleResponse.fromEntity(newRole)
+    );
   }
 }

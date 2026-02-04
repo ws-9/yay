@@ -9,16 +9,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityMemberRepository extends JpaRepository<CommunityMember, CommunityMemberKey> {
-  boolean existsByKey_CommunityIdAndKey_UserId(Long communityId, Long userId);
-
   @EntityGraph(attributePaths = {"role"})
   Optional<CommunityMember> findWithRoleByKey(CommunityMemberKey key);
+
+  @EntityGraph(attributePaths = {"user"})
+  Optional<CommunityMember> findWithUserByKey(CommunityMemberKey key);
 
   @EntityGraph(attributePaths = {"role", "community"})
   Optional<CommunityMember> findWithRoleAndCommunityByKey(CommunityMemberKey key);
 
   @EntityGraph(attributePaths = {"role", "community", "community.owner"})
   Optional<CommunityMember> findWithRoleAndCommunityAndOwnerByKey(CommunityMemberKey key);
+
+  @EntityGraph(attributePaths = {"user", "role", "community", "community.owner"})
+  Optional<CommunityMember> findWithUserAndRoleAndCommunityAndOwnerByKey(CommunityMemberKey key);
   
   @EntityGraph(attributePaths = {"user", "role"})
   List<CommunityMember> findAllWithUserAndRoleByKey_CommunityId(Long communityId);

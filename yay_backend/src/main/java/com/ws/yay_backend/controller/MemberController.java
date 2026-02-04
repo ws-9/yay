@@ -2,6 +2,8 @@ package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.JoinCommunityRequest;
 import com.ws.yay_backend.dto.request.RemoveMemberRequest;
+import com.ws.yay_backend.dto.request.UpdateRoleRequest;
+import com.ws.yay_backend.dto.response.GetMemberResponse;
 import com.ws.yay_backend.dto.response.JoinCommunityResponse;
 import com.ws.yay_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,5 +38,11 @@ public class MemberController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void removeMember(@RequestBody @Valid RemoveMemberRequest request) {
     memberService.deleteMember(request);
+  }
+
+  @Operation(summary = "Update member role")
+  @PatchMapping
+  public GetMemberResponse updateMemberRole(@RequestBody @Valid UpdateRoleRequest request) {
+    return memberService.updateRole(request);
   }
 }

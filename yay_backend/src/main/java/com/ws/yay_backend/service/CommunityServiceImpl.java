@@ -140,7 +140,7 @@ public class CommunityServiceImpl implements CommunityService {
     Community community = communityRepository.findWithOwnerById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + id));
     
-    boolean isMember = communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(id, userId);
+    boolean isMember = communityMemberRepository.existsById(new CommunityMemberKey(id, userId));
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
     
     if (!isMember && !isAdmin) {
@@ -212,7 +212,7 @@ public class CommunityServiceImpl implements CommunityService {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + communityId);
     }
     
-    boolean isMember = communityMemberRepository.existsByKey_CommunityIdAndKey_UserId(communityId, userId);
+    boolean isMember = communityMemberRepository.existsById(new CommunityMemberKey(communityId, userId));
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
     
     if (!isMember && !isAdmin) {
