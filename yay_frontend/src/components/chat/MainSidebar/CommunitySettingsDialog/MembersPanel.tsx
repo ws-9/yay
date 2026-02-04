@@ -5,6 +5,7 @@ import { useCommunityQuery } from '../../../../hooks/useCommunityQuery';
 import type { Member } from '../../../../types/Member';
 import { useUserInfoQuery } from '../../../../hooks/useUserInfoQuery';
 import { useMemberRole } from '../../../../hooks/useMemberRoleQuery';
+import { useUpdateMemberRoleMutation } from '../../../../hooks/useUpdateMemberRoleMutation';
 import type { CommunityRole } from '../../../../types/CommunityRole';
 
 const roles = [
@@ -47,6 +48,7 @@ export default function MembersPanel({ communityId }: { communityId: number }) {
       userRole={userRole}
       ownerId={community.ownerId}
       userId={userId}
+      communityId={communityId}
     />
   ));
 
@@ -62,11 +64,13 @@ function MemberRow({
   userRole,
   ownerId,
   userId,
+  communityId,
 }: {
   member: Member;
   userRole: CommunityRole;
   ownerId: number;
   userId: number;
+  communityId: number;
 }) {
   return (
     <div>
@@ -78,6 +82,7 @@ function MemberRow({
         memberId={member.userId}
         ownerId={ownerId}
         userId={userId}
+        communityId={communityId}
       />
     </div>
   );
@@ -90,6 +95,7 @@ function RoleSelector({
   memberId,
   ownerId,
   userId,
+  communityId,
 }: {
   roleName: string;
   userRole: CommunityRole;
@@ -97,9 +103,26 @@ function RoleSelector({
   memberId: number;
   ownerId: number;
   userId: number;
+  communityId: number;
 }) {
+  const updateRoleMutation = useUpdateMemberRoleMutation();
+
+  function handleRoleChange(newRoleValue: string | null) {
+    if (newRoleValue) {
+      updateRoleMutation.mutate({
+        communityId,
+        userId: memberId,
+        role: newRoleValue,
+      });
+    }
+  }
+
   return (
-    <Select.Root items={roles} defaultValue={roleName}>
+    <Select.Root
+      items={roles}
+      defaultValue={roleName}
+      onValueChange={handleRoleChange}
+    >
       <Select.Trigger
         disabled={
           !canClickTrigger(
@@ -202,8 +225,18 @@ function canClickTrigger(
     return false;
   }
 
-  if (!canManageRoles && userId !== ownerId) {
-    return targetUserId === userId;
+  if (userId === ownerId) {
+    return true;
+  }
+
+  // Allow self-changes (self-demotion)
+  const isSelf = targetUserId === userId;
+  if (isSelf) {
+    return true;
+  }
+
+  if (!canManageRoles) {
+    return false;
   }
 
   return targetHierarchy > userHierarchy;
@@ -217,19 +250,22 @@ function canSelectItem(
   canManageRoles: boolean,
   ownerId: number,
 ): boolean {
-  if (!canManageRoles && targetUserId !== userId) {
+  const itemHierarchy =
+    roleHierarchies[itemValue as keyof typeof roleHierarchies];
+
+  const isSelf = targetUserId === userId;
+
+  if (isSelf) {
+    return itemHierarchy > userHierarchy;
+  }
+
+  if (!canManageRoles) {
     return false;
   }
 
   if (userId === ownerId) {
-    if (targetUserId === userId) {
-      return false;
-    } // Owner can't select for themselves
-    return true; // Owner can select any for others
+    return true;
   }
-
-  const itemHierarchy =
-    roleHierarchies[itemValue as keyof typeof roleHierarchies];
 
   return itemHierarchy > userHierarchy;
 }
