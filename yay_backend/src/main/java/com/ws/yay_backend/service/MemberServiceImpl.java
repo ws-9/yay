@@ -1,16 +1,19 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.components.AuthUtilsComponent;
+import com.ws.yay_backend.dao.BannedUserRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
 import com.ws.yay_backend.dto.request.UpdateRoleRequest;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
+import com.ws.yay_backend.entity.BannedUser;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.CommunityRoleName;
 import com.ws.yay_backend.entity.User;
+import com.ws.yay_backend.entity.embedded.BannedUserKey;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import com.ws.yay_backend.dto.request.JoinCommunityRequest;
 import com.ws.yay_backend.dto.request.RemoveMemberRequest;
@@ -32,28 +35,36 @@ public class MemberServiceImpl implements MemberService {
   private final CommunityRepository communityRepository;
   private final CommunityMemberRepository communityMemberRepository;
   private final CommunityRoleRepository communityRoleRepository;
+  private final BannedUserRepository bannedUserRepository;
   private final AuthUtilsComponent authUtilsComponent;
 
   public MemberServiceImpl(
       CommunityRepository communityRepository,
       CommunityMemberRepository communityMemberRepository,
       CommunityRoleRepository communityRoleRepository,
+      BannedUserRepository bannedUserRepository,
       AuthUtilsComponent authUtilsComponent
   ) {
     this.communityRepository = communityRepository;
     this.communityMemberRepository = communityMemberRepository;
     this.communityRoleRepository = communityRoleRepository;
+    this.bannedUserRepository = bannedUserRepository;
     this.authUtilsComponent = authUtilsComponent;
   }
 
   @Override
   @Transactional
-  // TODO: implement banned_users table and check current user against it.
   public JoinCommunityResponse joinCommunity(JoinCommunityRequest request) {
     User user = authUtilsComponent.getAuthenticatedUser();
 
     Community community = communityRepository.findById(request.communityId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));
+
+    // Check if user is banned from this community
+    BannedUserKey bannedKey = new BannedUserKey(request.communityId(), user.getId());
+    if (bannedUserRepository.existsById(bannedKey)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are banned from this community");
+    }
 
     boolean alreadyMember = communityMemberRepository
         .existsById(new CommunityMemberKey(request.communityId(), user.getId()));
