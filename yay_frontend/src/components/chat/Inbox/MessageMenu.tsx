@@ -4,6 +4,7 @@ import useDeleteChannelMessage from '../../../hooks/useDeleteChannelMessageMutat
 import { useMemberRole } from '../../../hooks/useMemberRoleQuery';
 import { useChannelQuery } from '../../../hooks/useChannelQuery';
 import { useCommunityQuery } from '../../../hooks/useCommunityQuery';
+import useRemoveMemberMutation from '../../../hooks/useRemoveMemberMutation';
 import type { ChannelMessage } from '../../../types/ChannelMessage';
 import type { CommunityRole } from '../../../types/CommunityRole';
 
@@ -22,9 +23,11 @@ export default function MessageMenu({
   const { data: channel } = useChannelQuery(channelId);
   const { data: community } = useCommunityQuery(channel?.communityId ?? null);
   const deleteMutation = useDeleteChannelMessage();
+  const kickMutation = useRemoveMemberMutation();
 
   const communityId = channel?.communityId;
   const isCurrentUserOwner = community?.ownerId === userInfo?.id;
+  const isTargetOwner = message.userId === community?.ownerId;
 
   // Get current user's role
   const { data: currentUserRole } = useMemberRole(
@@ -50,6 +53,15 @@ export default function MessageMenu({
   const canEdit =
     userInfo?.id === message.userId && !message.deletedAt && !!currentUserRole;
 
+  const canBan = canUserBanMember(
+    userInfo?.id,
+    currentUserRole,
+    message.userId,
+    authorRole,
+    isCurrentUserOwner,
+    isTargetOwner,
+  );
+
   function handleEdit() {
     onEdit?.();
   }
@@ -58,7 +70,17 @@ export default function MessageMenu({
     deleteMutation.mutate({ id: message.id });
   }
 
-  if (!canDelete && !canEdit) {
+  function handleKick() {
+    if (communityId) {
+      kickMutation.mutate({ communityId, userId: message.userId });
+    }
+  }
+
+  function handleBan() {
+    // Ban is unimplemented, do nothing
+  }
+
+  if (!canDelete && !canEdit && !canBan) {
     return null;
   }
 
@@ -91,6 +113,22 @@ export default function MessageMenu({
                 className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900"
               >
                 Delete Message
+              </Menu.Item>
+            )}
+            {canBan && (
+              <Menu.Item
+                onClick={handleKick}
+                className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900"
+              >
+                Kick User
+              </Menu.Item>
+            )}
+            {canBan && (
+              <Menu.Item
+                onClick={handleBan}
+                className="flex cursor-default items-center gap-2 py-2 pr-8 pl-4 text-sm leading-4 outline-none select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900"
+              >
+                Ban User
               </Menu.Item>
             )}
           </Menu.Popup>
@@ -138,5 +176,45 @@ function canUserDeleteMessage(
   return (
     currentUserRole.canDeleteMessages &&
     currentUserRole.hierarchyLevel < authorRole.hierarchyLevel
+  );
+}
+
+function canUserBanMember(
+  currentUserId: number | undefined,
+  currentUserRole: CommunityRole | null | undefined,
+  targetUserId: number,
+  targetRole: CommunityRole | null | undefined,
+  isCurrentUserOwner: boolean,
+  isTargetOwner: boolean,
+): boolean {
+  // Can't ban yourself
+  if (currentUserId === targetUserId) {
+    return false;
+  }
+
+  // Can't ban the owner
+  if (isTargetOwner) {
+    return false;
+  }
+
+  // Can't ban someone who's not in the server
+  if (!targetRole) {
+    return false;
+  }
+
+  // Owner can ban anyone else
+  if (isCurrentUserOwner) {
+    return true;
+  }
+
+  // If current user has no role, can't ban
+  if (!currentUserRole) {
+    return false;
+  }
+
+  // Check if current user has ban permission and strictly higher hierarchy (lower number = stronger)
+  return (
+    currentUserRole.canBanUsers &&
+    currentUserRole.hierarchyLevel < targetRole.hierarchyLevel
   );
 }

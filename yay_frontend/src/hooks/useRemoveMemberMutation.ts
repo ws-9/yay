@@ -39,9 +39,11 @@ function useRemoveMemberMutation() {
         // If removing self, optimistically remove the community from bootstrap
         removeCommunityOptimistically(variables.communityId);
       } else {
-        // Otherwise, invalidate bootstrap to refetch
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.bootstrap,
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.communities.members.role(
+            variables.communityId,
+            variables.userId,
+          ),
         });
       }
     },
