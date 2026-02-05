@@ -3,6 +3,8 @@ package com.ws.yay_backend.controller;
 import com.ws.yay_backend.dto.request.CreateBanRequest;
 import com.ws.yay_backend.dto.response.BannedUserResponse;
 import com.ws.yay_backend.service.BanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Bans")
 @RestController
 @RequestMapping("/api/bans")
 public class BanController {
@@ -21,12 +24,14 @@ public class BanController {
     this.banService = banService;
   }
 
+  @Operation(summary = "Get communities bans")
   @GetMapping
   public ResponseEntity<List<BannedUserResponse>> getBannedUsers(@RequestParam Long communityId) {
     List<BannedUserResponse> bannedUsers = banService.getBannedUsers(communityId);
     return ResponseEntity.ok(bannedUsers);
   }
 
+  @Operation(summary = "Ban user from community")
   @PostMapping
   public ResponseEntity<BannedUserResponse> banUser(@RequestBody @Valid CreateBanRequest request) {
     BannedUserResponse bannedUser = banService.banUser(request);
