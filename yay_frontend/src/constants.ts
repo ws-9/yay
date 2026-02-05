@@ -10,6 +10,7 @@ export const API_MY_COMMUNITIES = API_BASE_URL + '/communities/my-communities';
 export const API_CHANNELS = API_BASE_URL + '/channels';
 export const API_MEMBERS = API_BASE_URL + '/members';
 export const API_MESSAGES = API_BASE_URL + '/messages';
+export const API_BANS = API_BASE_URL + '/bans';
 export const API_ME = API_BASE_URL + '/me';
 
 export const WS_BROKER = 'ws://localhost:8080/ws';

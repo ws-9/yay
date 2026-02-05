@@ -66,6 +66,13 @@ function CommunityDialogForm({
     });
   });
 
+  const onBannedError = useEffectEvent(() => {
+    toastManager.add({
+      title: `Error joining community`,
+      description: 'You are banned.',
+    });
+  });
+
   useEffect(() => {
     if (communityError) {
       if (communityError.message.includes('Failed to fetch')) {
@@ -75,6 +82,9 @@ function CommunityDialogForm({
     if (memberError) {
       if (memberError.message.includes('Failed to fetch')) {
         onNetworkError();
+      }
+      if (memberError.message.includes('banned')) {
+        onBannedError();
       }
     }
   }, [communityError, memberError]);
@@ -90,6 +100,13 @@ function CommunityDialogForm({
         {
           onError: error => {
             if (error.message === 'Community not found') {
+              const serverErrors = {
+                joinCode: error.message,
+              };
+              setErrors(serverErrors);
+            }
+            if (error.message.includes('banned')) {
+              // Set error in field and let useEffect show toast
               const serverErrors = {
                 joinCode: error.message,
               };

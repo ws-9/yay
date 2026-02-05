@@ -5,6 +5,7 @@ import { useMemberRole } from '../../../hooks/useMemberRoleQuery';
 import { useChannelQuery } from '../../../hooks/useChannelQuery';
 import { useCommunityQuery } from '../../../hooks/useCommunityQuery';
 import useRemoveMemberMutation from '../../../hooks/useRemoveMemberMutation';
+import useBanMember from '../../../hooks/useBanMemberMutation';
 import type { ChannelMessage } from '../../../types/ChannelMessage';
 import type { CommunityRole } from '../../../types/CommunityRole';
 
@@ -24,6 +25,7 @@ export default function MessageMenu({
   const { data: community } = useCommunityQuery(channel?.communityId ?? null);
   const deleteMutation = useDeleteChannelMessage();
   const kickMutation = useRemoveMemberMutation();
+  const banMutation = useBanMember();
 
   const communityId = channel?.communityId;
   const isCurrentUserOwner = community?.ownerId === userInfo?.id;
@@ -77,7 +79,9 @@ export default function MessageMenu({
   }
 
   function handleBan() {
-    // Ban is unimplemented, do nothing
+    if (communityId) {
+      banMutation.mutate({ communityId, userId: message.userId });
+    }
   }
 
   if (!canDelete && !canEdit && !canBan) {

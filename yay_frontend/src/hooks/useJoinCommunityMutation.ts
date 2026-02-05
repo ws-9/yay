@@ -31,6 +31,9 @@ function useJoinCommunityMutation() {
         if (response.status === 404) {
           throw new Error('Community not found');
         }
+        if (response.status === 403) {
+          throw new Error('You are banned from this community');
+        }
         const json = await response.json();
         throw new Error(JSON.stringify(json));
       }
