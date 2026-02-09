@@ -2,7 +2,9 @@ package com.ws.yay_backend.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.Type;
+import org.hibernate.generator.EventType;
 
 import java.util.Set;
 
@@ -27,6 +29,10 @@ public class Community {
   @Type(JsonBinaryType.class)
   @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
   private CommunitySettings settings;
+
+  @Generated(event = EventType.INSERT)
+  @Column(name = "invite_slug", insertable = false, updatable = false, nullable = false)
+  private String inviteSlug;
 
   public Community() {
     this.settings = new CommunitySettings();
@@ -76,5 +82,13 @@ public class Community {
 
   public void setSettings(CommunitySettings settings) {
     this.settings = settings;
+  }
+
+  public String getInviteSlug() {
+    return inviteSlug;
+  }
+
+  public void setInviteSlug(String inviteSlug) {
+    this.inviteSlug = inviteSlug;
   }
 }

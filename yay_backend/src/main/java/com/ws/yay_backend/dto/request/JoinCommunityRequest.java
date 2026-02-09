@@ -1,8 +1,8 @@
 package com.ws.yay_backend.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record JoinCommunityRequest(
-    @NotNull(message = "communityId required") long communityId
+    @NotBlank(message = "inviteSlug required") String inviteSlug
 ) {
 }

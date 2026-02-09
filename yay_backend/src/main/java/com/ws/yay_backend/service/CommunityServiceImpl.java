@@ -5,6 +5,7 @@ import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
+import com.ws.yay_backend.dto.response.*;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -12,10 +13,6 @@ import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.CommunityRoleName;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
-import com.ws.yay_backend.dto.response.CommunityRoleResponse;
-import com.ws.yay_backend.dto.response.GetChannelResponse;
-import com.ws.yay_backend.dto.response.GetCommunityResponse;
-import com.ws.yay_backend.dto.response.GetMemberResponse;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -226,5 +223,17 @@ public class CommunityServiceImpl implements CommunityService {
             channel.getCommunity().getId(),
             channel.getCommunity().getName()
         )).toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public GetCommunityInviteResponse getCommunityInvite(long id) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    CommunityMember membership = communityMemberRepository
+        .findWithCommunityByKey(new CommunityMemberKey(id, userId))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+
+    return new GetCommunityInviteResponse(membership.getCommunity().getInviteSlug());
   }
 }

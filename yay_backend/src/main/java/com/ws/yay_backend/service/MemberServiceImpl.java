@@ -7,7 +7,6 @@ import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
 import com.ws.yay_backend.dto.request.UpdateRoleRequest;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
-import com.ws.yay_backend.entity.BannedUser;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -57,17 +56,17 @@ public class MemberServiceImpl implements MemberService {
   public JoinCommunityResponse joinCommunity(JoinCommunityRequest request) {
     User user = authUtilsComponent.getAuthenticatedUser();
 
-    Community community = communityRepository.findById(request.communityId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));
+    Community community = communityRepository.findByInviteSlug(request.inviteSlug())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid invite slug"));
 
     // Check if user is banned from this community
-    BannedUserKey bannedKey = new BannedUserKey(request.communityId(), user.getId());
+    BannedUserKey bannedKey = new BannedUserKey(community.getId(), user.getId());
     if (bannedUserRepository.existsById(bannedKey)) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are banned from this community");
     }
 
     boolean alreadyMember = communityMemberRepository
-        .existsById(new CommunityMemberKey(request.communityId(), user.getId()));
+        .existsById(new CommunityMemberKey(community.getId(), user.getId()));
 
     if (!alreadyMember) {
       CommunityRole memberRole = communityRoleRepository.findByName(CommunityRoleName.MEMBER.getValue())

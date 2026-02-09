@@ -2,7 +2,8 @@ CREATE TABLE communities (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    settings JSONB NOT NULL DEFAULT '{}'
+    settings JSONB NOT NULL DEFAULT '{}',
+    invite_slug VARCHAR(8) UNIQUE NOT NULL DEFAULT substring(md5(random()::text), 1, 8)
 );
 
 CREATE TABLE community_roles (

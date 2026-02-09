@@ -21,4 +21,6 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
   // Find all communities that the user is part of with owner
   @EntityGraph(attributePaths = {"owner"})
   List<Community> findAllWithOwnerByMembers_User_id(Long memberId);
+
+  Optional<Community> findByInviteSlug(String inviteSlug);
 }

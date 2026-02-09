@@ -2,6 +2,7 @@ package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
+import com.ws.yay_backend.dto.response.GetCommunityInviteResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
 
@@ -21,4 +22,6 @@ public interface CommunityService {
   List<GetCommunityResponse> getUserOwnCommunities();
 
   List<GetChannelResponse> getCommunityChannels(Long communityId);
+
+  GetCommunityInviteResponse getCommunityInvite(long id);
 }

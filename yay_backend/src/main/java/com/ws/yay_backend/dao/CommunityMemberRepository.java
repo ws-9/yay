@@ -15,6 +15,9 @@ public interface CommunityMemberRepository extends JpaRepository<CommunityMember
   @EntityGraph(attributePaths = {"user"})
   Optional<CommunityMember> findWithUserByKey(CommunityMemberKey key);
 
+  @EntityGraph(attributePaths = {"community"})
+  Optional<CommunityMember> findWithCommunityByKey(CommunityMemberKey key);
+
   @EntityGraph(attributePaths = {"role", "community"})
   Optional<CommunityMember> findWithRoleAndCommunityByKey(CommunityMemberKey key);
 
