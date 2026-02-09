@@ -11,6 +11,7 @@ import { ErrorHandlingToast } from './MainSidebar/ErrorHandlingToast';
 import ChannelDialog from './MainSidebar/ChannelDialog';
 import ChannelSettingDialog from './MainSidebar/ChannelSettingDialog';
 import CommunitySettingDialog from './MainSidebar/CommunitySettingsDialog/CommunitySettingDialog';
+import ShareInviteDialog from './MainSidebar/ShareInviteDialog/ShareInviteDialog';
 
 export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -31,6 +32,7 @@ export default function ChatPage() {
       <ChannelSettingDialog />
       <CommunitySettingDialog />
       <ErrorHandlingToast />
+      <ShareInviteDialog />
     </div>
   );
 }

@@ -13,6 +13,10 @@ type UIStore = {
     isOpen: boolean;
     channelId: number | null;
   };
+  shareInviteDialog: {
+    isOpen: boolean;
+    communityId: number | null;
+  };
   actions: {
     openChannelDialog: (communityId: number) => void;
     closeChannelDialog: () => void;
@@ -20,6 +24,8 @@ type UIStore = {
     closeCommunitySettingsDialog: () => void;
     openChannelSettingsDialog: (channelId: number) => void;
     closeChannelSettingsDialog: () => void;
+    openShareInviteDialog: (communityId: number) => void;
+    closeShareInviteDialog: () => void;
   };
 };
 
@@ -35,6 +41,10 @@ export const useUIStore = create<UIStore>(set => ({
   channelSettingsDialog: {
     isOpen: false,
     channelId: null,
+  },
+  shareInviteDialog: {
+    isOpen: false,
+    communityId: null,
   },
   actions: {
     openChannelDialog: (communityId: number) =>
@@ -79,6 +89,20 @@ export const useUIStore = create<UIStore>(set => ({
           channelId: null,
         },
       }),
+    openShareInviteDialog: (communityId: number) =>
+      set({
+        shareInviteDialog: {
+          isOpen: true,
+          communityId,
+        },
+      }),
+    closeShareInviteDialog: () =>
+      set({
+        shareInviteDialog: {
+          isOpen: false,
+          communityId: null,
+        },
+      }),
   },
 }));
 
@@ -91,3 +115,6 @@ export const useCommunitySettingsDialog = () =>
 
 export const useChannelSettingsDialog = () =>
   useUIStore(state => state.channelSettingsDialog);
+
+export const useShareInviteDialog = () =>
+  useUIStore(state => state.shareInviteDialog);

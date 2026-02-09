@@ -96,7 +96,7 @@ function CommunityDialogForm({
     if (mode === 'join') {
       const joinCode = formData.get('joinCode') as string;
       mutateMembership(
-        { communityId: Number.parseInt(joinCode) },
+        { inviteSlug: joinCode },
         {
           onError: error => {
             if (error.message === 'Community not found') {

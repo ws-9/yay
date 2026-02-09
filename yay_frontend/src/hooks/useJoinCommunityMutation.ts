@@ -4,7 +4,7 @@ import { queryKeys } from './queryKeys';
 import useFetchWithAuth from './useFetchWithAuth';
 
 type JoinCommunityInput = {
-  communityId: number;
+  inviteSlug: string;
 };
 
 type JoinCommunityResponse = {

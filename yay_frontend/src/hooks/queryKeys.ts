@@ -11,6 +11,10 @@ export const queryKeys = {
       detail: (communityId: number) =>
         ['communities', communityId, 'members'] as const,
     },
+    invites: {
+      detail: (communityId: number) =>
+        ['communities', communityId, 'invites'] as const,
+    },
   },
   channels: {
     detail: (id: number) => ['channels', id] as const,
