@@ -5,6 +5,7 @@ import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
+import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.response.*;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
@@ -12,7 +13,7 @@ import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.CommunityRoleName;
 import com.ws.yay_backend.entity.User;
-import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -235,5 +236,34 @@ public class CommunityServiceImpl implements CommunityService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
 
     return new GetCommunityInviteResponse(membership.getCommunity().getInviteSlug());
+  }
+
+  @Override
+  @Transactional
+  public void transferOwnership(long communityId, TransferOwnershipRequest request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    CommunityMember membership = communityMemberRepository
+        .findWithCommunityAndOwnerByKey(new CommunityMemberKey(communityId, userId))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+
+    Community community = membership.getCommunity();
+
+    if (!community.getOwner().getId().equals(userId)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the community owner can transfer ownership");
+    }
+
+    if (request.newOwnerId() == userId) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot transfer ownership to yourself");
+    }
+
+    CommunityMember newOwnerMembership = communityMemberRepository.findWithUserByKey(new CommunityMemberKey(communityId, request.newOwnerId()))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not a member of this community"));
+
+    CommunityRole adminRole = communityRoleRepository.findByName(CommunityRoleName.ADMIN.getValue())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Admin role not found"));
+
+    community.setOwner(newOwnerMembership.getUser());
+    newOwnerMembership.setRole(adminRole);
   }
 }

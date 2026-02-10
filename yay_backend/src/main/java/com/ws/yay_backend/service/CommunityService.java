@@ -1,6 +1,7 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityInviteResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
@@ -24,4 +25,6 @@ public interface CommunityService {
   List<GetChannelResponse> getCommunityChannels(Long communityId);
 
   GetCommunityInviteResponse getCommunityInvite(long id);
+
+  void transferOwnership(long communityId, TransferOwnershipRequest request);
 }

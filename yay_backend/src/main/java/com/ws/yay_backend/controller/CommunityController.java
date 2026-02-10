@@ -2,6 +2,7 @@ package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.request.GetMemberRolesRequest;
+import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
 import com.ws.yay_backend.dto.response.*;
 import com.ws.yay_backend.service.CommunityService;
 import com.ws.yay_backend.service.MemberService;
@@ -76,6 +77,13 @@ public class CommunityController {
   @GetMapping("/{id}/invites")
   public GetCommunityInviteResponse getCommunityInvite(@PathVariable @Min(value = 1) long id) {
     return communityService.getCommunityInvite(id);
+  }
+
+  @Operation(summary = "Transfer community ownership")
+  @PatchMapping("/{id}/transfer-ownership")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void transferOwnership(@PathVariable long id, @RequestBody @Valid TransferOwnershipRequest request) {
+    communityService.transferOwnership(id, request);
   }
 
   @Operation(summary = "Get member roles for a community")
