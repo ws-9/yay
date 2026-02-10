@@ -23,7 +23,7 @@ public class Community {
   @JoinColumn(name = "owner_id", nullable = false)
   private User owner;
 
-  @OneToMany(mappedBy = "community", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "community", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
   private Set<CommunityMember> members;
 
   @Type(JsonBinaryType.class)
