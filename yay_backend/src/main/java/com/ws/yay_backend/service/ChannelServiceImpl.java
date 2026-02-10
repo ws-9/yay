@@ -178,7 +178,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     // Get all roles for the community
-    List<CommunityRole> roles = communityRoleRepository.findAllById(channel.getCommunity().getId());
+    List<CommunityRole> roles = communityRoleRepository.findAll();
     
     List<ChannelPermission> channelPermissions = channelPermissionRepository.findByKey_ChannelId(channelId);
     Map<Long, ChannelPermission> roleToPermissionMap = channelPermissions.stream()
