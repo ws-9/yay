@@ -1,6 +1,8 @@
 package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.CreateChannelRequest;
+import com.ws.yay_backend.dto.request.CreateChannelPermissionRequest;
+import com.ws.yay_backend.dto.response.ChannelPermissionResponse;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
 import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.dto.response.GetChannelResponse;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 
 @Tag(name = "Channels")
 @RestController
@@ -65,5 +68,24 @@ public class ChannelController {
       Long cursorId
   ) {
     return channelMessageService.getCursorPaginatedMessages(id, size, cursor, cursorId);
+  }
+
+  @Operation(summary = "Upsert channel permission")
+  @PatchMapping("/{id}/permissions")
+  @ResponseStatus(HttpStatus.OK)
+  public ChannelPermissionResponse upsertChannelPermission(@PathVariable long id, @RequestBody @Valid CreateChannelPermissionRequest request) {
+    return channelService.upsertChannelPermission(id, request);
+  }
+
+  @Operation(summary = "Get channel permissions")
+  @GetMapping("/{id}/permissions")
+  public List<ChannelPermissionResponse> getChannelPermissions(@PathVariable long id) {
+    return channelService.getChannelPermissions(id);
+  }
+
+  @Operation(summary = "Get channel permission by role")
+  @GetMapping("/{channelId}/permissions/{roleId}")
+  public ChannelPermissionResponse getChannelPermission(@PathVariable long channelId, @PathVariable long roleId) {
+    return channelService.getChannelPermission(channelId, roleId);
   }
 }

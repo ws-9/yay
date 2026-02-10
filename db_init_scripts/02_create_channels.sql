@@ -2,7 +2,7 @@ CREATE TABLE channels (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(35) NOT NULL,
     community_id BIGINT NOT NULL REFERENCES communities(id) ON DELETE CASCADE ON UPDATE RESTRICT,
-    UNIQUE(name, community_id)
+    UNIQUE (name, community_id)
 );
 
 CREATE TABLE channel_messages (
@@ -13,4 +13,12 @@ CREATE TABLE channel_messages (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT NULL,
     deleted_at TIMESTAMPTZ DEFAULT NULL
+);
+
+CREATE TABLE channel_permissions (
+    channel_id BIGINT NOT NULL REFERENCES channels(id) ON DELETE CASCADE ON UPDATE RESTRICT,
+    role_id BIGINT NOT NULL REFERENCES community_roles(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    can_read BOOLEAN NOT NULL DEFAULT true,
+    can_write BOOLEAN NOT NULL DEFAULT true,
+    PRIMARY KEY (channel_id, role_id)
 );
