@@ -9,7 +9,7 @@ import useMinBreakpoint from '../../hooks/useMinBreakpoint';
 import ChatPane from './Pane/ChatPane';
 import { ErrorHandlingToast } from './MainSidebar/ErrorHandlingToast';
 import ChannelDialog from './MainSidebar/ChannelDialog';
-import ChannelSettingDialog from './MainSidebar/ChannelSettingDialog';
+import ChannelSettingsDialog from './MainSidebar/ChannelSettingsDialog/ChannelSettingsDialog';
 import CommunitySettingDialog from './MainSidebar/CommunitySettingsDialog/CommunitySettingDialog';
 import ShareInviteDialog from './MainSidebar/ShareInviteDialog/ShareInviteDialog';
 
@@ -29,7 +29,7 @@ export default function ChatPage() {
       <SingleActivePaneRenderer />
       <MultiPaneRenderer />
       <ChannelDialog />
-      <ChannelSettingDialog />
+      <ChannelSettingsDialog />
       <CommunitySettingDialog />
       <ErrorHandlingToast />
       <ShareInviteDialog />

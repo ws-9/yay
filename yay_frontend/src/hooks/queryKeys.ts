@@ -19,5 +19,6 @@ export const queryKeys = {
   channels: {
     detail: (id: number) => ['channels', id] as const,
     messages: (id: number) => ['channels', id, 'messages'] as const,
+    permissions: (id: number) => ['channels', id, 'permissions'] as const,
   },
 } as const;

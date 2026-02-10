@@ -7,6 +7,7 @@ import type { Channel } from '../../../types/Channel';
 import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from './CommunityMenu';
 import type { CommunityRole } from '../../../types/CommunityRole';
+import ChannelMenu from './ChannelMenu';
 
 export default function CommunityTabsList() {
   const { data, isLoading, error } = useMyCommunitiesQuery();
@@ -92,7 +93,7 @@ function ChannelTab({ name, id }: { name: string; id: number }) {
 
   return (
     <div
-      className="cursor-pointer"
+      className="flex cursor-pointer justify-between"
       onClick={handleClick}
       draggable
       onDragStart={event => {
@@ -101,6 +102,7 @@ function ChannelTab({ name, id }: { name: string; id: number }) {
       }}
     >
       - {name}
+      <ChannelMenu channelId={id} />
     </div>
   );
 }
