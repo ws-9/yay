@@ -3,7 +3,7 @@ import { API_CHANNELS } from '../constants';
 import { queryKeys } from './queryKeys';
 import useFetchWithAuth from './useFetchWithAuth';
 
-type ChannelPermission = {
+export type ChannelPermission = {
   channelId: number;
   roleId: number;
   canRead: boolean;
