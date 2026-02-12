@@ -2,6 +2,7 @@ package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.request.GetMemberRolesRequest;
+import com.ws.yay_backend.dto.request.RenameCommunityRequest;
 import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
 import com.ws.yay_backend.dto.response.*;
 import com.ws.yay_backend.service.CommunityService;
@@ -46,6 +47,13 @@ public class CommunityController {
   @GetMapping("/{id}")
   public GetCommunityResponse getCommunity(@PathVariable @Min(value = 1) long id) {
     return communityService.getCommunity(id);
+  }
+
+  @Operation(summary = "Rename community")
+  @PatchMapping("/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public GetCommunityResponse renameCommunity(@PathVariable long id, @RequestBody @Valid RenameCommunityRequest request) {
+    return communityService.renameCommunity(id, request);
   }
 
   @Operation(summary = "Delete community by id")

@@ -6,6 +6,7 @@ import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
 import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.request.RenameCommunityRequest;
 import com.ws.yay_backend.dto.response.*;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
@@ -265,5 +266,30 @@ public class CommunityServiceImpl implements CommunityService {
 
     community.setOwner(newOwnerMembership.getUser());
     newOwnerMembership.setRole(adminRole);
+  }
+
+  @Override
+  @Transactional
+  public GetCommunityResponse renameCommunity(long communityId, RenameCommunityRequest request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    Community community = communityRepository.findWithOwnerById(communityId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found: " + communityId));
+
+    boolean isOwner = community.getOwner().getId().equals(userId);
+    if (!isOwner) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the community owner can delete this community");
+    }
+
+    community.setName(request.name());
+
+    return new GetCommunityResponse(
+        community.getId(),
+        community.getName(),
+        community.getOwner().getId(),
+        community.getOwner().getUsername(),
+        null,
+        null
+    );
   }
 }
