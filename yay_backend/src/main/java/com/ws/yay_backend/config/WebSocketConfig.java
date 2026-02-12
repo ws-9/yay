@@ -52,27 +52,33 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
-    registration.interceptors(new ChannelInterceptor() {
-        @Override
-        public Message<?> preSend(Message<?> message, MessageChannel channel) {
-          StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+    registration.interceptors(jwtAuthenticationInterceptor());
+  }
 
-          assert accessor != null;
-          if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
-            assert authorizationHeader != null;
+  private ChannelInterceptor jwtAuthenticationInterceptor() {
+    return new ChannelInterceptor() {
+      @Override
+      public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+          String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
+          
+          if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
 
             String username = jwtService.extractUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = 
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
             accessor.setUser(usernamePasswordAuthenticationToken);
           }
-
-          return message;
         }
-    });
+
+        return message;
+      }
+    };
   }
 }
