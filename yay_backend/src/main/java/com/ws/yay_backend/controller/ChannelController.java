@@ -47,6 +47,13 @@ public class ChannelController {
     return channelService.getChannel(id);
   }
 
+  @Operation(summary = "Delete channel by id")
+  @DeleteMapping("{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteChannel(@PathVariable long id) {
+    channelService.deleteChannel(id);
+  }
+
   @Operation(summary = "Get paginated channel messages")
   @GetMapping("{id}/messages")
   public CursorPaginatedResponse<GetChannelMessageResponse> getChannelMessages(

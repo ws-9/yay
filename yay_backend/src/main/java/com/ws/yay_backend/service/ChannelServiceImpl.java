@@ -216,4 +216,24 @@ public class ChannelServiceImpl implements ChannelService {
         .map(ChannelPermissionResponse::fromEntity)
         .orElseGet(() -> new ChannelPermissionResponse(channelId, roleId, true, true));
   }
+
+  @Override
+  @Transactional
+  public void deleteChannel(long channelId) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    Channel channel = channelRepository.findWithCommunityById(channelId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found"));
+
+    CommunityMember membership = communityMemberRepository
+        .findWithRoleByKey(new CommunityMemberKey(channel.getCommunity().getId(), userId))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found"));
+
+    boolean hasPermission = membership.getRole().getCanManageChannels();
+    if (!hasPermission) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to manage channels");
+    }
+
+    channelRepository.delete(channel);
+  }
 }

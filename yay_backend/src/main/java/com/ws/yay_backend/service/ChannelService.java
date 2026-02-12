@@ -18,4 +18,6 @@ public interface ChannelService {
   List<ChannelPermissionResponse> getChannelPermissions(long channelId);
 
   ChannelPermissionResponse getChannelPermission(long channelId, long roleId);
+
+  void deleteChannel(long channelId);
 }
