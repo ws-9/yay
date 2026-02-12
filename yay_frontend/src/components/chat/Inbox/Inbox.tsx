@@ -1,4 +1,4 @@
-import { useInfChannelMessagesQuery } from '../../../hooks/useInfChannelMessagesQuery';
+import { useInfChannelMessagesQuery } from '../../../hooks/queries/useInfChannelMessagesQuery';
 import { useChannelSubscription } from '../../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';

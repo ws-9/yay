@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { API_MESSAGES } from '../constants';
-import useFetchWithAuth from './useFetchWithAuth';
+import { API_MESSAGES } from '../../constants';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 type DeleteChannelMessageInput = {
   id: number;

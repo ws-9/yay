@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { create, windowScheduler } from '@yornaath/batshit';
-import { API_COMMUNITIES } from '../constants';
+import { API_COMMUNITIES } from '../../constants';
 import { useUserInfoQuery } from './useUserInfoQuery';
-import type { CommunityRole } from '../types/CommunityRole';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import type { CommunityRole } from '../../types/CommunityRole';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 export type MemberRoleQuery = {
   communityId: number;

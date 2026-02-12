@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
-import { useAuthActions } from '../store/authStore';
-import { API_LOGOUT_URL } from '../constants';
+import { useAuthActions } from '../../store/authStore';
+import { API_LOGOUT_URL } from '../../constants';
 
 function useLogoutMutation() {
   const { logout } = useAuthActions();

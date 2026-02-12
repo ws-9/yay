@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_MEMBERS } from '../constants';
-import { useUserInfoQuery } from './useUserInfoQuery';
-import { useRemoveCommunityOptimistically } from './cacheHelpers';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import { API_MEMBERS } from '../../constants';
+import { useUserInfoQuery } from '../queries/useUserInfoQuery';
+import { useRemoveCommunityOptimistically } from '../cacheHelpers';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 type RemoveMemberInput = {
   communityId: number;

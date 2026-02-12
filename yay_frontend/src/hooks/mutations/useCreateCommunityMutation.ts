@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import type { CommunityRole } from '../types/CommunityRole';
-import { API_COMMUNITIES } from '../constants';
-import { useCreateCommunityOptimistically } from './cacheHelpers';
-import useFetchWithAuth from './useFetchWithAuth';
+import type { CommunityRole } from '../../types/CommunityRole';
+import { API_COMMUNITIES } from '../../constants';
+import { useCreateCommunityOptimistically } from '../cacheHelpers';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 type CreateCommunityInput = {
   name: string;

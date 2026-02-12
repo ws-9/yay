@@ -3,9 +3,9 @@ import { Form } from '@base-ui/react/form';
 import { Field } from '@base-ui/react/field';
 import { Button } from '@base-ui/react/button';
 import { useEffect, useEffectEvent, useState } from 'react';
-import useCreateCommunity from '../../../hooks/useCreateCommunityMutation';
+import useCreateCommunity from '../../../hooks/mutations/useCreateCommunityMutation';
 import { Toast } from '@base-ui/react/toast';
-import useJoinCommunity from '../../../hooks/useJoinCommunityMutation';
+import useJoinCommunity from '../../../hooks/mutations/useJoinCommunityMutation';
 
 type DialogMode = 'join' | 'create';
 

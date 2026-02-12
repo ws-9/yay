@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_CHANNELS } from '../constants';
-import useFetchWithAuth from './useFetchWithAuth';
-import { queryKeys } from './queryKeys';
+import { API_CHANNELS } from '../../constants';
+import useFetchWithAuth from '../useFetchWithAuth';
+import { queryKeys } from '../queryKeys';
 
 type ChannelPermissionInput = {
   roleId: number;

@@ -1,9 +1,9 @@
 import { Menu } from '@base-ui/react/menu';
 import { useUiStoreActions } from '../../../store/uiStore';
-import useRemoveMember from '../../../hooks/useRemoveMemberMutation';
+import useRemoveMember from '../../../hooks/mutations/useRemoveMemberMutation';
 import { Toast } from '@base-ui/react/toast';
 import { useEffect, useEffectEvent } from 'react';
-import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useUserInfoQuery } from '../../../hooks/queries/useUserInfoQuery';
 import type { CommunityRole } from '../../../types/CommunityRole';
 
 export default function CommunityMenu({

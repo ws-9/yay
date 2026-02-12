@@ -1,11 +1,11 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { Select } from '@base-ui/react/select';
-import useMembersQuery from '../../../../hooks/useMembersQuery';
-import { useCommunityQuery } from '../../../../hooks/useCommunityQuery';
+import useMembersQuery from '../../../../hooks/queries/useMembersQuery';
+import { useCommunityQuery } from '../../../../hooks/queries/useCommunityQuery';
 import type { Member } from '../../../../types/Member';
-import { useUserInfoQuery } from '../../../../hooks/useUserInfoQuery';
-import { useMemberRole } from '../../../../hooks/useMemberRoleQuery';
-import { useUpdateMemberRoleMutation } from '../../../../hooks/useUpdateMemberRoleMutation';
+import { useUserInfoQuery } from '../../../../hooks/queries/useUserInfoQuery';
+import { useMemberRole } from '../../../../hooks/queries/useMemberRoleQuery';
+import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/useUpdateMemberRoleMutation';
 import type { CommunityRole } from '../../../../types/CommunityRole';
 
 const roles = [

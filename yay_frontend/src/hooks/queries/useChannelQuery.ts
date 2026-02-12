@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_CHANNELS } from '../constants';
-import type { Channel } from '../types/Channel';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import { API_CHANNELS } from '../../constants';
+import type { Channel } from '../../types/Channel';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 export function useChannelQuery(channelId: number | null) {
   const fetchWithAuth = useFetchWithAuth();

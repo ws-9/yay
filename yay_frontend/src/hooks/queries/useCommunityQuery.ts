@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_COMMUNITIES } from '../constants';
-import type { Community } from '../types/Community';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import { API_COMMUNITIES } from '../../constants';
+import type { Community } from '../../types/Community';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 export function useCommunityQuery(communityId: number | null) {
   const fetchWithAuth = useFetchWithAuth();

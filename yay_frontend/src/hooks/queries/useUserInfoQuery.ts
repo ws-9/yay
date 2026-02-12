@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_ME } from '../constants';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import { API_ME } from '../../constants';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 export type UserInfoResponse = {
   username: string;

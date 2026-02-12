@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
-import { API_COMMUNITIES } from '../constants';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
+import { API_COMMUNITIES } from '../../constants';
 
 type CommunityInviteSlug = {
   inviteSlug: string;

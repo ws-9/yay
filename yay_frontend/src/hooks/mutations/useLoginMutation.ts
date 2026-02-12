@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { useAuthActions } from '../store/authStore';
-import { API_LOGIN_URL } from '../constants';
+import { useAuthActions } from '../../store/authStore';
+import { API_LOGIN_URL } from '../../constants';
 
 type LoginInput = {
   username: string;

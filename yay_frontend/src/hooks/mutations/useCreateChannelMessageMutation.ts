@@ -1,26 +1,26 @@
 import { useMutation } from '@tanstack/react-query';
-import { API_MESSAGES } from '../constants';
-import type { ChannelMessage } from '../types/ChannelMessage';
-import useFetchWithAuth from './useFetchWithAuth';
+import type { ChannelMessage } from '../../types/ChannelMessage';
+import { API_MESSAGES } from '../../constants';
+import useFetchWithAuth from '../useFetchWithAuth';
 
-type EditChannelMessageInput = {
-  id: number;
+type CreateChannelMessageInput = {
+  channelId: number;
   message: string;
 };
 
-function useEditChannelMessageMutation() {
+function useCreateChannelMessageMutation() {
   const fetchWithAuth = useFetchWithAuth();
 
-  return useMutation<ChannelMessage, Error, EditChannelMessageInput>({
+  return useMutation<ChannelMessage, Error, CreateChannelMessageInput>({
     mutationFn: async function (data) {
       const response = await fetchWithAuth(API_MESSAGES, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: data.id,
           message: data.message,
+          channelId: data.channelId,
         }),
       });
 
@@ -35,6 +35,6 @@ function useEditChannelMessageMutation() {
   });
 }
 
-export default function useEditChannelMessage() {
-  return useEditChannelMessageMutation();
+export default function useCreateChannelMessage() {
+  return useCreateChannelMessageMutation();
 }

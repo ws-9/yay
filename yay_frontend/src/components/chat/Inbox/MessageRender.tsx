@@ -2,7 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { format } from 'date-fns';
 import MessageMenu from './MessageMenu';
-import useEditChannelMessage from '../../../hooks/useEditChannelMessageMutation';
+import useEditChannelMessage from '../../../hooks/mutations/useEditChannelMessageMutation';
 import { useInlineEdit } from '../../../hooks/useInlineEdit';
 import type { ChannelMessage } from '../../../types/ChannelMessage';
 

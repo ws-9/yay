@@ -3,12 +3,12 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from '@tanstack/react-query';
-import { API_BOOTSTRAP } from '../constants';
-import type { Community } from '../types/Community';
+import { API_BOOTSTRAP } from '../../constants';
+import type { Community } from '../../types/Community';
 import type { UserInfoResponse } from './useUserInfoQuery';
 import { useEffect } from 'react';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 export type BootstrapResponse = {
   communities: Array<Community>;

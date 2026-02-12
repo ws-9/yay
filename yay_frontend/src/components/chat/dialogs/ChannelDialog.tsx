@@ -1,6 +1,6 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { useEffect, useEffectEvent, useState } from 'react';
-import useCreateChannel from '../../../hooks/useCreateChannelMutation';
+import useCreateChannel from '../../../hooks/mutations/useCreateChannelMutation';
 import { useChannelDialog, useUiStoreActions } from '../../../store/uiStore';
 import { Toast } from '@base-ui/react/toast';
 import { Button } from '@base-ui/react/button';

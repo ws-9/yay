@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useFetchWithAuth from './useFetchWithAuth';
-import type { Member } from '../types/Member';
-import { API_MEMBERS } from '../constants';
-import { queryKeys } from './queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
+import type { Member } from '../../types/Member';
+import { API_MEMBERS } from '../../constants';
+import { queryKeys } from '../queryKeys';
 
 type UpdateMemberRoleRequest = {
   communityId: number;

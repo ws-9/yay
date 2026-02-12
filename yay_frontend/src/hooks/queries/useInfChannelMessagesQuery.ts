@@ -1,9 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import type { CursorPaginatedChannelMessages } from '../types/CursorPaginatedChannelMessages';
-import type { ChannelMessagePageParam } from '../types/ChannelMessagePageParam';
-import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../constants';
-import { queryKeys } from './queryKeys';
-import useFetchWithAuth from './useFetchWithAuth';
+import type { CursorPaginatedChannelMessages } from '../../types/CursorPaginatedChannelMessages';
+import type { ChannelMessagePageParam } from '../../types/ChannelMessagePageParam';
+import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../../constants';
+import { queryKeys } from '../queryKeys';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 export function useInfChannelMessagesQuery(channelId: number) {
   const fetchWithAuth = useFetchWithAuth();

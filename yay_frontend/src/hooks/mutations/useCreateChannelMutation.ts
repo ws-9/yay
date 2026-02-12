@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { API_CHANNELS } from '../constants';
-import { useCreateChannelOptimistically } from './cacheHelpers';
-import useFetchWithAuth from './useFetchWithAuth';
+import { API_CHANNELS } from '../../constants';
+import { useCreateChannelOptimistically } from '../cacheHelpers';
+import useFetchWithAuth from '../useFetchWithAuth';
 
 type CreateChannelInput = {
   communityId: number;

@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react';
 import { useIsAuthenticated } from '../../store/authStore';
-import { useLogin } from '../../hooks/useLoginMutation';
+import { useLogin } from '../../hooks/mutations/useLoginMutation';
 import { Link, useNavigate } from 'react-router';
 
 export default function Login() {
