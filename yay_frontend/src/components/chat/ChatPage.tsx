@@ -8,10 +8,10 @@ import BSPChatNodeRender from './BSPChatNodeRender';
 import useMinBreakpoint from '../../hooks/useMinBreakpoint';
 import ChatPane from './Pane/ChatPane';
 import { ErrorHandlingToast } from './MainSidebar/ErrorHandlingToast';
-import ChannelDialog from './MainSidebar/ChannelDialog';
-import ChannelSettingsDialog from './MainSidebar/ChannelSettingsDialog/ChannelSettingsDialog';
-import CommunitySettingDialog from './MainSidebar/CommunitySettingsDialog/CommunitySettingDialog';
-import ShareInviteDialog from './MainSidebar/ShareInviteDialog/ShareInviteDialog';
+import ChannelDialog from './dialogs/ChannelDialog';
+import ChannelSettingsDialog from './dialogs/ChannelSettingsDialog/ChannelSettingsDialog';
+import CommunitySettingDialog from './dialogs/CommunitySettingsDialog/CommunitySettingDialog';
+import ShareInviteDialog from './dialogs/ShareInviteDialog/ShareInviteDialog';
 
 export default function ChatPage() {
   const isAuthenticated = useIsAuthenticated();
