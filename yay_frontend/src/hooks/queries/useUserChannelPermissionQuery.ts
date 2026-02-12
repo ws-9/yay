@@ -1,32 +1,26 @@
-import { useQuery } from '@tanstack/react-query';
-import { API_CHANNELS } from '../../constants';
-import { queryKeys } from '../queryKeys';
-import useFetchWithAuth from '../useFetchWithAuth';
+import { useUserInfoQuery } from './useUserInfoQuery';
+import { useMemberRole } from './useMemberRoleQuery';
+import useChannelPermissionsQuery from './useChannelPermissionsQuery';
+import { useChannelQuery } from './useChannelQuery';
+import type { ChannelPermission } from './useChannelPermissionsQuery';
 
 export default function useUserChannelPermissionQuery(
   channelId: number | null,
 ) {
-  const fetchWithAuth = useFetchWithAuth();
+  const { data: userInfo } = useUserInfoQuery();
+  const { data: channel } = useChannelQuery(channelId);
+  const { data: userRole } = useMemberRole(
+    channel?.communityId ?? null,
+    userInfo?.id ?? null,
+  );
 
-  return useQuery<Array<ChannelPermission>>({
-    queryKey: queryKeys.channels.permissions(channelId!),
-    queryFn: async () => {
-      const response = await fetchWithAuth(
-        `${API_CHANNELS}/${channelId}/permissions`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+  return useChannelPermissionsQuery<ChannelPermission | null>(channelId, {
+    select: (permissions: ChannelPermission[]) => {
+      if (!userRole) {
+        return null;
       }
-
-      return response.json();
+      return permissions.find(perm => perm.roleId === userRole.id) ?? null;
     },
-    enabled: channelId !== null,
+    enabled: userRole !== null && userRole !== undefined,
   });
 }

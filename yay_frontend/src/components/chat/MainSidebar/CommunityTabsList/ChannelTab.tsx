@@ -1,17 +1,29 @@
+import { useChannelQuery } from '../../../../hooks/queries/useChannelQuery';
+import useUserChannelPermissionQuery from '../../../../hooks/queries/useUserChannelPermissionQuery';
 import {
   getActivePaneId,
   useWorkspaceActions,
 } from '../../../../store/workspaceStore';
 import ChannelMenu from '../ChannelMenu';
 
-export default function ChannelTab({ name, id }: { name: string; id: number }) {
+export default function ChannelTab({ channelId }: { channelId: number }) {
   const { setChannel } = useWorkspaceActions();
+  const { data: channelData } = useChannelQuery(channelId);
+  const { data: permissionData } = useUserChannelPermissionQuery(channelId);
+
+  if (channelData === null || permissionData === null) {
+    return null;
+  }
+
+  if (!permissionData?.canRead) {
+    return null;
+  }
 
   function handleClick() {
     const activePaneId = getActivePaneId();
 
     if (activePaneId) {
-      setChannel(activePaneId, id);
+      setChannel(activePaneId, channelId);
     }
   }
 
@@ -22,11 +34,11 @@ export default function ChannelTab({ name, id }: { name: string; id: number }) {
       draggable
       onDragStart={event => {
         event.dataTransfer.effectAllowed = 'copy';
-        event.dataTransfer.setData('channelId', id.toString());
+        event.dataTransfer.setData('channelId', channelId.toString());
       }}
     >
-      - {name}
-      <ChannelMenu channelId={id} />
+      - {channelData?.name}
+      <ChannelMenu channelId={channelId} />
     </div>
   );
 }

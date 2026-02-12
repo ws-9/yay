@@ -16,7 +16,9 @@ export default function CommunityTabsList() {
 
   useEffect(() => {
     if (data) {
-      const accessibleChannels = data.flatMap(c => c.channels.map(ch => ch.id));
+      const accessibleChannels = data.flatMap(
+        c => c.channels?.map(ch => ch.id) ?? [],
+      );
       handleCleanupInaccessibleChannels(accessibleChannels);
     }
   }, [data]);
@@ -35,7 +37,7 @@ export default function CommunityTabsList() {
       communityId={community.id}
       name={community.name}
       role={community.role!}
-      channels={community.channels ?? []}
+      channelIds={community.channels?.map(channel => channel.id) ?? []}
     />
   ));
 

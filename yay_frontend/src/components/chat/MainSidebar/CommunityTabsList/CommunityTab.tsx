@@ -2,21 +2,20 @@ import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from '../CommunityMenu';
 import type { CommunityRole } from '../../../../types/CommunityRole';
 import ChannelTab from './ChannelTab';
-import type { Channel } from '../../../../types/Channel';
 
 export default function CommunityTab({
   name,
   role,
-  channels,
+  channelIds,
   communityId,
 }: {
   name: string;
   role: CommunityRole;
-  channels: Array<Channel>;
+  channelIds: Array<number>;
   communityId: number;
 }) {
-  const channelTabs = channels.map(channel => (
-    <ChannelTab key={channel.id} name={channel.name} id={channel.id} />
+  const channelTabs = channelIds.map(id => (
+    <ChannelTab key={id} channelId={id} />
   ));
 
   return (
