@@ -8,9 +8,24 @@ import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from './CommunityMenu';
 import type { CommunityRole } from '../../../types/CommunityRole';
 import ChannelMenu from './ChannelMenu';
+import { useEffect, useEffectEvent } from 'react';
 
 export default function CommunityTabsList() {
   const { data, isLoading, error } = useMyCommunitiesQuery();
+  const { removeNodesNotInChannelList } = useWorkspaceActions();
+
+  const handleCleanupInaccessibleChannels = useEffectEvent(
+    (accessibleChannels: number[]) => {
+      removeNodesNotInChannelList(accessibleChannels);
+    },
+  );
+
+  useEffect(() => {
+    if (data) {
+      const accessibleChannels = data.flatMap(c => c.channels.map(ch => ch.id));
+      handleCleanupInaccessibleChannels(accessibleChannels);
+    }
+  }, [data]);
 
   if (isLoading) {
     return <div>Loading</div>;

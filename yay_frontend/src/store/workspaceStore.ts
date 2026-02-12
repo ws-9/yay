@@ -22,6 +22,7 @@ type WorkspaceStore = {
       channelId: number,
     ) => void;
     removeNode: (nodeId: string) => void;
+    removeNodesNotInChannelList: (accessibleChannelIds: number[]) => void;
     setActivePane: (nodeId: string) => void;
   };
 };
@@ -100,6 +101,58 @@ function findFirstPaneId(node: BSPChatNode): string {
     return node.id;
   }
   return findFirstPaneId(node.left);
+}
+
+// Remove all panes whose channelId is not in the accessible list
+// Keeps panes with null channelId (empty panes)
+function removeNodesNotInChannelListFromTree(
+  parent: BSPChatNode,
+  accessibleChannelIds: Set<number>,
+): BSPChatNode | null {
+  // For panes, check if they have an accessible channel ID
+  if (parent.type === 'pane') {
+    // Keep panes with null channelId (empty panes) and panes with accessible channels
+    if (
+      parent.channelId === null ||
+      accessibleChannelIds.has(parent.channelId)
+    ) {
+      return parent;
+    }
+    // Remove this pane (no longer accessible)
+    return null;
+  }
+
+  // For split nodes, recursively process children
+  if (parent.type === 'split') {
+    const newLeft = removeNodesNotInChannelListFromTree(
+      parent.left,
+      accessibleChannelIds,
+    );
+    const newRight = removeNodesNotInChannelListFromTree(
+      parent.right,
+      accessibleChannelIds,
+    );
+
+    // If both children are removed, remove this split node too
+    if (newLeft === null && newRight === null) {
+      return null;
+    }
+
+    // If one child is removed, promote the other and keep the parent's ID
+    if (newLeft === null) {
+      return { ...newRight!, id: parent.id };
+    }
+    if (newRight === null) {
+      return { ...newLeft!, id: parent.id };
+    }
+
+    // If both children still exist, return with updated children if they changed
+    if (newLeft !== parent.left || newRight !== parent.right) {
+      return { ...parent, left: newLeft, right: newRight };
+    }
+  }
+
+  return parent;
 }
 
 const useWorkspaceStore = create<WorkspaceStore>()(
@@ -209,6 +262,36 @@ const useWorkspaceStore = create<WorkspaceStore>()(
             // Get most recent pane that still exists
             const remainingPanes = getAllPaneIds(finalRoot);
             const newHistory = state.paneHistory.filter(id => id !== nodeId);
+            const lastActivePane = [...newHistory]
+              .reverse()
+              .find(id => remainingPanes.includes(id));
+
+            return {
+              rootNode: finalRoot,
+              activePaneId: lastActivePane || findFirstPaneId(finalRoot),
+              paneHistory: newHistory,
+            };
+          }),
+        removeNodesNotInChannelList: (accessibleChannelIds: number[]) =>
+          set(state => {
+            const accessibleSet = new Set(accessibleChannelIds);
+            const newRoot = removeNodesNotInChannelListFromTree(
+              state.rootNode,
+              accessibleSet,
+            );
+            const finalRoot = newRoot || {
+              type: 'pane',
+              id: 'root',
+              channelId: null,
+            };
+
+            // Get remaining panes and update history
+            const remainingPanes = getAllPaneIds(finalRoot);
+            const newHistory = state.paneHistory.filter(id =>
+              remainingPanes.includes(id),
+            );
+
+            // Find the most recent pane that still exists
             const lastActivePane = [...newHistory]
               .reverse()
               .find(id => remainingPanes.includes(id));
