@@ -2,6 +2,7 @@ package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.CreateChannelRequest;
 import com.ws.yay_backend.dto.request.CreateChannelPermissionRequest;
+import com.ws.yay_backend.dto.request.RenameChannelRequest;
 import com.ws.yay_backend.dto.response.ChannelPermissionResponse;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
 import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
@@ -45,6 +46,13 @@ public class ChannelController {
   @GetMapping("{id}")
   public GetChannelResponse getChannel(@PathVariable long id) {
     return channelService.getChannel(id);
+  }
+
+  @Operation(summary = "Rename channel by id")
+  @PatchMapping("{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public GetChannelResponse renameChannel(@PathVariable long id, RenameChannelRequest request) {
+    return channelService.renameChannel(id, request);
   }
 
   @Operation(summary = "Delete channel by id")

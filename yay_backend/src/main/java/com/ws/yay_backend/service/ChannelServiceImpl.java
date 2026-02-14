@@ -6,6 +6,7 @@ import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
+import com.ws.yay_backend.dto.request.RenameChannelRequest;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelPermission;
 import com.ws.yay_backend.entity.Community;
@@ -235,5 +236,32 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     channelRepository.delete(channel);
+  }
+
+  @Override
+  @Transactional
+  public GetChannelResponse renameChannel(long channelId, RenameChannelRequest request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    Channel channel = channelRepository.findWithCommunityById(channelId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found"));
+
+    CommunityMember membership = communityMemberRepository
+        .findWithRoleByKey(new CommunityMemberKey(channel.getCommunity().getId(), userId))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found"));
+
+    boolean hasPermission = membership.getRole().getCanManageChannels();
+    if (!hasPermission) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to manage channels");
+    }
+
+    channel.setName(request.name());
+
+    return new GetChannelResponse(
+        channel.getId(),
+        channel.getName(),
+        channel.getCommunity().getId(),
+        channel.getCommunity().getName()
+    );
   }
 }
