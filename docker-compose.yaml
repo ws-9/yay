@@ -27,7 +27,6 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - /app/node_modules
       - ./yay_frontend/src:/app/src:Z
 
 volumes:
