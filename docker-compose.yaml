@@ -9,3 +9,26 @@ services:
       POSTGRES_USER: user
       POSTGRES_DB: yay
       POSTGRES_PASSWORD: postgres
+  backend:
+    build:
+      context: ./yay_backend/
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - m2-cache:/root/.m2
+      - ./yay_backend:/app:Z
+  frontend:
+    build:
+      context: ./yay_frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - /app/node_modules
+      - ./yay_frontend/src:/app/src:Z
+
+volumes:
+  m2-cache:
