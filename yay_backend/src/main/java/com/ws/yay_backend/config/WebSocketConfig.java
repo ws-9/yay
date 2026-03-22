@@ -36,11 +36,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/ws")
-        .setAllowedOrigins("http://localhost:5173")
-        .withSockJS();
-    registry.addEndpoint("/ws")
-        .setAllowedOrigins("http://localhost:5173");
+    registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:5173").withSockJS();
+    registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:5173");
   }
 
   @Override
@@ -59,19 +56,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     return new ChannelInterceptor() {
       @Override
       public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        StompHeaderAccessor accessor =
+            MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
           String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
-          
+
           if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
 
             String username = jwtService.extractUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = 
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext()
+                .setAuthentication(usernamePasswordAuthenticationToken);
 
             accessor.setUser(usernamePasswordAuthenticationToken);
           }

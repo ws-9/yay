@@ -7,7 +7,6 @@ import com.ws.yay_backend.dto.response.GetChannelResponse;
 import com.ws.yay_backend.dto.response.GetCommunityInviteResponse;
 import com.ws.yay_backend.dto.response.GetCommunityResponse;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
-
 import java.util.List;
 
 public interface CommunityService {

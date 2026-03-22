@@ -6,6 +6,4 @@ public record GetChannelResponse(
     @NotNull long id,
     @NotNull String name,
     @NotNull long communityId,
-    @NotNull String communityName
-) {
-}
+    @NotNull String communityName) {}

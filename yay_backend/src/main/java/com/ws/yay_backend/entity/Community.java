@@ -2,11 +2,10 @@ package com.ws.yay_backend.entity;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import java.util.Set;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.Type;
 import org.hibernate.generator.EventType;
-
-import java.util.Set;
 
 @Entity
 @Table(name = "communities")
@@ -23,7 +22,11 @@ public class Community {
   @JoinColumn(name = "owner_id", nullable = false)
   private User owner;
 
-  @OneToMany(mappedBy = "community", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(
+      mappedBy = "community",
+      cascade = CascadeType.REMOVE,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
   private Set<CommunityMember> members;
 
   @Type(JsonBinaryType.class)

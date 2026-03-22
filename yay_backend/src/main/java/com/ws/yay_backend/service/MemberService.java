@@ -6,7 +6,6 @@ import com.ws.yay_backend.dto.request.UpdateRoleRequest;
 import com.ws.yay_backend.dto.response.GetMemberResponse;
 import com.ws.yay_backend.dto.response.GetMembersRolesResponse;
 import com.ws.yay_backend.dto.response.JoinCommunityResponse;
-
 import java.util.List;
 
 public interface MemberService {
@@ -18,4 +17,3 @@ public interface MemberService {
 
   GetMemberResponse updateRole(UpdateRoleRequest request);
 }
-

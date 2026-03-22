@@ -23,7 +23,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableMethodSecurity
 public class SecurityConfig {
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
     return config.getAuthenticationManager();
   }
 
@@ -42,7 +43,8 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
+        registry
+            .addMapping("/**")
             .allowedOrigins("http://localhost:5173")
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             .allowCredentials(true); // send cookies; crucial for HttpOnly refresh tokens
@@ -51,24 +53,30 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-    http.authorizeHttpRequests(configurer ->
-        configurer
-            .requestMatchers("/docs/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/v1/auth/*").permitAll()
-            .requestMatchers("/ws/**").permitAll()
-            .anyRequest().authenticated()
-    );
+  public SecurityFilterChain filterChain(
+      HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    http.authorizeHttpRequests(
+        configurer ->
+            configurer
+                .requestMatchers(
+                    "/docs/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+                .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/*")
+                .permitAll()
+                .requestMatchers("/ws/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated());
 
     http.httpBasic(Customizer.withDefaults());
     http.csrf(AbstractHttpConfigurer::disable);
     http.cors(Customizer.withDefaults());
-    http.exceptionHandling(exceptionHandling ->
-        exceptionHandling.authenticationEntryPoint(authenticationEntryPoint()));
-    http.sessionManagement(session ->
-        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.exceptionHandling(
+        exceptionHandling ->
+            exceptionHandling.authenticationEntryPoint(authenticationEntryPoint()));
+    http.sessionManagement(
+        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 }
-

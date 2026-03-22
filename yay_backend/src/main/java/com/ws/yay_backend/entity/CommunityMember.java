@@ -6,8 +6,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "community_members")
 public class CommunityMember {
-  @EmbeddedId
-  private CommunityMemberKey key;
+  @EmbeddedId private CommunityMemberKey key;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("communityId")

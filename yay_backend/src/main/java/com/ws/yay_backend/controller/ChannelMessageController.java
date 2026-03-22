@@ -26,14 +26,16 @@ public class ChannelMessageController {
   @Operation(summary = "Create a channel message")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public GetChannelMessageResponse createChannelMessage(@RequestBody @Valid CreateChannelMessageRequest request) {
+  public GetChannelMessageResponse createChannelMessage(
+      @RequestBody @Valid CreateChannelMessageRequest request) {
     return channelMessageService.createMessage(request);
   }
 
   @Operation(summary = "Edit a channel message")
   @PutMapping
   @ResponseStatus(HttpStatus.OK)
-  public GetChannelMessageResponse editChannelMessage(@RequestBody @Valid EditChannelMessageRequest request) {
+  public GetChannelMessageResponse editChannelMessage(
+      @RequestBody @Valid EditChannelMessageRequest request) {
     return channelMessageService.editMessage(request);
   }
 

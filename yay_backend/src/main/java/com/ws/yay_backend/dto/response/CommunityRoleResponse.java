@@ -11,8 +11,7 @@ public record CommunityRoleResponse(
     @NotNull Boolean canBanUsers,
     @NotNull Boolean canManageRoles,
     @NotNull Boolean canDeleteMessages,
-    @NotNull Boolean canManageCommunitySettings
-) {
+    @NotNull Boolean canManageCommunitySettings) {
   public static CommunityRoleResponse fromEntity(CommunityRole role) {
     return new CommunityRoleResponse(
         role.getId(),
@@ -22,7 +21,6 @@ public record CommunityRoleResponse(
         role.getCanBanUsers(),
         role.getCanManageRoles(),
         role.getCanDeleteMessages(),
-        role.getCanManageCommunitySettings()
-    );
+        role.getCanManageCommunitySettings());
   }
 }

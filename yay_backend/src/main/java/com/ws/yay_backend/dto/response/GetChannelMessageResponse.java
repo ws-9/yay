@@ -3,7 +3,6 @@ package com.ws.yay_backend.dto.response;
 import com.ws.yay_backend.entity.ChannelMessage;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.Instant;
 
 public record GetChannelMessageResponse(
@@ -14,8 +13,7 @@ public record GetChannelMessageResponse(
     @NotNull long channelId,
     @NotNull Instant createdAt,
     @Nullable Instant updatedAt,
-    @Nullable Instant deletedAt
-) {
+    @Nullable Instant deletedAt) {
   public GetChannelMessageResponse(ChannelMessage message) {
     this(
         message.getId(),
@@ -25,7 +23,6 @@ public record GetChannelMessageResponse(
         message.getChannel().getId(),
         message.getCreatedAt(),
         message.getUpdatedAt(),
-        message.getDeletedAt()
-    );
+        message.getDeletedAt());
   }
 }

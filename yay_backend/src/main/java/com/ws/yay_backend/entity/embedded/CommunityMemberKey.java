@@ -2,13 +2,13 @@ package com.ws.yay_backend.entity.embedded;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-
 import java.util.Objects;
 
 @Embeddable
 public class CommunityMemberKey {
   @Column(name = "community_id")
   private Long communityId;
+
   @Column(name = "user_id")
   private Long userId;
 

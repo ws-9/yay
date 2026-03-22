@@ -5,17 +5,19 @@ import com.ws.yay_backend.dao.ChannelMessageRepository;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dto.broadcast.ChannelMessageBroadcast;
+import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
+import com.ws.yay_backend.dto.request.DeleteChannelMessageRequest;
+import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
+import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
 import com.ws.yay_backend.entity.User;
-import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
-import com.ws.yay_backend.dto.request.DeleteChannelMessageRequest;
-import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
-import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
+import java.time.Instant;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +26,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.Instant;
-import java.util.List;
 
 @Service
 public class ChannelMessageServiceImpl implements ChannelMessageService {
@@ -42,8 +41,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       ChannelRepository channelRepository,
       CommunityMemberRepository communityMemberRepository,
       AuthUtilsComponent authUtilsComponent,
-      SimpMessagingTemplate simpMessagingTemplate
-  ) {
+      SimpMessagingTemplate simpMessagingTemplate) {
     this.channelMessageRepository = channelMessageRepository;
     this.channelRepository = channelRepository;
     this.communityMemberRepository = communityMemberRepository;
@@ -57,31 +55,31 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     User user = authUtilsComponent.getAuthenticatedUser();
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
 
-    Channel channel = channelRepository.findWithCommunityById((request.channelId()))
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Channel not found: " + request.channelId()
-        ));
+    Channel channel =
+        channelRepository
+            .findWithCommunityById((request.channelId()))
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Channel not found: " + request.channelId()));
 
-    boolean isMember = communityMemberRepository.existsById(
-        new CommunityMemberKey(channel.getCommunity().getId(), user.getId())
-    );
+    boolean isMember =
+        communityMemberRepository.existsById(
+            new CommunityMemberKey(channel.getCommunity().getId(), user.getId()));
 
     if (!isMember && !isAdmin) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "Channel not found: " + request.channelId()
-      );
+          HttpStatus.NOT_FOUND, "Channel not found: " + request.channelId());
     }
 
     ChannelMessage channelMessage = new ChannelMessage(request.message(), user, channel);
     ChannelMessage saved = channelMessageRepository.save(channelMessage);
 
     GetChannelMessageResponse response = new GetChannelMessageResponse(saved);
-    
+
     ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(saved);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
-    
+
     return response;
   }
 
@@ -91,29 +89,29 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
 
-    ChannelMessage channelMessage = channelMessageRepository.findWithUserAndChannelAndCommunityById(request.id())
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Message not found: " + request.id()
-        ));
+    ChannelMessage channelMessage =
+        channelMessageRepository
+            .findWithUserAndChannelAndCommunityById(request.id())
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Message not found: " + request.id()));
     // TODO: check if user is still member
     boolean isAuthor = channelMessage.getUser().getId().equals(userId);
 
     if (!isAuthor && !isAdmin) {
       throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN,
-          "You don't have permission to edit this message"
-      );
+          HttpStatus.FORBIDDEN, "You don't have permission to edit this message");
     }
 
     channelMessage.setMessage(request.message());
     channelMessage.setUpdatedAt(Instant.now());
 
     GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
-    
+
     ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
-    
+
     return response;
   }
 
@@ -122,11 +120,13 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
   public GetChannelMessageResponse deleteMessage(DeleteChannelMessageRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
-    ChannelMessage channelMessage = channelMessageRepository.findWithUserAndChannelById(request.id())
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Message not found: " + request.id()
-        ));
+    ChannelMessage channelMessage =
+        channelMessageRepository
+            .findWithUserAndChannelById(request.id())
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Message not found: " + request.id()));
 
     boolean isAuthor = channelMessage.getUser().getId().equals(userId);
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
@@ -135,74 +135,73 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       channelMessage.setDeletedAt(Instant.now());
 
       GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
-      
+
       ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
       simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
-      
+
       return response;
     }
 
     // Non-author, non-admin: check role-based permissions
     Channel channel = channelMessage.getChannel();
     Long communityId = channel.getCommunity().getId();
-    
+
     // Get current user's community member role
-    CommunityMember currentUserMember = communityMemberRepository
-        .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.FORBIDDEN,
-            "You are not a member of this community"
-        ));
-    
+    CommunityMember currentUserMember =
+        communityMemberRepository
+            .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.FORBIDDEN, "You are not a member of this community"));
+
     // Get message author's community member role
-    CommunityMember authorMember = communityMemberRepository
-        .findWithRoleByKey(new CommunityMemberKey(communityId, channelMessage.getUser().getId()))
-        .orElse(null);
-    
+    CommunityMember authorMember =
+        communityMemberRepository
+            .findWithRoleByKey(
+                new CommunityMemberKey(communityId, channelMessage.getUser().getId()))
+            .orElse(null);
+
     CommunityRole currentUserRole = currentUserMember.getRole();
-    
+
     // Check if user has delete message privilege
     if (!currentUserRole.getCanDeleteMessages()) {
       throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN,
-          "You don't have permission to delete messages"
-      );
+          HttpStatus.FORBIDDEN, "You don't have permission to delete messages");
     }
-    
+
     // Check hierarchy level (lower is more powerful)
     if (authorMember != null) {
       CommunityRole authorRole = authorMember.getRole();
       if (currentUserRole.getHierarchyLevel() >= authorRole.getHierarchyLevel()) {
         throw new ResponseStatusException(
             HttpStatus.FORBIDDEN,
-            "You cannot delete messages from users with equal or higher authority"
-        );
+            "You cannot delete messages from users with equal or higher authority");
       }
     }
 
     channelMessage.setDeletedAt(Instant.now());
 
     GetChannelMessageResponse response = new GetChannelMessageResponse(channelMessage);
-    
+
     ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
-    
+
     return response;
   }
 
   @Override
   @Transactional(readOnly = true)
   public CursorPaginatedResponse<GetChannelMessageResponse> getCursorPaginatedMessages(
-      long channelId,
-      int size,
-      Instant cursor,
-      Long cursorId
-  ) {
+      long channelId, int size, Instant cursor, Long cursorId) {
     Pageable pageable = PageRequest.of(0, size + 1);
 
-    List<ChannelMessage> messages = cursor != null
-        ? channelMessageRepository.findMessagesBeforeCursor(channelId, cursor, cursorId, pageable)
-        : channelMessageRepository.findByChannel_IdOrderByCreatedAtDescIdDesc(channelId, pageable);
+    List<ChannelMessage> messages =
+        cursor != null
+            ? channelMessageRepository.findMessagesBeforeCursor(
+                channelId, cursor, cursorId, pageable)
+            : channelMessageRepository.findByChannel_IdOrderByCreatedAtDescIdDesc(
+                channelId, pageable);
 
     boolean hasNext = messages.size() > size;
 
@@ -210,8 +209,8 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       messages = messages.subList(0, size);
     }
 
-    List<GetChannelMessageResponse> responseList = messages.stream()
-        .map(GetChannelMessageResponse::new).toList();
+    List<GetChannelMessageResponse> responseList =
+        messages.stream().map(GetChannelMessageResponse::new).toList();
 
     Instant nextCursor = messages.isEmpty() ? null : messages.getLast().getCreatedAt();
     Long nextCursorId = messages.isEmpty() ? null : messages.getLast().getId();

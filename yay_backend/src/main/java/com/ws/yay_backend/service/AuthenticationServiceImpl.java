@@ -2,23 +2,22 @@ package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.dao.RoleRepository;
 import com.ws.yay_backend.dao.UserRepository;
-import com.ws.yay_backend.entity.Role;
-import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.dto.request.AuthenticationRequest;
 import com.ws.yay_backend.dto.request.RegisterRequest;
 import com.ws.yay_backend.dto.response.AuthenticationResponse;
+import com.ws.yay_backend.entity.Role;
+import com.ws.yay_backend.entity.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Set;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -35,8 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       UserRepository userRepository,
       RoleRepository roleRepository,
       AuthenticationManager authenticationManager,
-      JwtService jwtService
-  ) {
+      JwtService jwtService) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.authenticationManager = authenticationManager;
@@ -54,16 +52,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   @Transactional(readOnly = true)
-  public AuthenticationResponse login(AuthenticationRequest authenticationRequest, HttpServletResponse response) {
+  public AuthenticationResponse login(
+      AuthenticationRequest authenticationRequest, HttpServletResponse response) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
-            authenticationRequest.username(), authenticationRequest.password()
-        )
-    );
+            authenticationRequest.username(), authenticationRequest.password()));
 
-    User user = userRepository.findByUsername(authenticationRequest.username())
-        .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
-
+    User user =
+        userRepository
+            .findByUsername(authenticationRequest.username())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
     String jwtToken = jwtService.generateAccessToken(new HashMap<>(), user);
     String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
@@ -81,15 +79,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     String username = registerRequest.username();
     String password = registerRequest.username();
 
-    Role defaultRole = roleRepository.findByName("ROLE_USER")
-        .orElseThrow(() -> new RuntimeException("Default role not found"));
+    Role defaultRole =
+        roleRepository
+            .findByName("ROLE_USER")
+            .orElseThrow(() -> new RuntimeException("Default role not found"));
 
-    return new User(
-        username,
-        "{noop}" + password,
-        true,
-        Set.of(defaultRole)
-    );
+    return new User(username, "{noop}" + password, true, Set.of(defaultRole));
   }
 
   private void setRefreshTokenCookie(HttpServletResponse response, String token) {
@@ -128,8 +123,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     String username = jwtService.extractUsername(refreshToken);
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    User user =
+        userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
     if (!jwtService.isTokenValid(refreshToken, user)) {
       clearRefreshTokenCookie(response);

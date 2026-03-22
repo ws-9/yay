@@ -9,5 +9,4 @@ public class YayBackendApplication {
   public static void main(String[] args) {
     SpringApplication.run(YayBackendApplication.class, args);
   }
-
 }

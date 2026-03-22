@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 
@@ -14,11 +12,15 @@ import org.springframework.security.messaging.access.intercept.MessageMatcherDel
 @EnableWebSocketSecurity
 public class WebSocketSecurityConfig {
   @Bean
-  AuthorizationManager<Message<?>> messageAuthorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+  AuthorizationManager<Message<?>> messageAuthorizationManager(
+      MessageMatcherDelegatingAuthorizationManager.Builder messages) {
     messages
-        .nullDestMatcher().authenticated()
-        .simpSubscribeDestMatchers("/topic/**").authenticated()
-        .simpDestMatchers("/app/**").authenticated();
+        .nullDestMatcher()
+        .authenticated()
+        .simpSubscribeDestMatchers("/topic/**")
+        .authenticated()
+        .simpDestMatchers("/app/**")
+        .authenticated();
 
     return messages.build();
   }

@@ -6,8 +6,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "banned_users")
 public class BannedUser {
-  @EmbeddedId
-  private BannedUserKey key;
+  @EmbeddedId private BannedUserKey key;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("communityId")

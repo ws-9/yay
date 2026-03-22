@@ -1,8 +1,7 @@
 package com.ws.yay_backend.dto.response;
 
-import org.springframework.data.domain.Page;
-
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public record PaginatedResponse<T>(
     List<T> data,
@@ -11,8 +10,7 @@ public record PaginatedResponse<T>(
     long totalItems,
     int pageSize,
     boolean hasNext,
-    boolean hasPrevious
-) {
+    boolean hasPrevious) {
   public PaginatedResponse(Page<T> page) {
     this(
         page.getContent(),
@@ -21,7 +19,6 @@ public record PaginatedResponse<T>(
         page.getTotalElements(),
         page.getSize(),
         page.hasNext(),
-        page.hasPrevious()
-    );
+        page.hasPrevious());
   }
 }

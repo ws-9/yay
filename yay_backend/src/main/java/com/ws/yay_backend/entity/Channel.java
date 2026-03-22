@@ -1,7 +1,6 @@
 package com.ws.yay_backend.entity;
 
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity

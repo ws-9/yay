@@ -1,8 +1,7 @@
 package com.ws.yay_backend.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Map;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtService {
   String extractUsername(String token);

@@ -5,6 +5,4 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateChannelRequest(
     @NotNull(message = "communityId required") Long communityId,
-    @NotEmpty(message = "name required") String name
-) {
-}
+    @NotEmpty(message = "name required") String name) {}

@@ -5,7 +5,6 @@ import com.ws.yay_backend.dto.request.DeleteChannelMessageRequest;
 import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
 import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
-
 import java.time.Instant;
 
 public interface ChannelMessageService {
@@ -15,5 +14,6 @@ public interface ChannelMessageService {
 
   GetChannelMessageResponse deleteMessage(DeleteChannelMessageRequest request);
 
-  CursorPaginatedResponse<GetChannelMessageResponse> getCursorPaginatedMessages(long channelId, int size, Instant cursor, Long cursorId);
+  CursorPaginatedResponse<GetChannelMessageResponse> getCursorPaginatedMessages(
+      long channelId, int size, Instant cursor, Long cursorId);
 }

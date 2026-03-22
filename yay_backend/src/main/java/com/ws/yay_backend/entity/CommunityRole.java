@@ -32,7 +32,14 @@ public class CommunityRole {
 
   public CommunityRole() {}
 
-  public CommunityRole(String name, Integer hierarchyLevel, Boolean canManageChannels, Boolean canBanUsers, Boolean canManageRoles, Boolean canDeleteMessages, Boolean canManageCommunitySettings) {
+  public CommunityRole(
+      String name,
+      Integer hierarchyLevel,
+      Boolean canManageChannels,
+      Boolean canBanUsers,
+      Boolean canManageRoles,
+      Boolean canDeleteMessages,
+      Boolean canManageCommunitySettings) {
     this.name = name;
     this.hierarchyLevel = hierarchyLevel;
     this.canManageChannels = canManageChannels;

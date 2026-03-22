@@ -9,7 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public interface AuthenticationService {
   void register(RegisterRequest registerRequest) throws Exception;
 
-  AuthenticationResponse login(AuthenticationRequest authenticationRequest, HttpServletResponse response);
+  AuthenticationResponse login(
+      AuthenticationRequest authenticationRequest, HttpServletResponse response);
 
   AuthenticationResponse refresh(HttpServletRequest request, HttpServletResponse response);
 

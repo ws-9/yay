@@ -34,7 +34,8 @@ public class AuthenticationController {
   @Operation(summary = "Retrieve access token and user info")
   @PostMapping("/login")
   @ResponseStatus(HttpStatus.OK)
-  public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
+  public AuthenticationResponse login(
+      @RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
     return authenticationService.login(request, response);
   }
 

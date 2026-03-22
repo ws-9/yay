@@ -22,25 +22,24 @@ public class AuthUtilsComponent {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
     String username = auth.getName();
-    return userRepository.findByUsername(username)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Authenticated user not found: " + username
-        ));
+    return userRepository
+        .findByUsername(username)
+        .orElseThrow(
+            () ->
+                new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Authenticated user not found: " + username));
   }
 
   public Long getAuthenticatedUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     Object principal = authentication.getPrincipal();
-    
+
     if (principal instanceof User user) {
       return user.getId();
     }
-    
+
     throw new ResponseStatusException(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        "Unable to get authenticated user ID"
-    );
+        HttpStatus.INTERNAL_SERVER_ERROR, "Unable to get authenticated user ID");
   }
 
   public boolean isCurrentUserAdmin() {

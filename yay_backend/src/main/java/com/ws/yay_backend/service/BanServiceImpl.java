@@ -13,14 +13,13 @@ import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.entity.embedded.BannedUserKey;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class BanServiceImpl implements BanService {
@@ -36,8 +35,7 @@ public class BanServiceImpl implements BanService {
       CommunityRepository communityRepository,
       CommunityMemberRepository communityMemberRepository,
       UserRepository userRepository,
-      AuthUtilsComponent authUtilsComponent
-  ) {
+      AuthUtilsComponent authUtilsComponent) {
     this.bannedUserRepository = bannedUserRepository;
     this.communityRepository = communityRepository;
     this.communityMemberRepository = communityMemberRepository;
@@ -58,25 +56,30 @@ public class BanServiceImpl implements BanService {
 
     if (!isAdmin) {
       // Check if user is a member of the community
-      CommunityMember membership = communityMemberRepository
-          .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
-          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+      CommunityMember membership =
+          communityMemberRepository
+              .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
+              .orElseThrow(
+                  () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
 
       if (!membership.getRole().getCanBanUsers()) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to view banned users");
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN, "You don't have permission to view banned users");
       }
     }
 
     // Get all banned users for the community
-    List<BannedUser> bannedUsers = bannedUserRepository.findAllWithUserAndCommunityByKey_CommunityId(communityId);
+    List<BannedUser> bannedUsers =
+        bannedUserRepository.findAllWithUserAndCommunityByKey_CommunityId(communityId);
 
     return bannedUsers.stream()
-        .map(bannedUser -> new BannedUserResponse(
-            bannedUser.getUser().getId(),
-            bannedUser.getUser().getUsername(),
-            bannedUser.getCommunity().getId(),
-            bannedUser.getCommunity().getName()
-        ))
+        .map(
+            bannedUser ->
+                new BannedUserResponse(
+                    bannedUser.getUser().getId(),
+                    bannedUser.getUser().getUsername(),
+                    bannedUser.getCommunity().getId(),
+                    bannedUser.getCommunity().getName()))
         .toList();
   }
 
@@ -85,15 +88,21 @@ public class BanServiceImpl implements BanService {
   public BannedUserResponse banUser(CreateBanRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
-    Community community = communityRepository.findWithOwnerById(request.communityId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+    Community community =
+        communityRepository
+            .findWithOwnerById(request.communityId())
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
 
-    User targetUser = userRepository.findById(request.userId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    User targetUser =
+        userRepository
+            .findById(request.userId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
     BannedUserKey banKey = new BannedUserKey(request.communityId(), request.userId());
     if (bannedUserRepository.existsById(banKey)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already banned from this community");
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, "User is already banned from this community");
     }
 
     // Cannot ban the community owner
@@ -105,7 +114,8 @@ public class BanServiceImpl implements BanService {
     boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
     if (isAdmin) {
       // If user is currently a member, remove them first
-      CommunityMemberKey memberKey = new CommunityMemberKey(request.communityId(), request.userId());
+      CommunityMemberKey memberKey =
+          new CommunityMemberKey(request.communityId(), request.userId());
       communityMemberRepository.deleteById(memberKey);
 
       // Create the ban
@@ -113,11 +123,7 @@ public class BanServiceImpl implements BanService {
       bannedUserRepository.save(bannedUser);
 
       return new BannedUserResponse(
-          targetUser.getId(),
-          targetUser.getUsername(),
-          community.getId(),
-          community.getName()
-      );
+          targetUser.getId(), targetUser.getUsername(), community.getId(), community.getName());
     }
 
     // Regular user logic - check permissions
@@ -125,26 +131,36 @@ public class BanServiceImpl implements BanService {
 
     if (!isOwner) {
       // Fetch both memberships in one query
-      List<CommunityMember> memberships = communityMemberRepository
-          .findAllWithRoleByKey_CommunityIdAndKey_UserIdIn(request.communityId(), Arrays.asList(userId, request.userId()));
+      List<CommunityMember> memberships =
+          communityMemberRepository.findAllWithRoleByKey_CommunityIdAndKey_UserIdIn(
+              request.communityId(), Arrays.asList(userId, request.userId()));
 
-      CommunityMember membership = memberships.stream()
-          .filter(m -> m.getKey().getUserId().equals(userId))
-          .findFirst()
-          .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not a member of this community"));
+      CommunityMember membership =
+          memberships.stream()
+              .filter(m -> m.getKey().getUserId().equals(userId))
+              .findFirst()
+              .orElseThrow(
+                  () ->
+                      new ResponseStatusException(
+                          HttpStatus.FORBIDDEN, "You are not a member of this community"));
 
       if (!membership.getRole().getCanBanUsers()) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to ban users");
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN, "You don't have permission to ban users");
       }
 
-      CommunityMember targetMembership = memberships.stream()
-          .filter(m -> m.getKey().getUserId().equals(request.userId()))
-          .findFirst()
-          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+      CommunityMember targetMembership =
+          memberships.stream()
+              .filter(m -> m.getKey().getUserId().equals(request.userId()))
+              .findFirst()
+              .orElseThrow(
+                  () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-      boolean hasSufficientHierarchy = targetMembership.getRole().getHierarchyLevel() > membership.getRole().getHierarchyLevel();
+      boolean hasSufficientHierarchy =
+          targetMembership.getRole().getHierarchyLevel() > membership.getRole().getHierarchyLevel();
       if (!hasSufficientHierarchy) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to ban users of higher hierarchy");
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN, "You don't have permission to ban users of higher hierarchy");
       }
     }
 
@@ -157,10 +173,6 @@ public class BanServiceImpl implements BanService {
     bannedUserRepository.save(bannedUser);
 
     return new BannedUserResponse(
-        targetUser.getId(),
-        targetUser.getUsername(),
-        community.getId(),
-        community.getName()
-    );
+        targetUser.getId(), targetUser.getUsername(), community.getId(), community.getName());
   }
 }

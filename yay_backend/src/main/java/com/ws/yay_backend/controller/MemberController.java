@@ -27,7 +27,8 @@ public class MemberController {
 
   @Operation(summary = "Add user to community")
   @PostMapping
-  public ResponseEntity<JoinCommunityResponse> joinCommunity(@RequestBody @Valid JoinCommunityRequest request) {
+  public ResponseEntity<JoinCommunityResponse> joinCommunity(
+      @RequestBody @Valid JoinCommunityRequest request) {
     JoinCommunityResponse result = memberService.joinCommunity(request);
     HttpStatus status = result.isNewMember() ? HttpStatus.CREATED : HttpStatus.OK;
     return ResponseEntity.status(status).body(result);

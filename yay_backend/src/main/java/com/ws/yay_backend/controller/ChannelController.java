@@ -1,7 +1,7 @@
 package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.request.CreateChannelRequest;
 import com.ws.yay_backend.dto.request.CreateChannelPermissionRequest;
+import com.ws.yay_backend.dto.request.CreateChannelRequest;
 import com.ws.yay_backend.dto.request.RenameChannelRequest;
 import com.ws.yay_backend.dto.response.ChannelPermissionResponse;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
@@ -15,12 +15,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.time.Instant;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
-import java.util.List;
 
 @Tag(name = "Channels")
 @RestController
@@ -30,7 +29,8 @@ public class ChannelController {
   private final ChannelMessageService channelMessageService;
 
   @Autowired
-  public ChannelController(ChannelService channelService, ChannelMessageService channelMessageService) {
+  public ChannelController(
+      ChannelService channelService, ChannelMessageService channelMessageService) {
     this.channelService = channelService;
     this.channelMessageService = channelMessageService;
   }
@@ -65,30 +65,24 @@ public class ChannelController {
   @Operation(summary = "Get paginated channel messages")
   @GetMapping("{id}/messages")
   public CursorPaginatedResponse<GetChannelMessageResponse> getChannelMessages(
-      @PathVariable
-      long id,
-      @RequestParam(defaultValue = "50") @Min(1) @Max(100)
-      int size,
+      @PathVariable long id,
+      @RequestParam(defaultValue = "50") @Min(1) @Max(100) int size,
       @Parameter(
-          description = "Cursor timestamp (ISO-8601 UTC)",
-          example = "2025-03-21T14:32:05.123Z"
-      )
-      @RequestParam(required = false)
-      Instant cursor,
-      @Parameter(
-          description = "Cursor message ID for keyset pagination",
-          example = "42"
-      )
-      @RequestParam(required = false)
-      Long cursorId
-  ) {
+              description = "Cursor timestamp (ISO-8601 UTC)",
+              example = "2025-03-21T14:32:05.123Z")
+          @RequestParam(required = false)
+          Instant cursor,
+      @Parameter(description = "Cursor message ID for keyset pagination", example = "42")
+          @RequestParam(required = false)
+          Long cursorId) {
     return channelMessageService.getCursorPaginatedMessages(id, size, cursor, cursorId);
   }
 
   @Operation(summary = "Upsert channel permission")
   @PatchMapping("/{id}/permissions")
   @ResponseStatus(HttpStatus.OK)
-  public ChannelPermissionResponse upsertChannelPermission(@PathVariable long id, @RequestBody @Valid CreateChannelPermissionRequest request) {
+  public ChannelPermissionResponse upsertChannelPermission(
+      @PathVariable long id, @RequestBody @Valid CreateChannelPermissionRequest request) {
     return channelService.upsertChannelPermission(id, request);
   }
 
@@ -100,7 +94,8 @@ public class ChannelController {
 
   @Operation(summary = "Get channel permission by role")
   @GetMapping("/{channelId}/permissions/{roleId}")
-  public ChannelPermissionResponse getChannelPermission(@PathVariable long channelId, @PathVariable long roleId) {
+  public ChannelPermissionResponse getChannelPermission(
+      @PathVariable long channelId, @PathVariable long roleId) {
     return channelService.getChannelPermission(channelId, roleId);
   }
 }

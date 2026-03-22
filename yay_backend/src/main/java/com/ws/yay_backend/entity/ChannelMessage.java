@@ -1,10 +1,9 @@
 package com.ws.yay_backend.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
-
-import java.time.Instant;
 
 @Entity
 @Table(name = "channel_messages")
@@ -37,7 +36,8 @@ public class ChannelMessage {
 
   public ChannelMessage() {}
 
-  public ChannelMessage(String message, User user, Channel channel, Instant updatedAt, Instant deletedAt) {
+  public ChannelMessage(
+      String message, User user, Channel channel, Instant updatedAt, Instant deletedAt) {
     this.message = message;
     this.user = user;
     this.channel = channel;

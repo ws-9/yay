@@ -7,6 +7,4 @@ public record GetMemberResponse(
     @NotNull String username,
     @NotNull long communityId,
     @NotNull String communityName,
-    @NotNull CommunityRoleResponse role
-) {
-}
+    @NotNull CommunityRoleResponse role) {}

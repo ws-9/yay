@@ -6,8 +6,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "channel_permissions")
 public class ChannelPermission {
-  @EmbeddedId
-  private ChannelPermissionKey key;
+  @EmbeddedId private ChannelPermissionKey key;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("channelId")
