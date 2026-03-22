@@ -1,6 +1,6 @@
 package com.ws.yay_backend.advice;
 
-import com.ws.yay_backend.dto.response.SimpleErrorResponse;
+import com.ws.yay_backend.dto.v1.response.SimpleErrorResponse;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;

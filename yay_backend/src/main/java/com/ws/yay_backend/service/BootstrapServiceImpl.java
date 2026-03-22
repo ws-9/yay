@@ -1,9 +1,9 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.components.AuthUtilsComponent;
-import com.ws.yay_backend.dto.response.AppBootstrapResponse;
-import com.ws.yay_backend.dto.response.GetCommunityResponse;
-import com.ws.yay_backend.dto.response.UserInfoResponse;
+import com.ws.yay_backend.dto.v1.response.AppBootstrapResponse;
+import com.ws.yay_backend.dto.v1.response.GetCommunityResponse;
+import com.ws.yay_backend.dto.v1.response.UserInfoResponse;
 import com.ws.yay_backend.entity.User;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

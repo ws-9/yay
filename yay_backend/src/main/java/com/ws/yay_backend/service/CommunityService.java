@@ -1,12 +1,12 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.request.CreateCommunityRequest;
-import com.ws.yay_backend.dto.request.RenameCommunityRequest;
-import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
-import com.ws.yay_backend.dto.response.GetChannelResponse;
-import com.ws.yay_backend.dto.response.GetCommunityInviteResponse;
-import com.ws.yay_backend.dto.response.GetCommunityResponse;
-import com.ws.yay_backend.dto.response.GetMemberResponse;
+import com.ws.yay_backend.dto.v1.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.v1.request.RenameCommunityRequest;
+import com.ws.yay_backend.dto.v1.request.TransferOwnershipRequest;
+import com.ws.yay_backend.dto.v1.response.GetChannelResponse;
+import com.ws.yay_backend.dto.v1.response.GetCommunityInviteResponse;
+import com.ws.yay_backend.dto.v1.response.GetCommunityResponse;
+import com.ws.yay_backend.dto.v1.response.GetMemberResponse;
 import java.util.List;
 
 public interface CommunityService {

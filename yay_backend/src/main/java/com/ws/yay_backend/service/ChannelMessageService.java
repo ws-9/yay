@@ -1,10 +1,10 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.request.CreateChannelMessageRequest;
-import com.ws.yay_backend.dto.request.DeleteChannelMessageRequest;
-import com.ws.yay_backend.dto.request.EditChannelMessageRequest;
-import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
-import com.ws.yay_backend.dto.response.GetChannelMessageResponse;
+import com.ws.yay_backend.dto.v1.request.CreateChannelMessageRequest;
+import com.ws.yay_backend.dto.v1.request.DeleteChannelMessageRequest;
+import com.ws.yay_backend.dto.v1.request.EditChannelMessageRequest;
+import com.ws.yay_backend.dto.v1.response.CursorPaginatedResponse;
+import com.ws.yay_backend.dto.v1.response.GetChannelMessageResponse;
 import java.time.Instant;
 
 public interface ChannelMessageService {

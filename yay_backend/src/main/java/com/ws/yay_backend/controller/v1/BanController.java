@@ -1,0 +1,39 @@
+package com.ws.yay_backend.controller.v1;
+
+import com.ws.yay_backend.dto.v1.request.CreateBanRequest;
+import com.ws.yay_backend.dto.v1.response.BannedUserResponse;
+import com.ws.yay_backend.service.BanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "Bans")
+@RestController
+@RequestMapping("/api/v1/bans")
+public class BanController {
+  private final BanService banService;
+
+  @Autowired
+  public BanController(BanService banService) {
+    this.banService = banService;
+  }
+
+  @Operation(summary = "Get communities bans")
+  @GetMapping
+  public ResponseEntity<List<BannedUserResponse>> getBannedUsers(@RequestParam Long communityId) {
+    List<BannedUserResponse> bannedUsers = banService.getBannedUsers(communityId);
+    return ResponseEntity.ok(bannedUsers);
+  }
+
+  @Operation(summary = "Ban user from community")
+  @PostMapping
+  public ResponseEntity<BannedUserResponse> banUser(@RequestBody @Valid CreateBanRequest request) {
+    BannedUserResponse bannedUser = banService.banUser(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(bannedUser);
+  }
+}

@@ -1,7 +1,7 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.components.AuthUtilsComponent;
-import com.ws.yay_backend.dto.response.UserInfoResponse;
+import com.ws.yay_backend.dto.v1.response.UserInfoResponse;
 import com.ws.yay_backend.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

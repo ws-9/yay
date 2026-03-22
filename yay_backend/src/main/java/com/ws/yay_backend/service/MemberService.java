@@ -1,11 +1,11 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.request.JoinCommunityRequest;
-import com.ws.yay_backend.dto.request.RemoveMemberRequest;
-import com.ws.yay_backend.dto.request.UpdateRoleRequest;
-import com.ws.yay_backend.dto.response.GetMemberResponse;
-import com.ws.yay_backend.dto.response.GetMembersRolesResponse;
-import com.ws.yay_backend.dto.response.JoinCommunityResponse;
+import com.ws.yay_backend.dto.v1.request.JoinCommunityRequest;
+import com.ws.yay_backend.dto.v1.request.RemoveMemberRequest;
+import com.ws.yay_backend.dto.v1.request.UpdateRoleRequest;
+import com.ws.yay_backend.dto.v1.response.GetMemberResponse;
+import com.ws.yay_backend.dto.v1.response.GetMembersRolesResponse;
+import com.ws.yay_backend.dto.v1.response.JoinCommunityResponse;
 import java.util.List;
 
 public interface MemberService {

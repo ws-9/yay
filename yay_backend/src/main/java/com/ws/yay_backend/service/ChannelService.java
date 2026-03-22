@@ -1,10 +1,10 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.request.CreateChannelPermissionRequest;
-import com.ws.yay_backend.dto.request.CreateChannelRequest;
-import com.ws.yay_backend.dto.request.RenameChannelRequest;
-import com.ws.yay_backend.dto.response.ChannelPermissionResponse;
-import com.ws.yay_backend.dto.response.GetChannelResponse;
+import com.ws.yay_backend.dto.v1.request.CreateChannelPermissionRequest;
+import com.ws.yay_backend.dto.v1.request.CreateChannelRequest;
+import com.ws.yay_backend.dto.v1.request.RenameChannelRequest;
+import com.ws.yay_backend.dto.v1.response.ChannelPermissionResponse;
+import com.ws.yay_backend.dto.v1.response.GetChannelResponse;
 import java.util.List;
 
 public interface ChannelService {
