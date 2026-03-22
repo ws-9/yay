@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Channel Messages")
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/api/v1/messages")
 public class ChannelMessageController {
   private final ChannelMessageService channelMessageService;
 

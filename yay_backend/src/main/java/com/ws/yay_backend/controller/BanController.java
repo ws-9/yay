@@ -15,7 +15,7 @@ import java.util.List;
 
 @Tag(name = "Bans")
 @RestController
-@RequestMapping("/api/bans")
+@RequestMapping("/api/v1/bans")
 public class BanController {
   private final BanService banService;
 

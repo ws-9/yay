@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 export const API_REGISTER_URL = API_BASE_URL + '/auth/register';
 export const API_LOGIN_URL = API_BASE_URL + '/auth/login';
 export const API_REFRESH_URL = API_BASE_URL + '/auth/refresh';

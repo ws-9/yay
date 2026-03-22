@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Bootstrap")
 @RestController
-@RequestMapping("/api/bootstrap")
+@RequestMapping("/api/v1/bootstrap")
 public class BootstrapController {
   private final BootstrapService bootstrapService;
 

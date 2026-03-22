@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "User info")
 @RestController
-@RequestMapping("/api/me")
+@RequestMapping("/api/v1/me")
 public class UserInfoController {
   private final UserInfoService userInfoService;
 

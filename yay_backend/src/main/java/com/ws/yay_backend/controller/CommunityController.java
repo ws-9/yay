@@ -19,7 +19,7 @@ import java.util.List;
 
 @Tag(name = "Communities")
 @RestController
-@RequestMapping("/api/communities")
+@RequestMapping("/api/v1/communities")
 public class CommunityController {
   private final CommunityService communityService;
   private final MemberService memberService;
