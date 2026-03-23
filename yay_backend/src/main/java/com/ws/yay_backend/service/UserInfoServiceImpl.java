@@ -2,6 +2,7 @@ package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dto.v1.response.UserInfoResponse;
+import com.ws.yay_backend.dto.v2.response.UserResponseV2;
 import com.ws.yay_backend.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     User user = authUtilsComponent.getAuthenticatedUser();
 
     return new UserInfoResponse(user.getUsername(), user.getId());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public UserResponseV2 getOwnUserInfoV2() {
+    User user = authUtilsComponent.getAuthenticatedUser();
+    return UserResponseV2.fromEntity(user);
   }
 }
