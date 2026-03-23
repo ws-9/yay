@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_MEMBERS_V1 } from '../../../constants';
-import { useUserInfoQuery } from '../../queries/v1/useUserInfoQuery';
+import { useMeV2Query } from '../../queries/v2/useMeV2Query';
 import { useRemoveCommunityOptimistically } from '../../cacheHelpers';
 import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
@@ -13,7 +13,7 @@ type RemoveMemberInput = {
 function useRemoveMemberMutation() {
   const fetchWithAuth = useFetchWithAuth();
   const queryClient = useQueryClient();
-  const { data: userInfo } = useUserInfoQuery();
+  const { data: userInfo } = useMeV2Query();
   const removeCommunityOptimistically = useRemoveCommunityOptimistically();
 
   return useMutation<void, Error, RemoveMemberInput>({

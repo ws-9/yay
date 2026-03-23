@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router';
-import { useBootstrapQuery } from '../../hooks/queries/v1/useBootstrapQuery';
+import { useBootstrapV2Query } from '../../hooks/queries/v2/useBootstrapV2Query';
 
 export default function AppDataProvider() {
-  const { isLoading, error } = useBootstrapQuery();
+  const { isLoading, error } = useBootstrapV2Query();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -14,3 +14,4 @@ export default function AppDataProvider() {
 
   return <Outlet />;
 }
+

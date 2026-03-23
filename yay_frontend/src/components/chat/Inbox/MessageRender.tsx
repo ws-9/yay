@@ -4,16 +4,22 @@ import { format } from 'date-fns';
 import MessageMenu from './MessageMenu';
 import useEditChannelMessage from '../../../hooks/mutations/v1/useEditChannelMessageMutation';
 import { useInlineEdit } from '../../../hooks/useInlineEdit';
-import type { ChannelMessage } from '../../../types/v1/ChannelMessage';
+import type { MessageV2 } from '../../../types/v2';
+import { useUserV2Query } from '../../../hooks/queries/v2/useUsersV2Query';
 
 export function MessageRender({
   message,
   channelId,
 }: {
-  message: ChannelMessage;
+  message: MessageV2;
   channelId: number;
 }) {
   const editMutation = useEditChannelMessage();
+  const { data: userData, isLoading: isLoadingUser } = useUserV2Query(
+    message.userId,
+  );
+  const username = userData?.username || `User ${message.userId}`;
+
   const {
     isEditing,
     editValue,
@@ -77,7 +83,9 @@ export function MessageRender({
     <div className="group relative pr-8 hover:bg-gray-100">
       {isEditing ? (
         <div className="flex items-start">
-          <span className="mr-2 shrink-0">{`${formattedDate} ${message.username}: `}</span>
+          <span className="mr-2 shrink-0">
+            {isLoadingUser ? '...' : `${formattedDate} ${username}: `}
+          </span>
           <textarea
             ref={textareaRef}
             value={editValue}
@@ -90,7 +98,7 @@ export function MessageRender({
         </div>
       ) : (
         <>
-          {`${formattedDate} ${message.username}: `}
+          {isLoadingUser ? '...' : `${formattedDate} ${username}: `}
           {message.deletedAt ? (
             'DELETED'
           ) : (
@@ -100,7 +108,7 @@ export function MessageRender({
             </>
           )}
           <MessageMenu
-            message={message}
+            message={message as any}
             channelId={channelId}
             onEdit={handleEdit}
           />

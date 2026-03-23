@@ -3,10 +3,10 @@ import { Select } from '@base-ui/react/select';
 import useMembersQuery from '../../../../hooks/queries/v1/useMembersQuery';
 import { useCommunityQuery } from '../../../../hooks/queries/v1/useCommunityQuery';
 import type { Member } from '../../../../types/v1/Member';
-import { useUserInfoQuery } from '../../../../hooks/queries/v1/useUserInfoQuery';
 import { useMemberRole } from '../../../../hooks/queries/v1/useMemberRoleQuery';
 import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/v1/useUpdateMemberRoleMutation';
 import type { CommunityRole } from '../../../../types/v1/CommunityRole';
+import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
 
 const roles = [
   { label: 'Admin', value: 'Admin' },
@@ -21,7 +21,7 @@ const roleHierarchies = {
 };
 
 export default function MembersPanel({ communityId }: { communityId: number }) {
-  const userInfoQuery = useUserInfoQuery();
+  const userInfoQuery = useMeV2Query();
   const communityQuery = useCommunityQuery(communityId);
   const membersQuery = useMembersQuery(communityId);
   const userRoleQuery = useMemberRole(communityId, userInfoQuery.data?.id ?? 0);

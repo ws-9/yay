@@ -1,5 +1,4 @@
-import { useChannelQuery } from '../../../../hooks/queries/v1/useChannelQuery';
-import useUserChannelPermissionQuery from '../../../../hooks/queries/v1/useUserChannelPermissionQuery';
+import { useChannelV2Query } from '../../../../hooks/queries/v2/useChannelV2Query';
 import {
   getActivePaneId,
   useWorkspaceActions,
@@ -8,14 +7,9 @@ import ChannelMenu from '../ChannelMenu';
 
 export default function ChannelTab({ channelId }: { channelId: number }) {
   const { setChannel } = useWorkspaceActions();
-  const { data: channelData } = useChannelQuery(channelId);
-  const { data: permissionData } = useUserChannelPermissionQuery(channelId);
+  const { data: channelData } = useChannelV2Query(channelId);
 
-  if (channelData === null || permissionData === null) {
-    return null;
-  }
-
-  if (!permissionData?.canRead) {
+  if (!channelData) {
     return null;
   }
 
@@ -37,7 +31,7 @@ export default function ChannelTab({ channelId }: { channelId: number }) {
         event.dataTransfer.setData('channelId', channelId.toString());
       }}
     >
-      - {channelData?.name}
+      - {channelData.name}
       <ChannelMenu channelId={channelId} />
     </div>
   );

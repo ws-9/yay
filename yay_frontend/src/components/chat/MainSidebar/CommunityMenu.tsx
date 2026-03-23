@@ -3,14 +3,14 @@ import { useUiStoreActions } from '../../../store/uiStore';
 import useRemoveMember from '../../../hooks/mutations/v1/useRemoveMemberMutation';
 import { Toast } from '@base-ui/react/toast';
 import { useEffect, useEffectEvent } from 'react';
-import { useUserInfoQuery } from '../../../hooks/queries/v1/useUserInfoQuery';
-import type { CommunityRole } from '../../../types/v1/CommunityRole';
+import { useMeV2Query } from '../../../hooks/queries/v2/useMeV2Query';
+import type { RoleV2 } from '../../../types/v2';
 
 export default function CommunityMenu({
   role,
   communityId,
 }: {
-  role: CommunityRole;
+  role: RoleV2;
   communityId: number;
 }) {
   const {
@@ -71,7 +71,7 @@ export default function CommunityMenu({
 
 function LeaveCommunityItem({ communityId }: { communityId: number }) {
   const { mutate, error } = useRemoveMember();
-  const { data, isLoading } = useUserInfoQuery();
+  const { data, isLoading } = useMeV2Query();
   const toastManager = Toast.useToastManager();
 
   const onError = useEffectEvent(() => {

@@ -10,6 +10,7 @@ import com.ws.yay_backend.dto.v1.request.DeleteChannelMessageRequest;
 import com.ws.yay_backend.dto.v1.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.v1.response.CursorPaginatedResponse;
 import com.ws.yay_backend.dto.v1.response.GetChannelMessageResponse;
+import com.ws.yay_backend.dto.v2.broadcast.ChannelMessageBroadcastV2;
 import com.ws.yay_backend.dto.v2.request.CreateMessageRequestV2;
 import com.ws.yay_backend.dto.v2.request.UpdateMessageRequestV2;
 import com.ws.yay_backend.dto.v2.response.MessageResponseV2;
@@ -248,7 +249,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
     MessageResponseV2 response = MessageResponseV2.fromEntity(saved);
 
-    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(saved);
+    ChannelMessageBroadcastV2 broadcast = ChannelMessageBroadcastV2.fromEntity(saved);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
 
     return response;
@@ -275,7 +276,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
     MessageResponseV2 response = MessageResponseV2.fromEntity(channelMessage);
 
-    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
+    ChannelMessageBroadcastV2 broadcast = ChannelMessageBroadcastV2.fromEntity(channelMessage);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
 
     return response;
@@ -332,7 +333,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       channelMessage.setDeletedAt(Instant.now());
     }
 
-    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
+    ChannelMessageBroadcastV2 broadcast = ChannelMessageBroadcastV2.fromEntity(channelMessage);
     simpMessagingTemplate.convertAndSend(
         "/topic/channel/" + channelMessage.getChannel().getId(), broadcast);
   }

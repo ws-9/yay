@@ -1,21 +1,31 @@
 import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from '../CommunityMenu';
-import type { CommunityRole } from '../../../../types/v1/CommunityRole';
 import ChannelTab from './ChannelTab';
+import { useChannelsV2Query } from '../../../../hooks/queries/v2/useChannelsV2Query';
+import { useMemberV2Query } from '../../../../hooks/queries/v2/useMemberV2Query';
+import { useRolesV2Query } from '../../../../hooks/queries/v2/useRolesV2Query';
+import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
 
 export default function CommunityTab({
   name,
-  role,
-  channelIds,
   communityId,
 }: {
   name: string;
-  role: CommunityRole;
-  channelIds: Array<number>;
   communityId: number;
 }) {
-  const channelTabs = channelIds.map(id => (
-    <ChannelTab key={id} channelId={id} />
+  const { data: user } = useMeV2Query();
+  const { data: channels } = useChannelsV2Query([communityId]);
+  const { data: memberships } = useMemberV2Query(
+    communityId,
+    user?.id as number,
+  );
+  const { data: roles } = useRolesV2Query();
+
+  const myMembership = memberships?.[0];
+  const myRole = roles?.find(r => r.id === myMembership?.roleId);
+
+  const channelTabs = channels?.map(ch => (
+    <ChannelTab key={ch.id} channelId={ch.id} />
   ));
 
   return (
@@ -28,7 +38,7 @@ export default function CommunityTab({
         >
           {name}
           <PlusIcon className="mr-2 size-3 shrink-0 transition-all ease-out group-data-[panel-open]:scale-110 group-data-[panel-open]:rotate-45" />
-          <CommunityMenu role={role} communityId={communityId} />
+          {myRole && <CommunityMenu role={myRole} communityId={communityId} />}
         </Accordion.Trigger>
       </Accordion.Header>
       <Accordion.Panel className="h-[var(--accordion-panel-height)] overflow-hidden text-base text-gray-600 transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0">

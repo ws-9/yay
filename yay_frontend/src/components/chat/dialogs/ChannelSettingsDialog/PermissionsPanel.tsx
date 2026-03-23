@@ -1,13 +1,11 @@
 import { Tabs } from '@base-ui/react/tabs';
-import useChannelPermissionsQuery, {
-  type ChannelPermission,
-} from '../../../../hooks/queries/v1/useChannelPermissionsQuery';
+import useChannelPermissionsQuery from '../../../../hooks/queries/v1/useChannelPermissionsQuery';
 import { useChannelQuery } from '../../../../hooks/queries/v1/useChannelQuery';
-import { useUserInfoQuery } from '../../../../hooks/queries/v1/useUserInfoQuery';
 import { useMemberRole } from '../../../../hooks/queries/v1/useMemberRoleQuery';
 import { Select } from '@base-ui/react/select';
 import useChannelPermissionMutation from '../../../../hooks/mutations/v1/useChannelPermissionMutation';
 import { useState } from 'react';
+import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
 
 const accessOptions = [
   { label: 'Can read', value: 'read' },
@@ -28,7 +26,7 @@ const roleMap: Record<number, string> = {
 };
 
 export default function PermissionsPanel({ channelId }: { channelId: number }) {
-  const userInfoQuery = useUserInfoQuery();
+  const userInfoQuery = useMeV2Query();
   const channelQuery = useChannelQuery(channelId);
   const { data: permissions, isLoading } =
     useChannelPermissionsQuery(channelId);

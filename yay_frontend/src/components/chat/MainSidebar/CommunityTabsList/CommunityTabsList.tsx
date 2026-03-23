@@ -1,11 +1,20 @@
-import useMyCommunitiesQuery from '../../../../hooks/queries/v1/useMyCommunitiesQuery';
+import { useCommunitiesV2Query } from '../../../../hooks/queries/v2/useCommunitiesV2Query';
+import { useChannelsV2Query } from '../../../../hooks/queries/v2/useChannelsV2Query';
 import { useWorkspaceActions } from '../../../../store/workspaceStore';
 import { Accordion } from '@base-ui/react/accordion';
 import { useEffect, useEffectEvent } from 'react';
 import CommunityTab from './CommunityTab';
 
 export default function CommunityTabsList() {
-  const { data, isLoading, error } = useMyCommunitiesQuery();
+  const {
+    data: communities,
+    isLoading: isLoadingCommunities,
+    error: errorCommunities,
+  } = useCommunitiesV2Query();
+  const communityIds = communities?.map(c => c.id) ?? [];
+  const { data: channels, isLoading: isLoadingChannels } =
+    useChannelsV2Query(communityIds);
+
   const { removeNodesNotInChannelList } = useWorkspaceActions();
 
   const handleCleanupInaccessibleChannels = useEffectEvent(
@@ -15,29 +24,25 @@ export default function CommunityTabsList() {
   );
 
   useEffect(() => {
-    if (data) {
-      const accessibleChannels = data.flatMap(
-        c => c.channels?.map(ch => ch.id) ?? [],
-      );
+    if (channels) {
+      const accessibleChannels = channels.map(ch => ch.id);
       handleCleanupInaccessibleChannels(accessibleChannels);
     }
-  }, [data]);
+  }, [channels]);
 
-  if (isLoading) {
+  if (isLoadingCommunities || isLoadingChannels) {
     return <div>Loading</div>;
   }
 
-  if (error) {
+  if (errorCommunities) {
     return <div>error</div>;
   }
 
-  const communityTabs = data?.map(community => (
+  const communityTabs = communities?.map(community => (
     <CommunityTab
       key={community.id}
       communityId={community.id}
       name={community.name}
-      role={community.role!}
-      channelIds={community.channels?.map(channel => channel.id) ?? []}
     />
   ));
 

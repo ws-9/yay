@@ -1,4 +1,4 @@
-import { useInfChannelMessagesQuery } from '../../../hooks/queries/v1/useInfChannelMessagesQuery';
+import { useInfChannelMessagesV2Query } from '../../../hooks/queries/v2/useInfChannelMessagesV2Query';
 import { useChannelSubscription } from '../../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -11,7 +11,7 @@ import { MessageRender } from './MessageRender';
 export type InboxHandle = {
   scrollToBottom: () => void;
 };
-// TODO: fix sticky top
+
 export default function Inbox({
   channelId,
   ref,
@@ -21,12 +21,10 @@ export default function Inbox({
 }) {
   const {
     data,
-    error,
-    status,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfChannelMessagesQuery(channelId);
+  } = useInfChannelMessagesV2Query(channelId);
   const messageEvents = useChannelSubscription(channelId);
   const { ref: endOfInboxRef, inView: endOfInboxInView } = useInView();
   const scrollContainerRef = useRef<ScrollableContainerHandle>(null);

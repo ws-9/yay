@@ -3,12 +3,12 @@ import {
   useWebSocketActions,
   useWebSocketConnectedStatus,
 } from '../store/webSocketStore';
-import type { ChannelMessage } from '../types/v1/ChannelMessage';
+import type { MessageV2 } from '../types/v2';
 
 export function useChannelSubscription(channelId: number) {
   const { subscribe } = useWebSocketActions();
   const webSocketConnected = useWebSocketConnectedStatus();
-  const [messageEvents, setMessagesEvents] = useState<Array<ChannelMessage>>(
+  const [messageEvents, setMessagesEvents] = useState<Array<MessageV2>>(
     [],
   );
 
@@ -20,7 +20,6 @@ export function useChannelSubscription(channelId: number) {
           id: payload.id,
           message: payload.message,
           userId: payload.userId,
-          username: payload.username,
           channelId: payload.channelId,
           createdAt: payload.createdAt,
           updatedAt: payload.updatedAt,

@@ -1,4 +1,5 @@
-import { useChannelQuery } from '../../../hooks/queries/v1/useChannelQuery';
+import { useChannelV2Query } from '../../../hooks/queries/v2/useChannelV2Query';
+import { useCommunityV2Query } from '../../../hooks/queries/v2/useCommunityV2Query';
 import {
   useIsActivePane,
   useWorkspaceActions,
@@ -18,8 +19,14 @@ export default function PaneHeader({
   dropZonesRef: React.RefObject<DropZonesHandle>;
   mode: 'single' | 'multi';
 }) {
-  const { data, isLoading } = useChannelQuery(channelId);
+  const { data: channel, isLoading: isLoadingChannel } = useChannelV2Query(
+    channelId as number,
+  );
+  const { data: community, isLoading: isLoadingCommunity } =
+    useCommunityV2Query(channel?.communityId ?? null);
+
   const isActive = useIsActivePane(nodeId);
+  const isLoading = isLoadingChannel || isLoadingCommunity;
 
   return (
     <div className="flex gap-2 border-b bg-gray-100 p-1">
@@ -37,7 +44,7 @@ export default function PaneHeader({
             dropZonesRef.current?.enableDropZones();
           }}
         >
-          {isLoading ? 'Loading' : `${data?.name} @ ${data?.communityName}`}
+          {isLoading ? 'Loading' : `${channel?.name} @ ${community?.name}`}
         </div>
       )}
       <HeaderMenu nodeId={nodeId} channelId={channelId} />

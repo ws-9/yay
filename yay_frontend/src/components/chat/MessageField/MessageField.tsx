@@ -8,7 +8,7 @@ import {
 import { useIsActivePane } from '../../../store/workspaceStore';
 import useCreateChannelMessage from '../../../hooks/mutations/v1/useCreateChannelMessageMutation';
 import { Toast } from '@base-ui/react/toast';
-import useUserChannelPermissionQuery from '../../../hooks/queries/v1/useUserChannelPermissionQuery';
+import { useChannelPermissionsV2 } from '../../../hooks/queries/v2/useChannelPermissionsV2';
 
 export default function MessageField({
   channelId,
@@ -22,7 +22,8 @@ export default function MessageField({
   const [message, setMessage] = useState('');
   const isActive = useIsActivePane(nodeId);
   const { mutate, isPending, error } = useCreateChannelMessage();
-  const { data: permissionData } = useUserChannelPermissionQuery(channelId);
+  const { canWrite, isLoading: isLoadingPermissions } =
+    useChannelPermissionsV2(channelId);
   const toastManager = Toast.useToastManager();
 
   // reset message on channel switch
@@ -63,16 +64,14 @@ export default function MessageField({
       <textarea
         className="field-sizing-content max-h-[9lh] w-full resize-none border-2 bg-white transition-all disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:opacity-60"
         placeholder={
-          !permissionData?.canWrite
-            ? 'You do not have write permission'
-            : 'Type away...'
+          isLoadingPermissions
+            ? 'Loading permissions...'
+            : !canWrite
+              ? 'You do not have write permission'
+              : 'Type away...'
         }
-        value={
-          !permissionData?.canWrite
-            ? 'You do not have write permission'
-            : message
-        }
-        disabled={!permissionData?.canWrite || isPending}
+        value={!canWrite && !isLoadingPermissions ? '' : message}
+        disabled={!canWrite || isPending || isLoadingPermissions}
         onChange={event => setMessage(event.target.value)}
         onKeyDown={handleEnter}
       />
