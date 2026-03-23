@@ -1,7 +1,7 @@
 package com.ws.yay_backend.controller.v2;
 
-import com.ws.yay_backend.dto.v2.request.ChannelPermissionRequestV2;
-import com.ws.yay_backend.dto.v2.response.ChannelPermissionResponseV2;
+import com.ws.yay_backend.dto.request.ChannelPermissionRequestV2;
+import com.ws.yay_backend.dto.response.ChannelPermissionResponseV2;
 import com.ws.yay_backend.service.ChannelPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

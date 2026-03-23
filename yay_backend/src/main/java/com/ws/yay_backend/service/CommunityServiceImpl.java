@@ -1,18 +1,14 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.components.AuthUtilsComponent;
-import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.v1.request.CreateCommunityRequest;
-import com.ws.yay_backend.dto.v1.request.RenameCommunityRequest;
-import com.ws.yay_backend.dto.v1.request.TransferOwnershipRequest;
-import com.ws.yay_backend.dto.v1.response.CommunityRoleResponse;
-import com.ws.yay_backend.dto.v1.response.GetCommunityResponse;
-import com.ws.yay_backend.dto.v2.request.CommunityBatchRequestV2;
-import com.ws.yay_backend.dto.v2.request.CreateCommunityRequestV2;
-import com.ws.yay_backend.dto.v2.response.CommunityResponseV2;
+import com.ws.yay_backend.dto.request.CommunityBatchRequestV2;
+import com.ws.yay_backend.dto.request.CreateCommunityRequestV2;
+import com.ws.yay_backend.dto.request.RenameCommunityRequest;
+import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
+import com.ws.yay_backend.dto.response.CommunityResponseV2;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -31,7 +27,6 @@ public class CommunityServiceImpl implements CommunityService {
   private final CommunityRepository communityRepository;
   private final CommunityMemberRepository communityMemberRepository;
   private final CommunityRoleRepository communityRoleRepository;
-  private final ChannelRepository channelRepository;
   private final AuthUtilsComponent authUtilsComponent;
 
   @Autowired
@@ -39,66 +34,11 @@ public class CommunityServiceImpl implements CommunityService {
       CommunityRepository communityRepository,
       CommunityMemberRepository communityMemberRepository,
       CommunityRoleRepository communityRoleRepository,
-      ChannelRepository channelRepository,
       AuthUtilsComponent authUtilsComponent) {
     this.communityRepository = communityRepository;
     this.communityMemberRepository = communityMemberRepository;
     this.communityRoleRepository = communityRoleRepository;
-    this.channelRepository = channelRepository;
     this.authUtilsComponent = authUtilsComponent;
-  }
-
-  @Override
-  @Transactional
-  public GetCommunityResponse createCommunity(CreateCommunityRequest request) {
-    User owner = authUtilsComponent.getAuthenticatedUser();
-
-    Community community = new Community(request.name(), owner);
-    Community saved = communityRepository.save(community);
-
-    // Add owner as a member with Admin role
-    CommunityRole adminRole =
-        communityRoleRepository
-            .findByName(CommunityRoleName.ADMIN.getValue())
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "Admin role not found"));
-
-    CommunityMember ownerMembership = new CommunityMember(saved, owner, adminRole);
-    communityMemberRepository.save(ownerMembership);
-
-    return new GetCommunityResponse(
-        saved.getId(),
-        saved.getName(),
-        saved.getOwner().getId(),
-        saved.getOwner().getUsername(),
-        CommunityRoleResponse.fromEntity(adminRole),
-        null);
-  }
-
-  @Override
-  @Transactional
-  public void deleteCommunity(long id) {
-    Long userId = authUtilsComponent.getAuthenticatedUserId();
-
-    Community community =
-        communityRepository
-            .findWithOwnerById(id)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Community not found: " + id));
-
-    boolean isOwner = community.getOwner().getId().equals(userId);
-    boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
-
-    if (!isOwner && !isAdmin) {
-      throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN, "Only the community owner can delete this community");
-    }
-
-    communityRepository.delete(community);
   }
 
   @Override
@@ -146,7 +86,7 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional
-  public GetCommunityResponse renameCommunity(long communityId, RenameCommunityRequest request) {
+  public CommunityResponseV2 renameCommunity(long communityId, RenameCommunityRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Community community =
@@ -165,13 +105,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     community.setName(request.name());
 
-    return new GetCommunityResponse(
-        community.getId(),
-        community.getName(),
-        community.getOwner().getId(),
-        community.getOwner().getUsername(),
-        null,
-        null);
+    return CommunityResponseV2.fromEntity(community);
   }
 
   @Override

@@ -2,9 +2,9 @@ package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.dao.RoleRepository;
 import com.ws.yay_backend.dao.UserRepository;
-import com.ws.yay_backend.dto.v1.request.AuthenticationRequest;
-import com.ws.yay_backend.dto.v1.request.RegisterRequest;
-import com.ws.yay_backend.dto.v1.response.AuthenticationResponse;
+import com.ws.yay_backend.dto.request.AuthenticationRequest;
+import com.ws.yay_backend.dto.request.RegisterRequest;
+import com.ws.yay_backend.dto.response.AuthenticationResponse;
 import com.ws.yay_backend.entity.Role;
 import com.ws.yay_backend.entity.User;
 import jakarta.servlet.http.Cookie;

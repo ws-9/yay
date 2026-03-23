@@ -1,9 +1,9 @@
 package com.ws.yay_backend.controller.v2;
 
-import com.ws.yay_backend.dto.v1.response.CursorPaginatedResponse;
-import com.ws.yay_backend.dto.v2.request.CreateMessageRequestV2;
-import com.ws.yay_backend.dto.v2.request.UpdateMessageRequestV2;
-import com.ws.yay_backend.dto.v2.response.MessageResponseV2;
+import com.ws.yay_backend.dto.request.CreateMessageRequestV2;
+import com.ws.yay_backend.dto.request.UpdateMessageRequestV2;
+import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
+import com.ws.yay_backend.dto.response.MessageResponseV2;
 import com.ws.yay_backend.service.ChannelMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -1,8 +1,8 @@
 package com.ws.yay_backend.controller.v2;
 
-import com.ws.yay_backend.dto.v2.request.CommunityBatchRequestV2;
-import com.ws.yay_backend.dto.v2.request.CreateCommunityRequestV2;
-import com.ws.yay_backend.dto.v2.response.CommunityResponseV2;
+import com.ws.yay_backend.dto.request.CommunityBatchRequestV2;
+import com.ws.yay_backend.dto.request.CreateCommunityRequestV2;
+import com.ws.yay_backend.dto.response.CommunityResponseV2;
 import com.ws.yay_backend.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

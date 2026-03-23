@@ -5,15 +5,10 @@ import com.ws.yay_backend.dao.BannedUserRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.v1.request.JoinCommunityRequest;
-import com.ws.yay_backend.dto.v1.request.RemoveMemberRequest;
-import com.ws.yay_backend.dto.v1.request.UpdateRoleRequest;
-import com.ws.yay_backend.dto.v1.response.CommunityRoleResponse;
-import com.ws.yay_backend.dto.v1.response.GetMemberResponse;
-import com.ws.yay_backend.dto.v1.response.JoinCommunityResponse;
-import com.ws.yay_backend.dto.v2.request.JoinCommunityRequestV2;
-import com.ws.yay_backend.dto.v2.request.UpdateMemberRoleRequestV2;
-import com.ws.yay_backend.dto.v2.response.MemberResponseV2;
+import com.ws.yay_backend.dto.request.JoinCommunityRequestV2;
+import com.ws.yay_backend.dto.request.UpdateMemberRoleRequestV2;
+import com.ws.yay_backend.dto.request.UpdateRoleRequest;
+import com.ws.yay_backend.dto.response.MemberResponseV2;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -50,131 +45,7 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   @Transactional
-  public JoinCommunityResponse joinCommunity(JoinCommunityRequest request) {
-    User user = authUtilsComponent.getAuthenticatedUser();
-
-    Community community =
-        communityRepository
-            .findByInviteSlug(request.inviteSlug())
-            .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid invite slug"));
-
-    // Check if user is banned from this community
-    BannedUserKey bannedKey = new BannedUserKey(community.getId(), user.getId());
-    if (bannedUserRepository.existsById(bannedKey)) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are banned from this community");
-    }
-
-    boolean alreadyMember =
-        communityMemberRepository.existsById(
-            new CommunityMemberKey(community.getId(), user.getId()));
-
-    if (!alreadyMember) {
-      CommunityRole memberRole =
-          communityRoleRepository
-              .findByName(CommunityRoleName.MEMBER.getValue())
-              .orElseThrow(
-                  () ->
-                      new ResponseStatusException(
-                          HttpStatus.INTERNAL_SERVER_ERROR, "Default member role not found"));
-
-      CommunityMember communityMember = new CommunityMember(community, user, memberRole);
-      communityMemberRepository.save(communityMember);
-    }
-
-    return new JoinCommunityResponse(user.getId(), user.getUsername(), !alreadyMember);
-  }
-
-  @Override
-  @Transactional
-  public void deleteMember(RemoveMemberRequest request) {
-    boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
-
-    if (isAdmin) {
-      Community community =
-          communityRepository
-              .findWithOwnerById(request.communityId())
-              .orElseThrow(
-                  () ->
-                      new ResponseStatusException(
-                          HttpStatus.NOT_FOUND, "Community not found: " + request.communityId()));
-
-      CommunityMemberKey key = new CommunityMemberKey(request.communityId(), request.userId());
-
-      CommunityMember toBeRemovedMember =
-          communityMemberRepository
-              .findById(key)
-              .orElseThrow(
-                  () ->
-                      new ResponseStatusException(
-                          HttpStatus.NOT_FOUND, "Member not found: " + request.userId()));
-
-      boolean isCommunityOwner = community.getOwner().getId().equals(request.userId());
-
-      if (isCommunityOwner) {
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
-      }
-
-      communityMemberRepository.delete(toBeRemovedMember);
-
-      return;
-    }
-
-    Long userId = authUtilsComponent.getAuthenticatedUserId();
-
-    // if user is not a member, just throw a NOT FOUND
-    CommunityMember membership =
-        communityMemberRepository
-            .findWithRoleAndCommunityAndOwnerByKey(
-                new CommunityMemberKey(request.communityId(), userId))
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Community id not found in database: " + request.communityId()));
-
-    boolean isSelf = userId.equals(request.userId());
-    boolean hasPrivilege = membership.getRole().getCanBanUsers();
-
-    if (!isSelf && !hasPrivilege) {
-      throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN, "You don't have permission to remove users");
-    }
-
-    CommunityMemberKey key = new CommunityMemberKey(request.communityId(), request.userId());
-
-    CommunityMember toBeRemovedMember =
-        communityMemberRepository
-            .findWithRoleByKey(key)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Member not found: " + request.userId()));
-
-    boolean isCommunityOwner =
-        membership.getCommunity().getOwner().getId().equals(request.userId());
-
-    if (isCommunityOwner) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
-    }
-
-    if (!isSelf) {
-      boolean hasSufficientHierarchy =
-          toBeRemovedMember.getRole().getHierarchyLevel()
-              > membership.getRole().getHierarchyLevel();
-
-      if (!hasSufficientHierarchy) {
-        throw new ResponseStatusException(
-            HttpStatus.FORBIDDEN, "You don't have permission to remove users of higher hierarchy");
-      }
-    }
-
-    communityMemberRepository.delete(toBeRemovedMember);
-  }
-
-  @Override
-  @Transactional
-  public GetMemberResponse updateRole(UpdateRoleRequest request) {
+  public MemberResponseV2 updateRole(UpdateRoleRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     CommunityMember membership =
@@ -218,12 +89,7 @@ public class MemberServiceImpl implements MemberService {
 
       targetMembership.setRole(newRole);
 
-      return new GetMemberResponse(
-          targetMembership.getUser().getId(),
-          targetMembership.getUser().getUsername(),
-          community.getId(),
-          community.getName(),
-          CommunityRoleResponse.fromEntity(newRole));
+      return MemberResponseV2.fromEntity(targetMembership);
     }
 
     // You should always be able to demote yourself
@@ -236,12 +102,7 @@ public class MemberServiceImpl implements MemberService {
 
       membership.setRole(newRole);
 
-      return new GetMemberResponse(
-          membership.getUser().getId(),
-          membership.getUser().getUsername(),
-          community.getId(),
-          community.getName(),
-          CommunityRoleResponse.fromEntity(newRole));
+      return MemberResponseV2.fromEntity(membership);
     }
 
     // Otherwise, compare hierarchy levels
@@ -277,12 +138,7 @@ public class MemberServiceImpl implements MemberService {
 
     targetMembership.setRole(newRole);
 
-    return new GetMemberResponse(
-        targetMembership.getUser().getId(),
-        targetMembership.getUser().getUsername(),
-        community.getId(),
-        community.getName(),
-        CommunityRoleResponse.fromEntity(newRole));
+    return MemberResponseV2.fromEntity(targetMembership);
   }
 
   @Override

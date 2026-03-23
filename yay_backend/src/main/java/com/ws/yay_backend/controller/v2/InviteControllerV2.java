@@ -1,6 +1,6 @@
 package com.ws.yay_backend.controller.v2;
 
-import com.ws.yay_backend.dto.v2.response.InviteResponseV2;
+import com.ws.yay_backend.dto.response.InviteResponseV2;
 import com.ws.yay_backend.service.InviteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

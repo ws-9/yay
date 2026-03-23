@@ -1,8 +1,8 @@
 package com.ws.yay_backend.controller.v1;
 
-import com.ws.yay_backend.dto.v1.request.AuthenticationRequest;
-import com.ws.yay_backend.dto.v1.request.RegisterRequest;
-import com.ws.yay_backend.dto.v1.response.AuthenticationResponse;
+import com.ws.yay_backend.dto.request.AuthenticationRequest;
+import com.ws.yay_backend.dto.request.RegisterRequest;
+import com.ws.yay_backend.dto.response.AuthenticationResponse;
 import com.ws.yay_backend.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Authentication Controller")
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v2/auth")
 public class AuthenticationController {
   private final AuthenticationService authenticationService;
 

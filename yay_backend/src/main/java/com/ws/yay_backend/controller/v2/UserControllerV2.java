@@ -1,7 +1,7 @@
 package com.ws.yay_backend.controller.v2;
 
-import com.ws.yay_backend.dto.v2.request.UserBatchRequestV2;
-import com.ws.yay_backend.dto.v2.response.UserResponseV2;
+import com.ws.yay_backend.dto.request.UserBatchRequestV2;
+import com.ws.yay_backend.dto.response.UserResponseV2;
 import com.ws.yay_backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

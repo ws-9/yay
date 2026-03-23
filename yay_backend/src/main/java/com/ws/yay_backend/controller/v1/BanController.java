@@ -1,7 +1,7 @@
 package com.ws.yay_backend.controller.v1;
 
-import com.ws.yay_backend.dto.v1.request.CreateBanRequest;
-import com.ws.yay_backend.dto.v1.response.BannedUserResponse;
+import com.ws.yay_backend.dto.request.CreateBanRequest;
+import com.ws.yay_backend.dto.response.BannedUserResponse;
 import com.ws.yay_backend.service.BanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Bans")
 @RestController
-@RequestMapping("/api/v1/bans")
+@RequestMapping("/api/v2/bans")
 public class BanController {
   private final BanService banService;
 

@@ -1,7 +1,7 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.v2.request.UserBatchRequestV2;
-import com.ws.yay_backend.dto.v2.response.UserResponseV2;
+import com.ws.yay_backend.dto.request.UserBatchRequestV2;
+import com.ws.yay_backend.dto.response.UserResponseV2;
 import java.util.List;
 
 public interface UserService {

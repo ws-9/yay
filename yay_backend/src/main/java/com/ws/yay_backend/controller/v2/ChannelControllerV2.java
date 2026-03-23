@@ -1,8 +1,8 @@
 package com.ws.yay_backend.controller.v2;
 
-import com.ws.yay_backend.dto.v2.request.ChannelBatchRequestV2;
-import com.ws.yay_backend.dto.v2.request.CreateChannelRequestV2;
-import com.ws.yay_backend.dto.v2.response.ChannelResponseV2;
+import com.ws.yay_backend.dto.request.ChannelBatchRequestV2;
+import com.ws.yay_backend.dto.request.CreateChannelRequestV2;
+import com.ws.yay_backend.dto.response.ChannelResponseV2;
 import com.ws.yay_backend.service.ChannelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

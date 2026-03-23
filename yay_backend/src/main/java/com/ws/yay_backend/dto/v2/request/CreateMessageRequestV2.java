@@ -1,6 +1,0 @@
-package com.ws.yay_backend.dto.v2.request;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-public record CreateMessageRequestV2(@NotBlank String message, @NotNull Long channelId) {}

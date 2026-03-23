@@ -1,6 +1,6 @@
 package com.ws.yay_backend.advice;
 
-import com.ws.yay_backend.dto.v1.broadcast.SimpleErrorBroadcast;
+import com.ws.yay_backend.dto.broadcast.SimpleErrorBroadcast;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.ControllerAdvice;
