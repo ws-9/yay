@@ -3,7 +3,7 @@ import {
   useWebSocketActions,
   useWebSocketConnectedStatus,
 } from '../store/webSocketStore';
-import type { ChannelMessage } from '../types/ChannelMessage';
+import type { ChannelMessage } from '../types/v1/ChannelMessage';
 
 export function useChannelSubscription(channelId: number) {
   const { subscribe } = useWebSocketActions();

@@ -1,13 +1,13 @@
 import { Menu } from '@base-ui/react/menu';
-import { useUserInfoQuery } from '../../../hooks/queries/useUserInfoQuery';
-import useDeleteChannelMessage from '../../../hooks/mutations/useDeleteChannelMessageMutation';
-import { useMemberRole } from '../../../hooks/queries/useMemberRoleQuery';
-import { useChannelQuery } from '../../../hooks/queries/useChannelQuery';
-import { useCommunityQuery } from '../../../hooks/queries/useCommunityQuery';
-import useRemoveMemberMutation from '../../../hooks/mutations/useRemoveMemberMutation';
-import useBanMember from '../../../hooks/mutations/useBanMemberMutation';
-import type { ChannelMessage } from '../../../types/ChannelMessage';
-import type { CommunityRole } from '../../../types/CommunityRole';
+import { useUserInfoQuery } from '../../../hooks/queries/v1/useUserInfoQuery';
+import useDeleteChannelMessage from '../../../hooks/mutations/v1/useDeleteChannelMessageMutation';
+import { useMemberRole } from '../../../hooks/queries/v1/useMemberRoleQuery';
+import { useChannelQuery } from '../../../hooks/queries/v1/useChannelQuery';
+import { useCommunityQuery } from '../../../hooks/queries/v1/useCommunityQuery';
+import useRemoveMemberMutation from '../../../hooks/mutations/v1/useRemoveMemberMutation';
+import useBanMember from '../../../hooks/mutations/v1/useBanMemberMutation';
+import type { ChannelMessage } from '../../../types/v1/ChannelMessage';
+import type { CommunityRole } from '../../../types/v1/CommunityRole';
 
 type MessageMenuProps = {
   message: ChannelMessage;

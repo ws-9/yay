@@ -1,4 +1,4 @@
-import { useChannelQuery } from '../../../hooks/queries/useChannelQuery';
+import { useChannelQuery } from '../../../hooks/queries/v1/useChannelQuery';
 import {
   useIsActivePane,
   useWorkspaceActions,

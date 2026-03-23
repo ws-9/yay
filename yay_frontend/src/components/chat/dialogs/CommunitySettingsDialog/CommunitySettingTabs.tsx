@@ -1,5 +1,5 @@
 import { Tabs } from '@base-ui/react/tabs';
-import { useCommunityQuery } from '../../../../hooks/queries/useCommunityQuery';
+import { useCommunityQuery } from '../../../../hooks/queries/v1/useCommunityQuery';
 import { Separator } from '@base-ui/react/separator';
 import MembersPanel from './MembersPanel';
 

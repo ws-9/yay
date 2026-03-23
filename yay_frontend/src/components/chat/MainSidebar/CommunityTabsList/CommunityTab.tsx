@@ -1,6 +1,6 @@
 import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from '../CommunityMenu';
-import type { CommunityRole } from '../../../../types/CommunityRole';
+import type { CommunityRole } from '../../../../types/v1/CommunityRole';
 import ChannelTab from './ChannelTab';
 
 export default function CommunityTab({

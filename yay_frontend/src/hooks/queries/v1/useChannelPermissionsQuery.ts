@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
-import { API_CHANNELS } from '../../constants';
-import { queryKeys } from '../queryKeys';
-import useFetchWithAuth from '../useFetchWithAuth';
+import { API_CHANNELS } from '../../../constants';
+import { queryKeys } from '../../queryKeys';
+import useFetchWithAuth from '../../useFetchWithAuth';
 
 export type ChannelPermission = {
   channelId: number;

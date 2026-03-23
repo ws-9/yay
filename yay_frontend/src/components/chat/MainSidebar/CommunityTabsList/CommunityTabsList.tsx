@@ -1,4 +1,4 @@
-import useMyCommunitiesQuery from '../../../../hooks/queries/useMyCommunitiesQuery';
+import useMyCommunitiesQuery from '../../../../hooks/queries/v1/useMyCommunitiesQuery';
 import { useWorkspaceActions } from '../../../../store/workspaceStore';
 import { Accordion } from '@base-ui/react/accordion';
 import { useEffect, useEffectEvent } from 'react';

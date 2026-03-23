@@ -1,12 +1,12 @@
 import { Tabs } from '@base-ui/react/tabs';
 import useChannelPermissionsQuery, {
   type ChannelPermission,
-} from '../../../../hooks/queries/useChannelPermissionsQuery';
-import { useChannelQuery } from '../../../../hooks/queries/useChannelQuery';
-import { useUserInfoQuery } from '../../../../hooks/queries/useUserInfoQuery';
-import { useMemberRole } from '../../../../hooks/queries/useMemberRoleQuery';
+} from '../../../../hooks/queries/v1/useChannelPermissionsQuery';
+import { useChannelQuery } from '../../../../hooks/queries/v1/useChannelQuery';
+import { useUserInfoQuery } from '../../../../hooks/queries/v1/useUserInfoQuery';
+import { useMemberRole } from '../../../../hooks/queries/v1/useMemberRoleQuery';
 import { Select } from '@base-ui/react/select';
-import useChannelPermissionMutation from '../../../../hooks/mutations/useChannelPermissionMutation';
+import useChannelPermissionMutation from '../../../../hooks/mutations/v1/useChannelPermissionMutation';
 import { useState } from 'react';
 
 const accessOptions = [

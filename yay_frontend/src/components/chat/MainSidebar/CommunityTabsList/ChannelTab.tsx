@@ -1,5 +1,5 @@
-import { useChannelQuery } from '../../../../hooks/queries/useChannelQuery';
-import useUserChannelPermissionQuery from '../../../../hooks/queries/useUserChannelPermissionQuery';
+import { useChannelQuery } from '../../../../hooks/queries/v1/useChannelQuery';
+import useUserChannelPermissionQuery from '../../../../hooks/queries/v1/useUserChannelPermissionQuery';
 import {
   getActivePaneId,
   useWorkspaceActions,

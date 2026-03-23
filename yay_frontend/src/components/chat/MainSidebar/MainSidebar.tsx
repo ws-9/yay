@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { useLogout } from '../../../hooks/mutations/useLogoutMutation';
+import { useLogout } from '../../../hooks/mutations/v1/useLogoutMutation';
 import CommunityTabsList from './CommunityTabsList/CommunityTabsList';
 import CommunityDialog from '../dialogs/CommunityDialog';
 import { ScrollArea } from '@base-ui/react/scroll-area';

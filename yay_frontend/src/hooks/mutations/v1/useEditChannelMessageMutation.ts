@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { API_MESSAGES } from '../../constants';
-import type { ChannelMessage } from '../../types/ChannelMessage';
-import useFetchWithAuth from '../useFetchWithAuth';
+import { API_MESSAGES } from '../../../constants';
+import type { ChannelMessage } from '../../../types/v1/ChannelMessage';
+import useFetchWithAuth from '../../useFetchWithAuth';
 
 type EditChannelMessageInput = {
   id: number;

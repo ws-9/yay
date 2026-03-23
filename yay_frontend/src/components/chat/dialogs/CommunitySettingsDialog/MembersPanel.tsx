@@ -1,12 +1,12 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { Select } from '@base-ui/react/select';
-import useMembersQuery from '../../../../hooks/queries/useMembersQuery';
-import { useCommunityQuery } from '../../../../hooks/queries/useCommunityQuery';
-import type { Member } from '../../../../types/Member';
-import { useUserInfoQuery } from '../../../../hooks/queries/useUserInfoQuery';
-import { useMemberRole } from '../../../../hooks/queries/useMemberRoleQuery';
-import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/useUpdateMemberRoleMutation';
-import type { CommunityRole } from '../../../../types/CommunityRole';
+import useMembersQuery from '../../../../hooks/queries/v1/useMembersQuery';
+import { useCommunityQuery } from '../../../../hooks/queries/v1/useCommunityQuery';
+import type { Member } from '../../../../types/v1/Member';
+import { useUserInfoQuery } from '../../../../hooks/queries/v1/useUserInfoQuery';
+import { useMemberRole } from '../../../../hooks/queries/v1/useMemberRoleQuery';
+import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/v1/useUpdateMemberRoleMutation';
+import type { CommunityRole } from '../../../../types/v1/CommunityRole';
 
 const roles = [
   { label: 'Admin', value: 'Admin' },

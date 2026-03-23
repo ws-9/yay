@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
-import type { Community } from '../types/Community';
-import type { BootstrapResponse } from './queries/useBootstrapQuery';
-import type { Channel } from '../types/Channel';
+import type { Community } from '../types/v1/Community';
+import type { BootstrapResponse } from './queries/v1/useBootstrapQuery';
+import type { Channel } from '../types/v1/Channel';
 import { queryKeys } from './queryKeys';
 
 export function useCreateCommunityOptimistically() {
