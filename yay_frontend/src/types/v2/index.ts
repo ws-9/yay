@@ -1,6 +1,8 @@
 export type { CursorPaginatedResponseV2 } from './CursorPaginatedResponseV2';
 export type { ChannelV2 } from './ChannelV2';
+export type { ChannelPermissionV2 } from './ChannelPermissionV2';
 export type { CommunityV2 } from './CommunityV2';
+export type { InviteResponseV2 } from './InviteResponseV2';
 export type { MemberV2 } from './MemberV2';
 export type { MessageV2 } from './MessageV2';
 export type { RoleV2 } from './RoleV2';

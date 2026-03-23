@@ -1,11 +1,13 @@
 import { Tabs } from '@base-ui/react/tabs';
-import useChannelPermissionsQuery from '../../../../hooks/queries/v1/useChannelPermissionsQuery';
-import { useChannelQuery } from '../../../../hooks/queries/v1/useChannelQuery';
-import { useMemberRole } from '../../../../hooks/queries/v1/useMemberRoleQuery';
+import { useRolesV2Query } from '../../../../hooks/queries/v2/useRolesV2Query';
+import { useChannelV2Query } from '../../../../hooks/queries/v2/useChannelV2Query';
+import { useChannelPermissionsV2Query } from '../../../../hooks/queries/v2/useChannelPermissionsV2Query';
+import { useMemberV2Query } from '../../../../hooks/queries/v2/useMemberV2Query';
 import { Select } from '@base-ui/react/select';
 import useChannelPermissionMutation from '../../../../hooks/mutations/v1/useChannelPermissionMutation';
 import { useState } from 'react';
 import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
+import type { RoleV2 } from '../../../../types/v2';
 
 const accessOptions = [
   { label: 'Can read', value: 'read' },
@@ -13,51 +15,58 @@ const accessOptions = [
   { label: 'No access', value: 'none' },
 ];
 
-const roleHierarchies = {
-  Admin: 1,
-  Moderator: 2,
-  Member: 3,
-};
-
-const roleMap: Record<number, string> = {
-  1: 'Admin',
-  2: 'Moderator',
-  3: 'Member',
-};
-
 export default function PermissionsPanel({ channelId }: { channelId: number }) {
   const userInfoQuery = useMeV2Query();
-  const channelQuery = useChannelQuery(channelId);
-  const { data: permissions, isLoading } =
-    useChannelPermissionsQuery(channelId);
-  const userRoleQuery = useMemberRole(
-    channelQuery.data?.communityId ?? null,
+  const channelQuery = useChannelV2Query(channelId);
+  const rolesQuery = useRolesV2Query();
+
+  const communityId = channelQuery.data?.communityId;
+  const permissionsQuery = useChannelPermissionsV2Query(
+    communityId ? [communityId] : [],
+  );
+
+  const myMemberQuery = useMemberV2Query(
+    communityId ?? null,
     userInfoQuery.data?.id ?? null,
   );
 
   const isLoadingData =
     userInfoQuery.isLoading ||
     channelQuery.isLoading ||
-    isLoading ||
-    userRoleQuery.isLoading;
+    rolesQuery.isLoading ||
+    permissionsQuery.isLoading ||
+    myMemberQuery.isLoading;
 
   if (isLoadingData) {
     return <div>Loading...</div>;
   }
 
-  const userHierarchy = userRoleQuery.data!.hierarchyLevel;
+  const allRoles = rolesQuery.data!;
+  const allPermissions = permissionsQuery.data!;
+  const myMembership = myMemberQuery.data?.[0];
+  const userRole = allRoles.find(r => r.id === myMembership?.roleId);
 
-  const permissionsList =
-    permissions?.map(permission => (
+  if (!userRole) {
+    return <div>Access denied</div>;
+  }
+
+  // Map each role to its permission for THIS channel, or default to read/write
+  const permissionsList = allRoles.map(role => {
+    const override = allPermissions.find(
+      p => p.channelId === channelId && p.roleId === role.id,
+    );
+
+    return (
       <PermissionRow
-        key={permission.roleId}
+        key={role.id}
         channelId={channelId}
-        roleId={permission.roleId}
-        canRead={permission.canRead}
-        canWrite={permission.canWrite}
-        userHierarchy={userHierarchy}
+        role={role}
+        canRead={override ? override.canRead : true}
+        canWrite={override ? override.canWrite : true}
+        userRole={userRole}
       />
-    )) ?? [];
+    );
+  });
 
   return (
     <Tabs.Panel className="flex-1 space-y-4 p-6" value="members">
@@ -68,26 +77,26 @@ export default function PermissionsPanel({ channelId }: { channelId: number }) {
 
 function PermissionRow({
   channelId,
-  roleId,
+  role,
   canRead,
   canWrite,
-  userHierarchy,
+  userRole,
 }: {
   channelId: number;
-  roleId: number;
+  role: RoleV2;
   canRead: boolean;
   canWrite: boolean;
-  userHierarchy: number;
+  userRole: RoleV2;
 }) {
   return (
-    <div>
-      {`${roleMap[roleId]} `}
+    <div className="flex items-center justify-between">
+      <span className="text-sm font-medium text-gray-700">{role.name}</span>
       <AccessSelector
         channelId={channelId}
         canRead={canRead}
         canWrite={canWrite}
-        roleId={roleId}
-        userHierarchy={userHierarchy}
+        role={role}
+        userRole={userRole}
       />
     </div>
   );
@@ -97,21 +106,19 @@ function AccessSelector({
   channelId,
   canRead,
   canWrite,
-  roleId,
-  userHierarchy,
+  role,
+  userRole,
 }: {
   channelId: number;
   canRead: boolean;
   canWrite: boolean;
-  roleId: number;
-  userHierarchy: number;
+  role: RoleV2;
+  userRole: RoleV2;
 }) {
   const { mutate } = useChannelPermissionMutation(channelId);
   const [value, setValue] = useState(toAccessOption(canRead, canWrite));
 
-  const roleHierarchy =
-    roleHierarchies[roleMap[roleId] as keyof typeof roleHierarchies];
-  const isDisabled = userHierarchy >= roleHierarchy;
+  const isDisabled = userRole.hierarchyLevel >= role.hierarchyLevel;
 
   function handleAccessChange(newAccessValue: string | null) {
     if (newAccessValue === null) {
@@ -122,19 +129,19 @@ function AccessSelector({
 
     if (newAccessValue === 'read') {
       mutate({
-        roleId: roleId,
+        roleId: role.id,
         canRead: true,
         canWrite: false,
       });
     } else if (newAccessValue === 'readWrite') {
       mutate({
-        roleId: roleId,
+        roleId: role.id,
         canRead: true,
         canWrite: true,
       });
     } else if (newAccessValue === 'none') {
       mutate({
-        roleId: roleId,
+        roleId: role.id,
         canRead: false,
         canWrite: false,
       });

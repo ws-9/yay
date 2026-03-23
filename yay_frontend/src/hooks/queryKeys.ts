@@ -57,4 +57,14 @@ export const queryKeysV2 = {
     byChannel: (channelId: number) =>
       ['v2', 'messages', { channelId }] as const,
   },
+  channelPermissions: {
+    all: (communityIds: number[]) =>
+      ['v2', 'channel-permissions', { communityIds: [...communityIds].sort() }] as const,
+    detail: (channelId: number, roleId: number) =>
+      ['v2', 'channel-permissions', { channelId, roleId }] as const,
+  },
+  invites: {
+    byCommunity: (communityId: number) =>
+      ['v2', 'invites', { communityId }] as const,
+  },
 } as const;

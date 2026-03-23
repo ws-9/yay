@@ -1,12 +1,13 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { Select } from '@base-ui/react/select';
-import useMembersQuery from '../../../../hooks/queries/v1/useMembersQuery';
-import { useCommunityQuery } from '../../../../hooks/queries/v1/useCommunityQuery';
-import type { Member } from '../../../../types/v1/Member';
-import { useMemberRole } from '../../../../hooks/queries/v1/useMemberRoleQuery';
+import { useCommunityV2Query } from '../../../../hooks/queries/v2/useCommunityV2Query';
+import { useCommunityMembersV2Query } from '../../../../hooks/queries/v2/useCommunityMembersV2Query';
+import { useRolesV2Query } from '../../../../hooks/queries/v2/useRolesV2Query';
+import { useUserV2Query } from '../../../../hooks/queries/v2/useUsersV2Query';
+import { useMemberV2Query } from '../../../../hooks/queries/v2/useMemberV2Query';
 import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/v1/useUpdateMemberRoleMutation';
-import type { CommunityRole } from '../../../../types/v1/CommunityRole';
 import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
+import type { MemberV2, RoleV2 } from '../../../../types/v2';
 
 const roles = [
   { label: 'Admin', value: 'Admin' },
@@ -14,32 +15,39 @@ const roles = [
   { label: 'Member', value: 'Member' },
 ];
 
-const roleHierarchies = {
-  Admin: 1,
-  Moderator: 2,
-  Member: 3,
-};
-
 export default function MembersPanel({ communityId }: { communityId: number }) {
   const userInfoQuery = useMeV2Query();
-  const communityQuery = useCommunityQuery(communityId);
-  const membersQuery = useMembersQuery(communityId);
-  const userRoleQuery = useMemberRole(communityId, userInfoQuery.data?.id ?? 0);
+  const communityQuery = useCommunityV2Query(communityId);
+  const membersQuery = useCommunityMembersV2Query(communityId);
+  const rolesQuery = useRolesV2Query();
+
+  const myMemberQuery = useMemberV2Query(
+    communityId,
+    userInfoQuery.data?.id ?? null,
+  );
 
   const isLoading =
     userInfoQuery.isLoading ||
     communityQuery.isLoading ||
     membersQuery.isLoading ||
-    userRoleQuery.isLoading;
+    rolesQuery.isLoading ||
+    myMemberQuery.isLoading;
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   const community = communityQuery.data!;
-  const userRole = userRoleQuery.data!;
   const data = membersQuery.data!;
+  const allRoles = rolesQuery.data!;
   const userId = userInfoQuery.data!.id;
+
+  const myMembership = myMemberQuery.data?.[0];
+  const userRole = allRoles.find(r => r.id === myMembership?.roleId);
+
+  if (!userRole) {
+    return <div>Access denied</div>;
+  }
 
   const membersList = data.map(member => (
     <MemberRow
@@ -49,6 +57,7 @@ export default function MembersPanel({ communityId }: { communityId: number }) {
       ownerId={community.ownerId}
       userId={userId}
       communityId={communityId}
+      allRoles={allRoles}
     />
   ));
 
@@ -65,24 +74,34 @@ function MemberRow({
   ownerId,
   userId,
   communityId,
+  allRoles,
 }: {
-  member: Member;
-  userRole: CommunityRole;
+  member: MemberV2;
+  userRole: RoleV2;
   ownerId: number;
   userId: number;
   communityId: number;
+  allRoles: RoleV2[];
 }) {
+  const userQuery = useUserV2Query(member.userId);
+  const memberRole = allRoles.find(r => r.id === member.roleId)!;
+
+  if (userQuery.isLoading) {
+    return <div>Loading member...</div>;
+  }
+
   return (
     <div>
-      {`${member.username}`}{' '}
+      {`${userQuery.data?.username}`}{' '}
       <RoleSelector
-        roleName={member.role.name}
+        roleName={memberRole.name}
         userRole={userRole}
-        targetRole={member.role}
+        targetRole={memberRole}
         memberId={member.userId}
         ownerId={ownerId}
         userId={userId}
         communityId={communityId}
+        allRoles={allRoles}
       />
     </div>
   );
@@ -96,14 +115,16 @@ function RoleSelector({
   ownerId,
   userId,
   communityId,
+  allRoles,
 }: {
   roleName: string;
-  userRole: CommunityRole;
-  targetRole: CommunityRole;
+  userRole: RoleV2;
+  targetRole: RoleV2;
   memberId: number;
   ownerId: number;
   userId: number;
   communityId: number;
+  allRoles: RoleV2[];
 }) {
   const updateRoleMutation = useUpdateMemberRoleMutation();
 
@@ -161,6 +182,7 @@ function RoleSelector({
                       userId,
                       userRole.canManageRoles,
                       ownerId,
+                      allRoles,
                     )
                   }
                   className="grid cursor-default grid-cols-[0.75rem_1fr] items-center gap-2 py-2 pr-4 pl-2.5 text-sm leading-4 outline-none select-none group-data-[side=none]:pr-12 group-data-[side=none]:text-base group-data-[side=none]:leading-4 data-disabled:cursor-not-allowed data-disabled:bg-gray-100 data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-gray-50 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-gray-900 pointer-coarse:py-2.5 pointer-coarse:text-[0.925rem]"
@@ -249,9 +271,11 @@ function canSelectItem(
   userId: number,
   canManageRoles: boolean,
   ownerId: number,
+  allRoles: RoleV2[],
 ): boolean {
-  const itemHierarchy =
-    roleHierarchies[itemValue as keyof typeof roleHierarchies];
+  const itemRole = allRoles.find(r => r.name === itemValue);
+  if (!itemRole) return false;
+  const itemHierarchy = itemRole.hierarchyLevel;
 
   const isSelf = targetUserId === userId;
 

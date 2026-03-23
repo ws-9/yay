@@ -22,6 +22,8 @@ export const API_COMMUNITIES_V2 = API_BASE_URL_V2 + '/communities';
 export const API_CHANNELS_V2 = API_BASE_URL_V2 + '/channels';
 export const API_MEMBERS_V2 = API_BASE_URL_V2 + '/members';
 export const API_MESSAGES_V2 = API_BASE_URL_V2 + '/messages';
+export const API_CHANNEL_PERMISSIONS_V2 = API_BASE_URL_V2 + '/channel-permissions';
+export const API_INVITES_V2 = API_BASE_URL_V2 + '/invites';
 
 export const WS_BROKER = 'ws://localhost:8080/ws';
 

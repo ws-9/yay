@@ -1,5 +1,5 @@
 import { Tabs } from '@base-ui/react/tabs';
-import { useCommunityQuery } from '../../../../hooks/queries/v1/useCommunityQuery';
+import { useCommunityV2Query } from '../../../../hooks/queries/v2/useCommunityV2Query';
 import { Separator } from '@base-ui/react/separator';
 import MembersPanel from './MembersPanel';
 
@@ -8,7 +8,7 @@ export default function CommunitySettingTabs({
 }: {
   communityId: number | null;
 }) {
-  const { data } = useCommunityQuery(communityId);
+  const { data } = useCommunityV2Query(communityId);
 
   if (!communityId || !data) {
     return null;
