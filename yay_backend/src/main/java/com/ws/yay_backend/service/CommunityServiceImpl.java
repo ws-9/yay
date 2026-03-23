@@ -9,6 +9,9 @@ import com.ws.yay_backend.dto.v1.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.v1.request.RenameCommunityRequest;
 import com.ws.yay_backend.dto.v1.request.TransferOwnershipRequest;
 import com.ws.yay_backend.dto.v1.response.*;
+import com.ws.yay_backend.dto.v2.request.CommunityBatchRequestV2;
+import com.ws.yay_backend.dto.v2.request.CreateCommunityRequestV2;
+import com.ws.yay_backend.dto.v2.response.CommunityResponseV2;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -343,5 +346,85 @@ public class CommunityServiceImpl implements CommunityService {
         community.getOwner().getUsername(),
         null,
         null);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CommunityResponseV2> getJoinedCommunitiesV2() {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+    return communityRepository.findAllWithOwnerByMembers_User_id(userId).stream()
+        .map(CommunityResponseV2::fromEntity)
+        .toList();
+  }
+
+  @Override
+  @Transactional
+  public CommunityResponseV2 createCommunityV2(CreateCommunityRequestV2 request) {
+    User owner = authUtilsComponent.getAuthenticatedUser();
+
+    Community community = new Community(request.name(), owner);
+    Community saved = communityRepository.save(community);
+
+    // Add owner as a member with Admin role
+    CommunityRole adminRole =
+        communityRoleRepository
+            .findByName(CommunityRoleName.ADMIN.getValue())
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "Admin role not found"));
+
+    CommunityMember ownerMembership = new CommunityMember(saved, owner, adminRole);
+    communityMemberRepository.save(ownerMembership);
+
+    return CommunityResponseV2.fromEntity(saved);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public CommunityResponseV2 getCommunityV2(long id) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    Community community =
+        communityRepository
+            .findWithOwnerById(id)
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+
+    boolean isMember = communityMemberRepository.existsById(new CommunityMemberKey(id, userId));
+    if (!isMember) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found");
+    }
+
+    return CommunityResponseV2.fromEntity(community);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CommunityResponseV2> getCommunitiesBatchV2(CommunityBatchRequestV2 request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+    return communityRepository.findCommunitiesByIdsAndUserId(request.ids(), userId).stream()
+        .map(CommunityResponseV2::fromEntity)
+        .toList();
+  }
+
+  @Override
+  @Transactional
+  public void deleteCommunityV2(long id) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    Community community =
+        communityRepository
+            .findWithOwnerById(id)
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found"));
+
+    boolean isOwner = community.getOwner().getId().equals(userId);
+    if (!isOwner) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN, "Only the community owner can delete this community");
+    }
+
+    communityRepository.delete(community);
   }
 }
