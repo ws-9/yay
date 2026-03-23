@@ -1,13 +1,13 @@
 import { Tabs } from '@base-ui/react/tabs';
-import { useRolesV2Query } from '../../../../hooks/queries/v2/useRolesV2Query';
-import { useChannelV2Query } from '../../../../hooks/queries/v2/useChannelV2Query';
-import { useChannelPermissionsV2Query } from '../../../../hooks/queries/v2/useChannelPermissionsV2Query';
-import { useMemberV2Query } from '../../../../hooks/queries/v2/useMemberV2Query';
+import { useRolesV2Query } from '../../../../hooks/queries/useRolesV2Query';
+import { useChannelV2Query } from '../../../../hooks/queries/useChannelV2Query';
+import { useChannelPermissionsV2Query } from '../../../../hooks/queries/useChannelPermissionsV2Query';
+import { useMemberV2Query } from '../../../../hooks/queries/useMemberV2Query';
 import { Select } from '@base-ui/react/select';
-import useChannelPermissionMutation from '../../../../hooks/mutations/v1/useChannelPermissionMutation';
+import useChannelPermissionMutation from '../../../../hooks/mutations/useChannelPermissionMutation';
 import { useState } from 'react';
-import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
-import type { RoleV2 } from '../../../../types/v2';
+import { useMeV2Query } from '../../../../hooks/queries/useMeV2Query';
+import type { RoleV2 } from '../../../../types';
 
 const accessOptions = [
   { label: 'Can read', value: 'read' },

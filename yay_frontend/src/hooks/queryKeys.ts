@@ -24,6 +24,7 @@ export const queryKeysV1 = {
 } as const;
 
 export const queryKeysV2 = {
+  bootstrap: ['v2', 'bootstrap'] as const,
   me: ['v2', 'me'] as const,
   users: {
     detail: (id: number) => ['v2', 'users', id] as const,

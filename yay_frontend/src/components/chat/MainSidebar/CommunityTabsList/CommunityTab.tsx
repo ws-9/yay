@@ -1,10 +1,10 @@
 import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from '../CommunityMenu';
 import ChannelTab from './ChannelTab';
-import { useChannelsV2Query } from '../../../../hooks/queries/v2/useChannelsV2Query';
-import { useMemberV2Query } from '../../../../hooks/queries/v2/useMemberV2Query';
-import { useRolesV2Query } from '../../../../hooks/queries/v2/useRolesV2Query';
-import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
+import { useChannelsV2Query } from '../../../../hooks/queries/useChannelsV2Query';
+import { useMemberV2Query } from '../../../../hooks/queries/useMemberV2Query';
+import { useRolesV2Query } from '../../../../hooks/queries/useRolesV2Query';
+import { useMeV2Query } from '../../../../hooks/queries/useMeV2Query';
 
 export default function CommunityTab({
   name,

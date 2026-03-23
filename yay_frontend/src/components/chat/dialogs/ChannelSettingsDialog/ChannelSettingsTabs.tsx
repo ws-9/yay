@@ -1,6 +1,6 @@
 import { Separator } from '@base-ui/react/separator';
 import { Tabs } from '@base-ui/react/tabs';
-import { useChannelV2Query } from '../../../../hooks/queries/v2/useChannelV2Query';
+import { useChannelV2Query } from '../../../../hooks/queries/useChannelV2Query';
 import PermissionsPanel from './PermissionsPanel';
 
 export default function ChannelSettingsTabs({

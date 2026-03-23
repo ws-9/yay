@@ -3,14 +3,12 @@ import {
   useWebSocketActions,
   useWebSocketConnectedStatus,
 } from '../store/webSocketStore';
-import type { MessageV2 } from '../types/v2';
+import type { MessageV2 } from '../types';
 
 export function useChannelSubscription(channelId: number) {
   const { subscribe } = useWebSocketActions();
   const webSocketConnected = useWebSocketConnectedStatus();
-  const [messageEvents, setMessagesEvents] = useState<Array<MessageV2>>(
-    [],
-  );
+  const [messageEvents, setMessagesEvents] = useState<Array<MessageV2>>([]);
 
   const doSubscribe = useEffectEvent((channelId: number) => {
     return subscribe(`/topic/channel/${channelId}`, payload => {

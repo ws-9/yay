@@ -6,9 +6,9 @@ import {
   useEffectEvent,
 } from 'react';
 import { useIsActivePane } from '../../../store/workspaceStore';
-import useCreateChannelMessage from '../../../hooks/mutations/v1/useCreateChannelMessageMutation';
+import useCreateChannelMessage from '../../../hooks/mutations/useCreateChannelMessageMutation';
 import { Toast } from '@base-ui/react/toast';
-import { useChannelPermissionsV2 } from '../../../hooks/queries/v2/useChannelPermissionsV2';
+import { useChannelPermissionsV2 } from '../../../hooks/queries/useChannelPermissionsV2';
 
 export default function MessageField({
   channelId,

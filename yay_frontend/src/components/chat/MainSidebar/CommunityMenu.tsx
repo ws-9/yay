@@ -1,10 +1,10 @@
 import { Menu } from '@base-ui/react/menu';
 import { useUiStoreActions } from '../../../store/uiStore';
-import useRemoveMember from '../../../hooks/mutations/v1/useRemoveMemberMutation';
+import useRemoveMember from '../../../hooks/mutations/useRemoveMemberMutation';
 import { Toast } from '@base-ui/react/toast';
 import { useEffect, useEffectEvent } from 'react';
-import { useMeV2Query } from '../../../hooks/queries/v2/useMeV2Query';
-import type { RoleV2 } from '../../../types/v2';
+import { useMeV2Query } from '../../../hooks/queries/useMeV2Query';
+import type { RoleV2 } from '../../../types';
 
 export default function CommunityMenu({
   role,

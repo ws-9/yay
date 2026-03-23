@@ -1,5 +1,5 @@
-import { useCommunitiesV2Query } from '../../../../hooks/queries/v2/useCommunitiesV2Query';
-import { useChannelsV2Query } from '../../../../hooks/queries/v2/useChannelsV2Query';
+import { useCommunitiesV2Query } from '../../../../hooks/queries/useCommunitiesV2Query';
+import { useChannelsV2Query } from '../../../../hooks/queries/useChannelsV2Query';
 import { useWorkspaceActions } from '../../../../store/workspaceStore';
 import { Accordion } from '@base-ui/react/accordion';
 import { useEffect, useEffectEvent } from 'react';

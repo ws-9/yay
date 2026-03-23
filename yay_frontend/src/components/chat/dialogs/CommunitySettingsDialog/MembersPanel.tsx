@@ -1,13 +1,13 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { Select } from '@base-ui/react/select';
-import { useCommunityV2Query } from '../../../../hooks/queries/v2/useCommunityV2Query';
-import { useCommunityMembersV2Query } from '../../../../hooks/queries/v2/useCommunityMembersV2Query';
-import { useRolesV2Query } from '../../../../hooks/queries/v2/useRolesV2Query';
-import { useUserV2Query } from '../../../../hooks/queries/v2/useUsersV2Query';
-import { useMemberV2Query } from '../../../../hooks/queries/v2/useMemberV2Query';
-import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/v1/useUpdateMemberRoleMutation';
-import { useMeV2Query } from '../../../../hooks/queries/v2/useMeV2Query';
-import type { MemberV2, RoleV2 } from '../../../../types/v2';
+import { useCommunityV2Query } from '../../../../hooks/queries/useCommunityV2Query';
+import { useCommunityMembersV2Query } from '../../../../hooks/queries/useCommunityMembersV2Query';
+import { useRolesV2Query } from '../../../../hooks/queries/useRolesV2Query';
+import { useUserV2Query } from '../../../../hooks/queries/useUsersV2Query';
+import { useMemberV2Query } from '../../../../hooks/queries/useMemberV2Query';
+import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/useUpdateMemberRoleMutation';
+import { useMeV2Query } from '../../../../hooks/queries/useMeV2Query';
+import type { MemberV2, RoleV2 } from '../../../../types';
 
 const roles = [
   { label: 'Admin', value: 'Admin' },

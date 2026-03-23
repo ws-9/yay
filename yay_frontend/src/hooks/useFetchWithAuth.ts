@@ -1,9 +1,9 @@
 import { useAuthActions, getTokenState } from '../store/authStore';
 import { useNavigate } from 'react-router';
-import { API_REFRESH_URL_V1 } from '../constants';
+import { API_REFRESH_URL } from '../constants';
 
 async function refreshToken() {
-  const response = await fetch(API_REFRESH_URL_V1, {
+  const response = await fetch(API_REFRESH_URL, {
     method: 'POST',
     credentials: 'include',
   });

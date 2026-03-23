@@ -2,10 +2,10 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { format } from 'date-fns';
 import MessageMenu from './MessageMenu';
-import useEditChannelMessage from '../../../hooks/mutations/v1/useEditChannelMessageMutation';
+import useEditChannelMessage from '../../../hooks/mutations/useEditChannelMessageMutation';
 import { useInlineEdit } from '../../../hooks/useInlineEdit';
-import type { MessageV2 } from '../../../types/v2';
-import { useUserV2Query } from '../../../hooks/queries/v2/useUsersV2Query';
+import type { MessageV2 } from '../../../types';
+import { useUserV2Query } from '../../../hooks/queries/useUsersV2Query';
 
 export function MessageRender({
   message,

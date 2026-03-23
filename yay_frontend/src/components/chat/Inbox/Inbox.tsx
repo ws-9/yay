@@ -1,4 +1,4 @@
-import { useInfChannelMessagesV2Query } from '../../../hooks/queries/v2/useInfChannelMessagesV2Query';
+import { useInfChannelMessagesV2Query } from '../../../hooks/queries/useInfChannelMessagesV2Query';
 import { useChannelSubscription } from '../../../hooks/useChannelSubscription';
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -19,12 +19,8 @@ export default function Inbox({
   channelId: number;
   ref?: React.Ref<InboxHandle>;
 }) {
-  const {
-    data,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useInfChannelMessagesV2Query(channelId);
+  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfChannelMessagesV2Query(channelId);
   const messageEvents = useChannelSubscription(channelId);
   const { ref: endOfInboxRef, inView: endOfInboxInView } = useInView();
   const scrollContainerRef = useRef<ScrollableContainerHandle>(null);

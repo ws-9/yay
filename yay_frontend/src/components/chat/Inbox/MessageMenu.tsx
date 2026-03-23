@@ -1,13 +1,13 @@
 import { Menu } from '@base-ui/react/menu';
-import useDeleteChannelMessage from '../../../hooks/mutations/v1/useDeleteChannelMessageMutation';
-import { useChannelV2Query } from '../../../hooks/queries/v2/useChannelV2Query';
-import { useCommunityV2Query } from '../../../hooks/queries/v2/useCommunityV2Query';
-import { useMemberV2Query } from '../../../hooks/queries/v2/useMemberV2Query';
-import { useRolesV2Query } from '../../../hooks/queries/v2/useRolesV2Query';
-import useRemoveMemberMutation from '../../../hooks/mutations/v1/useRemoveMemberMutation';
-import useBanMember from '../../../hooks/mutations/v1/useBanMemberMutation';
-import type { MessageV2, RoleV2 } from '../../../types/v2';
-import { useMeV2Query } from '../../../hooks/queries/v2/useMeV2Query';
+import useDeleteChannelMessage from '../../../hooks/mutations/useDeleteChannelMessageMutation';
+import { useChannelV2Query } from '../../../hooks/queries/useChannelV2Query';
+import { useCommunityV2Query } from '../../../hooks/queries/useCommunityV2Query';
+import { useMemberV2Query } from '../../../hooks/queries/useMemberV2Query';
+import { useRolesV2Query } from '../../../hooks/queries/useRolesV2Query';
+import useRemoveMemberMutation from '../../../hooks/mutations/useRemoveMemberMutation';
+import useBanMember from '../../../hooks/mutations/useBanMemberMutation';
+import type { MessageV2, RoleV2 } from '../../../types';
+import { useMeV2Query } from '../../../hooks/queries/useMeV2Query';
 
 type MessageMenuProps = {
   message: MessageV2;

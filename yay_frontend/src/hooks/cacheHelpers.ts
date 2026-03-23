@@ -1,106 +1,34 @@
 import { useQueryClient } from '@tanstack/react-query';
-import type { Community } from '../types/v1/Community';
-import type { BootstrapResponse } from './queries/v1/useBootstrapQuery';
-import type { Channel } from '../types/v1/Channel';
-import { queryKeysV1 } from './queryKeys';
+import { queryKeysV2 } from './queryKeys';
 
-export function useCreateCommunityOptimistically() {
+export function useInvalidateBootstrap() {
   const queryClient = useQueryClient();
-  return function createCommunityOptimistically(newCommunity: Community) {
-    // Update bootstrap cache
-    queryClient.setQueryData(
-      queryKeysV1.bootstrap,
-      (old: BootstrapResponse | undefined) => {
-        if (!old) {
-          return {
-            communities: [newCommunity],
-            user: {
-              id: newCommunity.ownerId,
-              username: newCommunity.ownerUsername,
-            },
-          };
-        }
-        return {
-          ...old,
-          communities: [...old.communities, newCommunity],
-        };
-      },
-    );
-    // Set individual community cache
-    queryClient.setQueryData(
-      queryKeysV1.communities.detail(newCommunity.id),
-      newCommunity,
-    );
-    // Set community role cache
-    queryClient.setQueryData(
-      queryKeysV1.communities.members.role(
-        newCommunity.id,
-        newCommunity.ownerId,
-      ),
-      newCommunity.role,
-    );
+  return () => queryClient.invalidateQueries({ queryKey: queryKeysV2.bootstrap });
+}
+
+export function useInvalidateCommunity(communityId: number) {
+  const queryClient = useQueryClient();
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeysV2.communities.detail(communityId) });
+    // Also invalidate list of communities
+    queryClient.invalidateQueries({ queryKey: queryKeysV2.communities.all });
+    queryClient.invalidateQueries({ queryKey: queryKeysV2.communities.joined });
   };
 }
 
-export function useCreateChannelOptimistically() {
+export function useInvalidateChannel(channelId: number, communityId?: number) {
   const queryClient = useQueryClient();
-  return function createChannelOptimistically(newChannel: Channel) {
-    // Update bootstrap cache
-    queryClient.setQueryData(
-      queryKeysV1.bootstrap,
-      (old: BootstrapResponse | undefined) => {
-        if (!old) {
-          return old;
-        }
-        return {
-          ...old,
-          communities: old.communities.map(community => {
-            if (community.id === newChannel.communityId) {
-              return {
-                ...community,
-                channels: [...(community.channels || []), newChannel],
-              };
-            }
-            return community;
-          }),
-        };
-      },
-    );
-    // Update individual community cache
-    queryClient.setQueryData(
-      queryKeysV1.communities.detail(newChannel.communityId),
-      (old: Community | undefined) => {
-        if (!old) {
-          return old;
-        }
-        return {
-          ...old,
-          channels: [...(old.channels || []), newChannel],
-        };
-      },
-    );
-    // Set individual channel cache
-    queryClient.setQueryData(
-      queryKeysV1.channels.detail(newChannel.id),
-      newChannel,
-    );
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeysV2.channels.detail(channelId) });
+    if (communityId) {
+       queryClient.invalidateQueries({ queryKey: queryKeysV2.channels.byCommunity([communityId]) });
+    }
   };
 }
 
-export function useRemoveCommunityOptimistically() {
+export function useInvalidateMembers(communityId: number) {
   const queryClient = useQueryClient();
-  return function removeCommunityOptimistically(communityId: number) {
-    queryClient.setQueryData(
-      queryKeysV1.bootstrap,
-      (old: BootstrapResponse | undefined) => {
-        if (!old) {
-          return old;
-        }
-        return {
-          ...old,
-          communities: old.communities.filter(c => c.id !== communityId),
-        };
-      },
-    );
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeysV2.members.byCommunity(communityId) });
   };
 }

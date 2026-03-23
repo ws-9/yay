@@ -1,5 +1,5 @@
-import { useChannelV2Query } from '../../../hooks/queries/v2/useChannelV2Query';
-import { useCommunityV2Query } from '../../../hooks/queries/v2/useCommunityV2Query';
+import { useChannelV2Query } from '../../../hooks/queries/useChannelV2Query';
+import { useCommunityV2Query } from '../../../hooks/queries/useCommunityV2Query';
 import {
   useIsActivePane,
   useWorkspaceActions,

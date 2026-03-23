@@ -1,4 +1,4 @@
-import { useChannelV2Query } from '../../../../hooks/queries/v2/useChannelV2Query';
+import { useChannelV2Query } from '../../../../hooks/queries/useChannelV2Query';
 import {
   getActivePaneId,
   useWorkspaceActions,

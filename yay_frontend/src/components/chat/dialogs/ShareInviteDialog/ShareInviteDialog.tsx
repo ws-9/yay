@@ -3,7 +3,7 @@ import {
   useShareInviteDialog,
   useUiStoreActions,
 } from '../../../../store/uiStore';
-import { useInviteV2Query } from '../../../../hooks/queries/v2/useInviteV2Query';
+import { useInviteV2Query } from '../../../../hooks/queries/useInviteV2Query';
 
 export default function ShareInviteDialog() {
   const { communityId, isOpen } = useShareInviteDialog();
