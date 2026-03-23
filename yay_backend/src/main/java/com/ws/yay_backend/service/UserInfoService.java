@@ -1,8 +1,8 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.response.UserResponseV2;
+import com.ws.yay_backend.dto.response.UserResponse;
 
 public interface UserInfoService {
 
-  UserResponseV2 getOwnUserInfoV2();
+  UserResponse getOwnUserInfo();
 }

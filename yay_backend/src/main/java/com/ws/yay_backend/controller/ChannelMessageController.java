@@ -1,9 +1,9 @@
-package com.ws.yay_backend.controller.v2;
+package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.request.CreateMessageRequestV2;
-import com.ws.yay_backend.dto.request.UpdateMessageRequestV2;
+import com.ws.yay_backend.dto.request.CreateMessageRequest;
+import com.ws.yay_backend.dto.request.UpdateMessageRequest;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
-import com.ws.yay_backend.dto.response.MessageResponseV2;
+import com.ws.yay_backend.dto.response.MessageResponse;
 import com.ws.yay_backend.service.ChannelMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,43 +18,43 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Channel Messages V2")
 @RestController
 @RequestMapping("/api/v2/messages")
-public class ChannelMessageControllerV2 {
+public class ChannelMessageController {
   private final ChannelMessageService channelMessageService;
 
-  public ChannelMessageControllerV2(ChannelMessageService channelMessageService) {
+  public ChannelMessageController(ChannelMessageService channelMessageService) {
     this.channelMessageService = channelMessageService;
   }
 
   @Operation(summary = "Create a channel message")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MessageResponseV2 createMessage(@RequestBody @Valid CreateMessageRequestV2 request) {
-    return channelMessageService.createMessageV2(request);
+  public MessageResponse createMessage(@RequestBody @Valid CreateMessageRequest request) {
+    return channelMessageService.createMessage(request);
   }
 
   @Operation(summary = "Get message by id")
   @GetMapping("/{id}")
-  public MessageResponseV2 getMessage(@PathVariable long id) {
-    return channelMessageService.getMessageV2(id);
+  public MessageResponse getMessage(@PathVariable long id) {
+    return channelMessageService.getMessage(id);
   }
 
   @Operation(summary = "Update a message")
   @PatchMapping("/{id}")
-  public MessageResponseV2 updateMessage(
-      @PathVariable long id, @RequestBody @Valid UpdateMessageRequestV2 request) {
-    return channelMessageService.updateMessageV2(id, request);
+  public MessageResponse updateMessage(
+      @PathVariable long id, @RequestBody @Valid UpdateMessageRequest request) {
+    return channelMessageService.updateMessage(id, request);
   }
 
   @Operation(summary = "Delete a message")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteMessage(@PathVariable long id) {
-    channelMessageService.deleteMessageV2(id);
+    channelMessageService.deleteMessage(id);
   }
 
   @Operation(summary = "Get paginated channel messages")
   @GetMapping
-  public CursorPaginatedResponse<MessageResponseV2> getMessages(
+  public CursorPaginatedResponse<MessageResponse> getMessages(
       @RequestParam long channelId,
       @RequestParam(defaultValue = "50") @Min(1) @Max(100) int size,
       @Parameter(
@@ -65,6 +65,6 @@ public class ChannelMessageControllerV2 {
       @Parameter(description = "Cursor message ID for keyset pagination", example = "42")
           @RequestParam(required = false)
           Long cursorId) {
-    return channelMessageService.getCursorPaginatedMessagesV2(channelId, size, cursor, cursorId);
+    return channelMessageService.getCursorPaginatedMessages(channelId, size, cursor, cursorId);
   }
 }

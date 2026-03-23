@@ -3,7 +3,7 @@ package com.ws.yay_backend.dto.response;
 import com.ws.yay_backend.entity.CommunityRole;
 import jakarta.validation.constraints.NotNull;
 
-public record RoleResponseV2(
+public record RoleResponse(
     @NotNull long id,
     @NotNull String name,
     @NotNull int hierarchyLevel,
@@ -12,8 +12,8 @@ public record RoleResponseV2(
     @NotNull boolean canManageRoles,
     @NotNull boolean canDeleteMessages,
     @NotNull boolean canManageCommunitySettings) {
-  public static RoleResponseV2 fromEntity(CommunityRole role) {
-    return new RoleResponseV2(
+  public static RoleResponse fromEntity(CommunityRole role) {
+    return new RoleResponse(
         role.getId(),
         role.getName(),
         role.getHierarchyLevel(),

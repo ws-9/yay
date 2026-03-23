@@ -1,8 +1,8 @@
-package com.ws.yay_backend.controller.v2;
+package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.request.JoinCommunityRequestV2;
-import com.ws.yay_backend.dto.request.UpdateMemberRoleRequestV2;
-import com.ws.yay_backend.dto.response.MemberResponseV2;
+import com.ws.yay_backend.dto.request.JoinCommunityRequest;
+import com.ws.yay_backend.dto.request.UpdateMemberRoleRequest;
+import com.ws.yay_backend.dto.response.MemberResponse;
 import com.ws.yay_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,43 +14,43 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Members V2")
 @RestController
 @RequestMapping("/api/v2/members")
-public class MemberControllerV2 {
+public class MemberController {
   private final MemberService memberService;
 
-  public MemberControllerV2(MemberService memberService) {
+  public MemberController(MemberService memberService) {
     this.memberService = memberService;
   }
 
   @Operation(summary = "Join a community")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MemberResponseV2 joinCommunity(@RequestBody @Valid JoinCommunityRequestV2 request) {
-    return memberService.joinCommunityV2(request);
+  public MemberResponse joinCommunity(@RequestBody @Valid JoinCommunityRequest request) {
+    return memberService.joinCommunity(request);
   }
 
   @Operation(summary = "Get members (filtered by communityId and optionally userId)")
   @GetMapping
-  public List<MemberResponseV2> getMembers(
+  public List<MemberResponse> getMembers(
       @RequestParam long communityId, @RequestParam(required = false) Long userId) {
     if (userId != null) {
-      return List.of(memberService.getMemberV2(communityId, userId));
+      return List.of(memberService.getMember(communityId, userId));
     }
-    return memberService.getMembersByCommunityV2(communityId);
+    return memberService.getMembersByCommunity(communityId);
   }
 
   @Operation(summary = "Update member role")
   @PatchMapping("/{communityId}/{userId}")
-  public MemberResponseV2 updateMemberRole(
+  public MemberResponse updateMemberRole(
       @PathVariable long communityId,
       @PathVariable long userId,
-      @RequestBody @Valid UpdateMemberRoleRequestV2 request) {
-    return memberService.updateMemberRoleV2(communityId, userId, request);
+      @RequestBody @Valid UpdateMemberRoleRequest request) {
+    return memberService.updateMemberRole(communityId, userId, request);
   }
 
   @Operation(summary = "Remove member from community")
   @DeleteMapping("/{communityId}/{userId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void removeMember(@PathVariable long communityId, @PathVariable long userId) {
-    memberService.deleteMemberV2(communityId, userId);
+    memberService.deleteMember(communityId, userId);
   }
 }

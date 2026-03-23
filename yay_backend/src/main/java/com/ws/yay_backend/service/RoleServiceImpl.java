@@ -1,7 +1,7 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.response.RoleResponseV2;
+import com.ws.yay_backend.dto.response.RoleResponse;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ public class RoleServiceImpl implements RoleService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<RoleResponseV2> getRolesV2() {
-    return communityRoleRepository.findAll().stream().map(RoleResponseV2::fromEntity).toList();
+  public List<RoleResponse> getRoles() {
+    return communityRoleRepository.findAll().stream().map(RoleResponse::fromEntity).toList();
   }
 }

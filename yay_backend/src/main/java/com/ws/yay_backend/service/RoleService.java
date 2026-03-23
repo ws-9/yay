@@ -1,8 +1,8 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.response.RoleResponseV2;
+import com.ws.yay_backend.dto.response.RoleResponse;
 import java.util.List;
 
 public interface RoleService {
-  List<RoleResponseV2> getRolesV2();
+  List<RoleResponse> getRoles();
 }

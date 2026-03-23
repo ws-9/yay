@@ -5,10 +5,10 @@ import com.ws.yay_backend.dao.BannedUserRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.request.JoinCommunityRequestV2;
-import com.ws.yay_backend.dto.request.UpdateMemberRoleRequestV2;
+import com.ws.yay_backend.dto.request.JoinCommunityRequest;
+import com.ws.yay_backend.dto.request.UpdateMemberRoleRequest;
 import com.ws.yay_backend.dto.request.UpdateRoleRequest;
-import com.ws.yay_backend.dto.response.MemberResponseV2;
+import com.ws.yay_backend.dto.response.MemberResponse;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -45,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   @Transactional
-  public MemberResponseV2 updateRole(UpdateRoleRequest request) {
+  public MemberResponse updateRole(UpdateRoleRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     CommunityMember membership =
@@ -89,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
 
       targetMembership.setRole(newRole);
 
-      return MemberResponseV2.fromEntity(targetMembership);
+      return MemberResponse.fromEntity(targetMembership);
     }
 
     // You should always be able to demote yourself
@@ -102,7 +102,7 @@ public class MemberServiceImpl implements MemberService {
 
       membership.setRole(newRole);
 
-      return MemberResponseV2.fromEntity(membership);
+      return MemberResponse.fromEntity(membership);
     }
 
     // Otherwise, compare hierarchy levels
@@ -138,12 +138,12 @@ public class MemberServiceImpl implements MemberService {
 
     targetMembership.setRole(newRole);
 
-    return MemberResponseV2.fromEntity(targetMembership);
+    return MemberResponse.fromEntity(targetMembership);
   }
 
   @Override
   @Transactional
-  public MemberResponseV2 joinCommunityV2(JoinCommunityRequestV2 request) {
+  public MemberResponse joinCommunity(JoinCommunityRequest request) {
     User user = authUtilsComponent.getAuthenticatedUser();
 
     Community community =
@@ -175,13 +175,13 @@ public class MemberServiceImpl implements MemberService {
                       new CommunityMember(community, user, memberRole));
                 });
 
-    return MemberResponseV2.fromEntity(communityMember);
+    return MemberResponse.fromEntity(communityMember);
   }
 
   @Override
   @Transactional
-  public MemberResponseV2 updateMemberRoleV2(
-      long communityId, long userId, UpdateMemberRoleRequestV2 request) {
+  public MemberResponse updateMemberRole(
+      long communityId, long userId, UpdateMemberRoleRequest request) {
     Long currentUserId = authUtilsComponent.getAuthenticatedUserId();
 
     CommunityMember currentUserMembership =
@@ -232,12 +232,12 @@ public class MemberServiceImpl implements MemberService {
       targetMembership.setRole(newRole);
     }
 
-    return MemberResponseV2.fromEntity(targetMembership);
+    return MemberResponse.fromEntity(targetMembership);
   }
 
   @Override
   @Transactional
-  public void deleteMemberV2(long communityId, long userId) {
+  public void deleteMember(long communityId, long userId) {
     Long currentUserId = authUtilsComponent.getAuthenticatedUserId();
 
     CommunityMember currentUserMembership =
@@ -276,7 +276,7 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<MemberResponseV2> getMembersByCommunityV2(long communityId) {
+  public List<MemberResponse> getMembersByCommunity(long communityId) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     if (!communityMemberRepository.existsById(new CommunityMemberKey(communityId, userId))) {
@@ -286,13 +286,13 @@ public class MemberServiceImpl implements MemberService {
     return communityMemberRepository
         .findAllWithUserRoleAndCommunityByKey_CommunityId(communityId)
         .stream()
-        .map(MemberResponseV2::fromEntity)
+        .map(MemberResponse::fromEntity)
         .toList();
   }
 
   @Override
   @Transactional(readOnly = true)
-  public MemberResponseV2 getMemberV2(long communityId, long userId) {
+  public MemberResponse getMember(long communityId, long userId) {
     Long currentUserId = authUtilsComponent.getAuthenticatedUserId();
 
     if (!communityMemberRepository.existsById(new CommunityMemberKey(communityId, currentUserId))) {
@@ -305,6 +305,6 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found"));
 
-    return MemberResponseV2.fromEntity(member);
+    return MemberResponse.fromEntity(member);
   }
 }

@@ -1,6 +1,6 @@
-package com.ws.yay_backend.controller.v2;
+package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.response.InviteResponseV2;
+import com.ws.yay_backend.dto.response.InviteResponse;
 import com.ws.yay_backend.service.InviteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v2/invites")
 @Tag(name = "Invite V2", description = "Flat Community Invite API")
 @Validated
-public class InviteControllerV2 {
+public class InviteController {
 
   private final InviteService inviteService;
 
-  public InviteControllerV2(InviteService inviteService) {
+  public InviteController(InviteService inviteService) {
     this.inviteService = inviteService;
   }
 
   @Operation(summary = "Get community invite by community ID")
   @GetMapping
-  public InviteResponseV2 getInvite(@RequestParam @Min(1) long communityId) {
+  public InviteResponse getInvite(@RequestParam @Min(1) long communityId) {
     return inviteService.getInvite(communityId);
   }
 }

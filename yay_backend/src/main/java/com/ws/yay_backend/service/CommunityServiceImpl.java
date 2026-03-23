@@ -4,11 +4,11 @@ import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.request.CommunityBatchRequestV2;
-import com.ws.yay_backend.dto.request.CreateCommunityRequestV2;
+import com.ws.yay_backend.dto.request.CommunityBatchRequest;
+import com.ws.yay_backend.dto.request.CreateCommunityRequest;
 import com.ws.yay_backend.dto.request.RenameCommunityRequest;
 import com.ws.yay_backend.dto.request.TransferOwnershipRequest;
-import com.ws.yay_backend.dto.response.CommunityResponseV2;
+import com.ws.yay_backend.dto.response.CommunityResponse;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -86,7 +86,7 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional
-  public CommunityResponseV2 renameCommunity(long communityId, RenameCommunityRequest request) {
+  public CommunityResponse renameCommunity(long communityId, RenameCommunityRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Community community =
@@ -105,21 +105,21 @@ public class CommunityServiceImpl implements CommunityService {
 
     community.setName(request.name());
 
-    return CommunityResponseV2.fromEntity(community);
+    return CommunityResponse.fromEntity(community);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<CommunityResponseV2> getJoinedCommunitiesV2() {
+  public List<CommunityResponse> getJoinedCommunities() {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     return communityRepository.findAllWithOwnerByMembers_User_id(userId).stream()
-        .map(CommunityResponseV2::fromEntity)
+        .map(CommunityResponse::fromEntity)
         .toList();
   }
 
   @Override
   @Transactional
-  public CommunityResponseV2 createCommunityV2(CreateCommunityRequestV2 request) {
+  public CommunityResponse createCommunity(CreateCommunityRequest request) {
     User owner = authUtilsComponent.getAuthenticatedUser();
 
     Community community = new Community(request.name(), owner);
@@ -137,12 +137,12 @@ public class CommunityServiceImpl implements CommunityService {
     CommunityMember ownerMembership = new CommunityMember(saved, owner, adminRole);
     communityMemberRepository.save(ownerMembership);
 
-    return CommunityResponseV2.fromEntity(saved);
+    return CommunityResponse.fromEntity(saved);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public CommunityResponseV2 getCommunityV2(long id) {
+  public CommunityResponse getCommunity(long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Community community =
@@ -156,21 +156,21 @@ public class CommunityServiceImpl implements CommunityService {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Community not found");
     }
 
-    return CommunityResponseV2.fromEntity(community);
+    return CommunityResponse.fromEntity(community);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<CommunityResponseV2> getCommunitiesBatchV2(CommunityBatchRequestV2 request) {
+  public List<CommunityResponse> getCommunitiesBatch(CommunityBatchRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     return communityRepository.findCommunitiesByIdsAndUserId(request.ids(), userId).stream()
-        .map(CommunityResponseV2::fromEntity)
+        .map(CommunityResponse::fromEntity)
         .toList();
   }
 
   @Override
   @Transactional
-  public void deleteCommunityV2(long id) {
+  public void deleteCommunity(long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Community community =

@@ -1,22 +1,21 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.request.CreateMessageRequestV2;
-import com.ws.yay_backend.dto.request.UpdateMessageRequestV2;
+import com.ws.yay_backend.dto.request.CreateMessageRequest;
+import com.ws.yay_backend.dto.request.UpdateMessageRequest;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
-import com.ws.yay_backend.dto.response.MessageResponseV2;
+import com.ws.yay_backend.dto.response.MessageResponse;
 import java.time.Instant;
 
 public interface ChannelMessageService {
 
-  // V2 Methods
-  MessageResponseV2 createMessageV2(CreateMessageRequestV2 request);
+  MessageResponse createMessage(CreateMessageRequest request);
 
-  MessageResponseV2 updateMessageV2(long id, UpdateMessageRequestV2 request);
+  MessageResponse updateMessage(long id, UpdateMessageRequest request);
 
-  void deleteMessageV2(long id);
+  void deleteMessage(long id);
 
-  MessageResponseV2 getMessageV2(long id);
+  MessageResponse getMessage(long id);
 
-  CursorPaginatedResponse<MessageResponseV2> getCursorPaginatedMessagesV2(
+  CursorPaginatedResponse<MessageResponse> getCursorPaginatedMessages(
       long channelId, int size, Instant cursor, Long cursorId);
 }

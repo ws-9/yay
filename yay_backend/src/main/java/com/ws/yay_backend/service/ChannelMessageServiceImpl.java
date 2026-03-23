@@ -4,11 +4,11 @@ import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.ChannelMessageRepository;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
-import com.ws.yay_backend.dto.broadcast.ChannelMessageBroadcastV2;
-import com.ws.yay_backend.dto.request.CreateMessageRequestV2;
-import com.ws.yay_backend.dto.request.UpdateMessageRequestV2;
+import com.ws.yay_backend.dto.broadcast.ChannelMessageBroadcast;
+import com.ws.yay_backend.dto.request.CreateMessageRequest;
+import com.ws.yay_backend.dto.request.UpdateMessageRequest;
 import com.ws.yay_backend.dto.response.CursorPaginatedResponse;
-import com.ws.yay_backend.dto.response.MessageResponseV2;
+import com.ws.yay_backend.dto.response.MessageResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -50,7 +50,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
   @Override
   @Transactional
-  public MessageResponseV2 createMessageV2(CreateMessageRequestV2 request) {
+  public MessageResponse createMessage(CreateMessageRequest request) {
     User user = authUtilsComponent.getAuthenticatedUser();
 
     Channel channel =
@@ -73,9 +73,9 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     ChannelMessage channelMessage = new ChannelMessage(request.message(), user, channel);
     ChannelMessage saved = channelMessageRepository.save(channelMessage);
 
-    MessageResponseV2 response = MessageResponseV2.fromEntity(saved);
+    MessageResponse response = MessageResponse.fromEntity(saved);
 
-    ChannelMessageBroadcastV2 broadcast = ChannelMessageBroadcastV2.fromEntity(saved);
+    ChannelMessageBroadcast broadcast = ChannelMessageBroadcast.fromEntity(saved);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
 
     return response;
@@ -83,7 +83,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
   @Override
   @Transactional
-  public MessageResponseV2 updateMessageV2(long id, UpdateMessageRequestV2 request) {
+  public MessageResponse updateMessage(long id, UpdateMessageRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     ChannelMessage channelMessage =
@@ -100,9 +100,9 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
     channelMessage.setMessage(request.message());
     channelMessage.setUpdatedAt(Instant.now());
 
-    MessageResponseV2 response = MessageResponseV2.fromEntity(channelMessage);
+    MessageResponse response = MessageResponse.fromEntity(channelMessage);
 
-    ChannelMessageBroadcastV2 broadcast = ChannelMessageBroadcastV2.fromEntity(channelMessage);
+    ChannelMessageBroadcast broadcast = ChannelMessageBroadcast.fromEntity(channelMessage);
     simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
 
     return response;
@@ -110,7 +110,7 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
   @Override
   @Transactional
-  public void deleteMessageV2(long id) {
+  public void deleteMessage(long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     ChannelMessage channelMessage =
@@ -159,14 +159,14 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       channelMessage.setDeletedAt(Instant.now());
     }
 
-    ChannelMessageBroadcastV2 broadcast = ChannelMessageBroadcastV2.fromEntity(channelMessage);
+    ChannelMessageBroadcast broadcast = ChannelMessageBroadcast.fromEntity(channelMessage);
     simpMessagingTemplate.convertAndSend(
         "/topic/channel/" + channelMessage.getChannel().getId(), broadcast);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public MessageResponseV2 getMessageV2(long id) {
+  public MessageResponse getMessage(long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     ChannelMessage channelMessage =
@@ -183,12 +183,12 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found");
     }
 
-    return MessageResponseV2.fromEntity(channelMessage);
+    return MessageResponse.fromEntity(channelMessage);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public CursorPaginatedResponse<MessageResponseV2> getCursorPaginatedMessagesV2(
+  public CursorPaginatedResponse<MessageResponse> getCursorPaginatedMessages(
       long channelId, int size, Instant cursor, Long cursorId) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
     Pageable pageable = PageRequest.of(0, size + 1);
@@ -206,8 +206,8 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
       messages = messages.subList(0, size);
     }
 
-    List<MessageResponseV2> responseList =
-        messages.stream().map(MessageResponseV2::fromEntity).toList();
+    List<MessageResponse> responseList =
+        messages.stream().map(MessageResponse::fromEntity).toList();
 
     Instant nextCursor = messages.isEmpty() ? null : messages.getLast().getCreatedAt();
     Long nextCursorId = messages.isEmpty() ? null : messages.getLast().getId();

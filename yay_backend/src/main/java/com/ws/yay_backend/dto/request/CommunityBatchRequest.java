@@ -3,4 +3,4 @@ package com.ws.yay_backend.dto.request;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
-public record UserBatchRequestV2(@NotEmpty List<Long> ids) {}
+public record CommunityBatchRequest(@NotEmpty List<Long> ids) {}

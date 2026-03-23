@@ -1,15 +1,15 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.request.ChannelPermissionRequestV2;
-import com.ws.yay_backend.dto.response.ChannelPermissionResponseV2;
+import com.ws.yay_backend.dto.request.ChannelPermissionRequest;
+import com.ws.yay_backend.dto.response.ChannelPermissionResponse;
 import java.util.List;
 
 public interface ChannelPermissionService {
-  ChannelPermissionResponseV2 getChannelPermissionV2(long channelId, long roleId);
+  ChannelPermissionResponse getChannelPermission(long channelId, long roleId);
 
-  List<ChannelPermissionResponseV2> getChannelPermissionsV2(List<Long> communityIds);
+  List<ChannelPermissionResponse> getChannelPermissions(List<Long> communityIds);
 
-  ChannelPermissionResponseV2 upsertChannelPermissionV2(ChannelPermissionRequestV2 request);
+  ChannelPermissionResponse upsertChannelPermission(ChannelPermissionRequest request);
 
-  void deleteChannelPermissionV2(long channelId, long roleId);
+  void deleteChannelPermission(long channelId, long roleId);
 }

@@ -1,7 +1,7 @@
-package com.ws.yay_backend.controller.v2;
+package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.request.UserBatchRequestV2;
-import com.ws.yay_backend.dto.response.UserResponseV2;
+import com.ws.yay_backend.dto.request.UserBatchRequest;
+import com.ws.yay_backend.dto.response.UserResponse;
 import com.ws.yay_backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Users V2")
 @RestController
 @RequestMapping("/api/v2/users")
-public class UserControllerV2 {
+public class UserController {
   private final UserService userService;
 
-  public UserControllerV2(UserService userService) {
+  public UserController(UserService userService) {
     this.userService = userService;
   }
 
   @Operation(summary = "Get user by id")
   @GetMapping("/{id}")
-  public UserResponseV2 getUser(@PathVariable long id) {
-    return userService.getUserV2(id);
+  public UserResponse getUser(@PathVariable long id) {
+    return userService.getUser(id);
   }
 
   @Operation(summary = "Batch fetch users")
   @PostMapping("/batch")
-  public List<UserResponseV2> getUsersBatch(@RequestBody @Valid UserBatchRequestV2 request) {
-    return userService.getUsersBatchV2(request);
+  public List<UserResponse> getUsersBatch(@RequestBody @Valid UserBatchRequest request) {
+    return userService.getUsersBatch(request);
   }
 }

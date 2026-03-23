@@ -1,8 +1,8 @@
-package com.ws.yay_backend.controller.v2;
+package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.request.ChannelBatchRequestV2;
-import com.ws.yay_backend.dto.request.CreateChannelRequestV2;
-import com.ws.yay_backend.dto.response.ChannelResponseV2;
+import com.ws.yay_backend.dto.request.ChannelBatchRequest;
+import com.ws.yay_backend.dto.request.CreateChannelRequest;
+import com.ws.yay_backend.dto.response.ChannelResponse;
 import com.ws.yay_backend.service.ChannelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,43 +14,42 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Channels V2")
 @RestController
 @RequestMapping("/api/v2/channels")
-public class ChannelControllerV2 {
+public class ChannelController {
   private final ChannelService channelService;
 
-  public ChannelControllerV2(ChannelService channelService) {
+  public ChannelController(ChannelService channelService) {
     this.channelService = channelService;
   }
 
   @Operation(summary = "Create a channel")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ChannelResponseV2 createChannel(@RequestBody @Valid CreateChannelRequestV2 request) {
-    return channelService.createChannelV2(request);
+  public ChannelResponse createChannel(@RequestBody @Valid CreateChannelRequest request) {
+    return channelService.createChannel(request);
   }
 
   @Operation(summary = "Get channel by id")
   @GetMapping("/{id}")
-  public ChannelResponseV2 getChannel(@PathVariable long id) {
-    return channelService.getChannelV2(id);
+  public ChannelResponse getChannel(@PathVariable long id) {
+    return channelService.getChannel(id);
   }
 
   @Operation(summary = "Get channels (filtered by communityIds)")
   @GetMapping
-  public List<ChannelResponseV2> getChannels(@RequestParam List<Long> communityIds) {
-    return channelService.getChannelsByCommunityV2(communityIds);
+  public List<ChannelResponse> getChannels(@RequestParam List<Long> communityIds) {
+    return channelService.getChannelsByCommunity(communityIds);
   }
 
   @Operation(summary = "Batch fetch channels")
   @PostMapping("/batch")
-  public List<ChannelResponseV2> getChannelsBatch(
-      @RequestBody @Valid ChannelBatchRequestV2 request) {
-    return channelService.getChannelsBatchV2(request);
+  public List<ChannelResponse> getChannelsBatch(@RequestBody @Valid ChannelBatchRequest request) {
+    return channelService.getChannelsBatch(request);
   }
 
   @Operation(summary = "Delete channel")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteChannel(@PathVariable long id) {
-    channelService.deleteChannelV2(id);
+    channelService.deleteChannel(id);
   }
 }

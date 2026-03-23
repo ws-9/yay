@@ -5,8 +5,8 @@ import com.ws.yay_backend.dao.ChannelPermissionRepository;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
 import com.ws.yay_backend.dao.CommunityRoleRepository;
-import com.ws.yay_backend.dto.request.ChannelPermissionRequestV2;
-import com.ws.yay_backend.dto.response.ChannelPermissionResponseV2;
+import com.ws.yay_backend.dto.request.ChannelPermissionRequest;
+import com.ws.yay_backend.dto.response.ChannelPermissionResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelPermission;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -42,7 +42,7 @@ public class ChannelPermissionServiceImpl implements ChannelPermissionService {
 
   @Override
   @Transactional(readOnly = true)
-  public ChannelPermissionResponseV2 getChannelPermissionV2(long channelId, long roleId) {
+  public ChannelPermissionResponse getChannelPermission(long channelId, long roleId) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Channel channel =
@@ -62,25 +62,25 @@ public class ChannelPermissionServiceImpl implements ChannelPermissionService {
 
     return channelPermissionRepository
         .findById(key)
-        .map(ChannelPermissionResponseV2::fromEntity)
-        .orElseGet(() -> new ChannelPermissionResponseV2(channelId, roleId, true, true));
+        .map(ChannelPermissionResponse::fromEntity)
+        .orElseGet(() -> new ChannelPermissionResponse(channelId, roleId, true, true));
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<ChannelPermissionResponseV2> getChannelPermissionsV2(List<Long> communityIds) {
+  public List<ChannelPermissionResponse> getChannelPermissions(List<Long> communityIds) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     return channelPermissionRepository
         .findPermissionsByCommunityIdsAndUserId(communityIds, userId)
         .stream()
-        .map(ChannelPermissionResponseV2::fromEntity)
+        .map(ChannelPermissionResponse::fromEntity)
         .toList();
   }
 
   @Override
   @Transactional
-  public ChannelPermissionResponseV2 upsertChannelPermissionV2(ChannelPermissionRequestV2 request) {
+  public ChannelPermissionResponse upsertChannelPermission(ChannelPermissionRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Channel channel =
@@ -127,12 +127,12 @@ public class ChannelPermissionServiceImpl implements ChannelPermissionService {
       channelPermissionRepository.save(permission);
     }
 
-    return ChannelPermissionResponseV2.fromEntity(permission);
+    return ChannelPermissionResponse.fromEntity(permission);
   }
 
   @Override
   @Transactional
-  public void deleteChannelPermissionV2(long channelId, long roleId) {
+  public void deleteChannelPermission(long channelId, long roleId) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Channel channel =

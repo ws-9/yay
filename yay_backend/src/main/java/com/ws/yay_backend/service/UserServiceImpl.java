@@ -1,8 +1,8 @@
 package com.ws.yay_backend.service;
 
 import com.ws.yay_backend.dao.UserRepository;
-import com.ws.yay_backend.dto.request.UserBatchRequestV2;
-import com.ws.yay_backend.dto.response.UserResponseV2;
+import com.ws.yay_backend.dto.request.UserBatchRequest;
+import com.ws.yay_backend.dto.response.UserResponse;
 import com.ws.yay_backend.entity.User;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,18 +20,18 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(readOnly = true)
-  public UserResponseV2 getUserV2(long id) {
+  public UserResponse getUser(long id) {
     User user =
         userRepository
             .findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-    return UserResponseV2.fromEntity(user);
+    return UserResponse.fromEntity(user);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<UserResponseV2> getUsersBatchV2(UserBatchRequestV2 request) {
+  public List<UserResponse> getUsersBatch(UserBatchRequest request) {
     List<User> users = userRepository.findAllById(request.ids());
-    return users.stream().map(UserResponseV2::fromEntity).toList();
+    return users.stream().map(UserResponse::fromEntity).toList();
   }
 }

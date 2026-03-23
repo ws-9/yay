@@ -1,7 +1,7 @@
 package com.ws.yay_backend.service;
 
-import com.ws.yay_backend.dto.response.InviteResponseV2;
+import com.ws.yay_backend.dto.response.InviteResponse;
 
 public interface InviteService {
-  InviteResponseV2 getInvite(long communityId);
+  InviteResponse getInvite(long communityId);
 }

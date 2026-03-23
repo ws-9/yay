@@ -1,8 +1,8 @@
-package com.ws.yay_backend.controller.v2;
+package com.ws.yay_backend.controller;
 
-import com.ws.yay_backend.dto.request.CommunityBatchRequestV2;
-import com.ws.yay_backend.dto.request.CreateCommunityRequestV2;
-import com.ws.yay_backend.dto.response.CommunityResponseV2;
+import com.ws.yay_backend.dto.request.CommunityBatchRequest;
+import com.ws.yay_backend.dto.request.CreateCommunityRequest;
+import com.ws.yay_backend.dto.response.CommunityResponse;
 import com.ws.yay_backend.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Communities V2")
 @RestController
 @RequestMapping("/api/v2/communities")
-public class CommunityControllerV2 {
+public class CommunityController {
   private final CommunityService communityService;
 
-  public CommunityControllerV2(CommunityService communityService) {
+  public CommunityController(CommunityService communityService) {
     this.communityService = communityService;
   }
 
   @Operation(summary = "Get user's joined communities")
   @GetMapping
-  public List<CommunityResponseV2> getCommunities(
+  public List<CommunityResponse> getCommunities(
       @RequestParam(value = "joined", defaultValue = "true") boolean joined) {
     if (joined) {
-      return communityService.getJoinedCommunitiesV2();
+      return communityService.getJoinedCommunities();
     }
     // Future: handle joined=false for a public directory
     return List.of();
@@ -35,27 +35,27 @@ public class CommunityControllerV2 {
   @Operation(summary = "Create a community")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommunityResponseV2 createCommunity(@RequestBody @Valid CreateCommunityRequestV2 request) {
-    return communityService.createCommunityV2(request);
+  public CommunityResponse createCommunity(@RequestBody @Valid CreateCommunityRequest request) {
+    return communityService.createCommunity(request);
   }
 
   @Operation(summary = "Get community by id")
   @GetMapping("/{id}")
-  public CommunityResponseV2 getCommunity(@PathVariable long id) {
-    return communityService.getCommunityV2(id);
+  public CommunityResponse getCommunity(@PathVariable long id) {
+    return communityService.getCommunity(id);
   }
 
   @Operation(summary = "Batch fetch communities")
   @PostMapping("/batch")
-  public List<CommunityResponseV2> getCommunitiesBatch(
-      @RequestBody @Valid CommunityBatchRequestV2 request) {
-    return communityService.getCommunitiesBatchV2(request);
+  public List<CommunityResponse> getCommunitiesBatch(
+      @RequestBody @Valid CommunityBatchRequest request) {
+    return communityService.getCommunitiesBatch(request);
   }
 
   @Operation(summary = "Delete community")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCommunity(@PathVariable long id) {
-    communityService.deleteCommunityV2(id);
+    communityService.deleteCommunity(id);
   }
 }

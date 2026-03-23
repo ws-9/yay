@@ -3,10 +3,10 @@ package com.ws.yay_backend.service;
 import com.ws.yay_backend.components.AuthUtilsComponent;
 import com.ws.yay_backend.dao.ChannelRepository;
 import com.ws.yay_backend.dao.CommunityMemberRepository;
-import com.ws.yay_backend.dto.request.ChannelBatchRequestV2;
-import com.ws.yay_backend.dto.request.CreateChannelRequestV2;
+import com.ws.yay_backend.dto.request.ChannelBatchRequest;
+import com.ws.yay_backend.dto.request.CreateChannelRequest;
 import com.ws.yay_backend.dto.request.RenameChannelRequest;
-import com.ws.yay_backend.dto.response.ChannelResponseV2;
+import com.ws.yay_backend.dto.response.ChannelResponse;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -35,7 +35,7 @@ public class ChannelServiceImpl implements ChannelService {
 
   @Override
   @Transactional
-  public ChannelResponseV2 renameChannel(long channelId, RenameChannelRequest request) {
+  public ChannelResponse renameChannel(long channelId, RenameChannelRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Channel channel =
@@ -58,12 +58,12 @@ public class ChannelServiceImpl implements ChannelService {
 
     channel.setName(request.name());
 
-    return ChannelResponseV2.fromEntity(channel);
+    return ChannelResponse.fromEntity(channel);
   }
 
   @Override
   @Transactional
-  public ChannelResponseV2 createChannelV2(CreateChannelRequestV2 request) {
+  public ChannelResponse createChannel(CreateChannelRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     CommunityMember membership =
@@ -91,12 +91,12 @@ public class ChannelServiceImpl implements ChannelService {
     Channel channel = new Channel(request.name(), community, new ArrayList<>());
     Channel saved = channelRepository.save(channel);
 
-    return ChannelResponseV2.fromEntity(saved);
+    return ChannelResponse.fromEntity(saved);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public ChannelResponseV2 getChannelV2(long id) {
+  public ChannelResponse getChannel(long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Channel channel =
@@ -112,32 +112,32 @@ public class ChannelServiceImpl implements ChannelService {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found");
     }
 
-    return ChannelResponseV2.fromEntity(channel);
+    return ChannelResponse.fromEntity(channel);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<ChannelResponseV2> getChannelsByCommunityV2(List<Long> communityIds) {
+  public List<ChannelResponse> getChannelsByCommunity(List<Long> communityIds) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     return channelRepository.findChannelsByCommunityIdsAndUserId(communityIds, userId).stream()
-        .map(ChannelResponseV2::fromEntity)
+        .map(ChannelResponse::fromEntity)
         .toList();
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<ChannelResponseV2> getChannelsBatchV2(ChannelBatchRequestV2 request) {
+  public List<ChannelResponse> getChannelsBatch(ChannelBatchRequest request) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     List<Channel> channels = channelRepository.findChannelsByIdsAndUserId(request.ids(), userId);
 
-    return channels.stream().map(ChannelResponseV2::fromEntity).toList();
+    return channels.stream().map(ChannelResponse::fromEntity).toList();
   }
 
   @Override
   @Transactional
-  public void deleteChannelV2(long id) {
+  public void deleteChannel(long id) {
     Long userId = authUtilsComponent.getAuthenticatedUserId();
 
     Channel channel =

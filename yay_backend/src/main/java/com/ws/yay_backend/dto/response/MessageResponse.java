@@ -1,11 +1,11 @@
-package com.ws.yay_backend.dto.broadcast;
+package com.ws.yay_backend.dto.response;
 
 import com.ws.yay_backend.entity.ChannelMessage;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 
-public record ChannelMessageBroadcastV2(
+public record MessageResponse(
     @NotNull long id,
     @NotNull String message,
     @NotNull long userId,
@@ -13,8 +13,8 @@ public record ChannelMessageBroadcastV2(
     @NotNull Instant createdAt,
     @Nullable Instant updatedAt,
     @Nullable Instant deletedAt) {
-  public static ChannelMessageBroadcastV2 fromEntity(ChannelMessage message) {
-    return new ChannelMessageBroadcastV2(
+  public static MessageResponse fromEntity(ChannelMessage message) {
+    return new MessageResponse(
         message.getId(),
         message.getMessage(),
         message.getUser().getId(),

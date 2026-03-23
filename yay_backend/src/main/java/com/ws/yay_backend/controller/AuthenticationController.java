@@ -1,4 +1,4 @@
-package com.ws.yay_backend.controller.v1;
+package com.ws.yay_backend.controller;
 
 import com.ws.yay_backend.dto.request.AuthenticationRequest;
 import com.ws.yay_backend.dto.request.RegisterRequest;
