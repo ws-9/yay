@@ -12,6 +12,9 @@ import com.ws.yay_backend.dto.v1.response.CommunityRoleResponse;
 import com.ws.yay_backend.dto.v1.response.GetMemberResponse;
 import com.ws.yay_backend.dto.v1.response.GetMembersRolesResponse;
 import com.ws.yay_backend.dto.v1.response.JoinCommunityResponse;
+import com.ws.yay_backend.dto.v2.request.JoinCommunityRequestV2;
+import com.ws.yay_backend.dto.v2.request.UpdateMemberRoleRequestV2;
+import com.ws.yay_backend.dto.v2.response.MemberResponseV2;
 import com.ws.yay_backend.entity.Community;
 import com.ws.yay_backend.entity.CommunityMember;
 import com.ws.yay_backend.entity.CommunityRole;
@@ -320,5 +323,172 @@ public class MemberServiceImpl implements MemberService {
         community.getId(),
         community.getName(),
         CommunityRoleResponse.fromEntity(newRole));
+  }
+
+  @Override
+  @Transactional
+  public MemberResponseV2 joinCommunityV2(JoinCommunityRequestV2 request) {
+    User user = authUtilsComponent.getAuthenticatedUser();
+
+    Community community =
+        communityRepository
+            .findByInviteSlug(request.inviteSlug())
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid invite slug"));
+
+    BannedUserKey bannedKey = new BannedUserKey(community.getId(), user.getId());
+    if (bannedUserRepository.existsById(bannedKey)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are banned from this community");
+    }
+
+    CommunityMemberKey key = new CommunityMemberKey(community.getId(), user.getId());
+    CommunityMember communityMember =
+        communityMemberRepository
+            .findById(key)
+            .orElseGet(
+                () -> {
+                  CommunityRole memberRole =
+                      communityRoleRepository
+                          .findByName(CommunityRoleName.MEMBER.getValue())
+                          .orElseThrow(
+                              () ->
+                                  new ResponseStatusException(
+                                      HttpStatus.INTERNAL_SERVER_ERROR,
+                                      "Default member role not found"));
+                  return communityMemberRepository.save(
+                      new CommunityMember(community, user, memberRole));
+                });
+
+    return MemberResponseV2.fromEntity(communityMember);
+  }
+
+  @Override
+  @Transactional
+  public MemberResponseV2 updateMemberRoleV2(
+      long communityId, long userId, UpdateMemberRoleRequestV2 request) {
+    Long currentUserId = authUtilsComponent.getAuthenticatedUserId();
+
+    CommunityMember currentUserMembership =
+        communityMemberRepository
+            .findWithRoleAndCommunityAndOwnerByKey(
+                new CommunityMemberKey(communityId, currentUserId))
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"));
+
+    CommunityRole newRole =
+        communityRoleRepository
+            .findById(request.roleId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+
+    Community community = currentUserMembership.getCommunity();
+    boolean isOwner = currentUserId.equals(community.getOwner().getId());
+    boolean isTargetOwner = community.getOwner().getId().equals(userId);
+    boolean isTargetSelf = currentUserId.equals(userId);
+
+    if (isTargetOwner) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN, "Cannot change role of community owner");
+    }
+
+    CommunityMember targetMembership =
+        communityMemberRepository
+            .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found"));
+
+    if (isOwner) {
+      targetMembership.setRole(newRole);
+    } else if (isTargetSelf) {
+      if (newRole.getHierarchyLevel() <= currentUserMembership.getRole().getHierarchyLevel()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only demote yourself");
+      }
+      targetMembership.setRole(newRole);
+    } else {
+      if (!currentUserMembership.getRole().getCanManageRoles()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission denied");
+      }
+      if (targetMembership.getRole().getHierarchyLevel()
+          <= currentUserMembership.getRole().getHierarchyLevel()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient authority");
+      }
+      if (newRole.getHierarchyLevel() <= currentUserMembership.getRole().getHierarchyLevel()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot assign higher authority");
+      }
+      targetMembership.setRole(newRole);
+    }
+
+    return MemberResponseV2.fromEntity(targetMembership);
+  }
+
+  @Override
+  @Transactional
+  public void deleteMemberV2(long communityId, long userId) {
+    Long currentUserId = authUtilsComponent.getAuthenticatedUserId();
+
+    CommunityMember currentUserMembership =
+        communityMemberRepository
+            .findWithRoleAndCommunityAndOwnerByKey(
+                new CommunityMemberKey(communityId, currentUserId))
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied"));
+
+    Community community = currentUserMembership.getCommunity();
+    boolean isOwner = currentUserId.equals(community.getOwner().getId());
+    boolean isSelf = currentUserId.equals(userId);
+
+    CommunityMember targetMembership =
+        communityMemberRepository
+            .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found"));
+
+    if (community.getOwner().getId().equals(userId)) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove the community owner");
+    }
+
+    if (isOwner || isSelf) {
+      communityMemberRepository.delete(targetMembership);
+    } else {
+      if (!currentUserMembership.getRole().getCanBanUsers()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission denied");
+      }
+      if (targetMembership.getRole().getHierarchyLevel()
+          <= currentUserMembership.getRole().getHierarchyLevel()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient authority");
+      }
+      communityMemberRepository.delete(targetMembership);
+    }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<MemberResponseV2> getMembersByCommunityV2(long communityId) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    if (!communityMemberRepository.existsById(new CommunityMemberKey(communityId, userId))) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+    }
+
+    return communityMemberRepository
+        .findAllWithUserRoleAndCommunityByKey_CommunityId(communityId)
+        .stream()
+        .map(MemberResponseV2::fromEntity)
+        .toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public MemberResponseV2 getMemberV2(long communityId, long userId) {
+    Long currentUserId = authUtilsComponent.getAuthenticatedUserId();
+
+    if (!communityMemberRepository.existsById(new CommunityMemberKey(communityId, currentUserId))) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+    }
+
+    CommunityMember member =
+        communityMemberRepository
+            .findWithUserRoleAndCommunityByKey(new CommunityMemberKey(communityId, userId))
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found"));
+
+    return MemberResponseV2.fromEntity(member);
   }
 }

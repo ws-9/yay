@@ -33,6 +33,12 @@ public interface CommunityMemberRepository
   @EntityGraph(attributePaths = {"user", "role"})
   List<CommunityMember> findAllWithUserAndRoleByKey_CommunityId(Long communityId);
 
+  @EntityGraph(attributePaths = {"user", "role", "community"})
+  List<CommunityMember> findAllWithUserRoleAndCommunityByKey_CommunityId(Long communityId);
+
+  @EntityGraph(attributePaths = {"user", "role", "community"})
+  Optional<CommunityMember> findWithUserRoleAndCommunityByKey(CommunityMemberKey key);
+
   @EntityGraph(attributePaths = {"role"})
   List<CommunityMember> findAllWithRoleByKey_UserIdAndKey_CommunityIdIn(
       Long userId, List<Long> communityIds);
