@@ -5,10 +5,10 @@ import {
 } from '@tanstack/react-query';
 import { API_BOOTSTRAP_V1 } from '../../../constants';
 import type { Community } from '../../../types/v1/Community';
-import type { UserInfoResponse } from '../useUserInfoQuery';
 import { useEffect } from 'react';
 import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
+import type { UserInfoResponse } from './useUserInfoQuery';
 
 export type BootstrapResponse = {
   communities: Array<Community>;
