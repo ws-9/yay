@@ -10,6 +10,9 @@ import com.ws.yay_backend.dto.v1.request.DeleteChannelMessageRequest;
 import com.ws.yay_backend.dto.v1.request.EditChannelMessageRequest;
 import com.ws.yay_backend.dto.v1.response.CursorPaginatedResponse;
 import com.ws.yay_backend.dto.v1.response.GetChannelMessageResponse;
+import com.ws.yay_backend.dto.v2.request.CreateMessageRequestV2;
+import com.ws.yay_backend.dto.v2.request.UpdateMessageRequestV2;
+import com.ws.yay_backend.dto.v2.response.MessageResponseV2;
 import com.ws.yay_backend.entity.Channel;
 import com.ws.yay_backend.entity.ChannelMessage;
 import com.ws.yay_backend.entity.CommunityMember;
@@ -211,6 +214,173 @@ public class ChannelMessageServiceImpl implements ChannelMessageService {
 
     List<GetChannelMessageResponse> responseList =
         messages.stream().map(GetChannelMessageResponse::new).toList();
+
+    Instant nextCursor = messages.isEmpty() ? null : messages.getLast().getCreatedAt();
+    Long nextCursorId = messages.isEmpty() ? null : messages.getLast().getId();
+
+    return new CursorPaginatedResponse<>(responseList, nextCursor, nextCursorId, hasNext);
+  }
+
+  @Override
+  @Transactional
+  public MessageResponseV2 createMessageV2(CreateMessageRequestV2 request) {
+    User user = authUtilsComponent.getAuthenticatedUser();
+
+    Channel channel =
+        channelRepository
+            .findWithCommunityById(request.channelId())
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Channel not found: " + request.channelId()));
+
+    boolean isMember =
+        communityMemberRepository.existsById(
+            new CommunityMemberKey(channel.getCommunity().getId(), user.getId()));
+
+    if (!isMember) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "Channel not found: " + request.channelId());
+    }
+
+    ChannelMessage channelMessage = new ChannelMessage(request.message(), user, channel);
+    ChannelMessage saved = channelMessageRepository.save(channelMessage);
+
+    MessageResponseV2 response = MessageResponseV2.fromEntity(saved);
+
+    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(saved);
+    simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
+
+    return response;
+  }
+
+  @Override
+  @Transactional
+  public MessageResponseV2 updateMessageV2(long id, UpdateMessageRequestV2 request) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    ChannelMessage channelMessage =
+        channelMessageRepository
+            .findWithUserAndChannelById(id)
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
+
+    if (!channelMessage.getUser().getId().equals(userId)) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN, "You don't have permission to edit this message");
+    }
+
+    channelMessage.setMessage(request.message());
+    channelMessage.setUpdatedAt(Instant.now());
+
+    MessageResponseV2 response = MessageResponseV2.fromEntity(channelMessage);
+
+    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
+    simpMessagingTemplate.convertAndSend("/topic/channel/" + response.channelId(), broadcast);
+
+    return response;
+  }
+
+  @Override
+  @Transactional
+  public void deleteMessageV2(long id) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    ChannelMessage channelMessage =
+        channelMessageRepository
+            .findWithUserAndChannelAndCommunityById(id)
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
+
+    boolean isAuthor = channelMessage.getUser().getId().equals(userId);
+
+    if (isAuthor) {
+      channelMessage.setDeletedAt(Instant.now());
+    } else {
+      Long communityId = channelMessage.getChannel().getCommunity().getId();
+
+      CommunityMember currentUserMember =
+          communityMemberRepository
+              .findWithRoleByKey(new CommunityMemberKey(communityId, userId))
+              .orElseThrow(
+                  () ->
+                      new ResponseStatusException(
+                          HttpStatus.FORBIDDEN, "You are not a member of this community"));
+
+      CommunityMember authorMember =
+          communityMemberRepository
+              .findWithRoleByKey(
+                  new CommunityMemberKey(communityId, channelMessage.getUser().getId()))
+              .orElse(null);
+
+      CommunityRole currentUserRole = currentUserMember.getRole();
+
+      if (!currentUserRole.getCanDeleteMessages()) {
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN, "You don't have permission to delete messages");
+      }
+
+      if (authorMember != null) {
+        CommunityRole authorRole = authorMember.getRole();
+        if (currentUserRole.getHierarchyLevel() >= authorRole.getHierarchyLevel()) {
+          throw new ResponseStatusException(
+              HttpStatus.FORBIDDEN,
+              "You cannot delete messages from users with equal or higher authority");
+        }
+      }
+
+      channelMessage.setDeletedAt(Instant.now());
+    }
+
+    ChannelMessageBroadcast broadcast = new ChannelMessageBroadcast(channelMessage);
+    simpMessagingTemplate.convertAndSend(
+        "/topic/channel/" + channelMessage.getChannel().getId(), broadcast);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public MessageResponseV2 getMessageV2(long id) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+
+    ChannelMessage channelMessage =
+        channelMessageRepository
+            .findWithUserAndChannelAndCommunityById(id)
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
+
+    boolean isMember =
+        communityMemberRepository.existsById(
+            new CommunityMemberKey(channelMessage.getChannel().getCommunity().getId(), userId));
+
+    if (!isMember) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found");
+    }
+
+    return MessageResponseV2.fromEntity(channelMessage);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public CursorPaginatedResponse<MessageResponseV2> getCursorPaginatedMessagesV2(
+      long channelId, int size, Instant cursor, Long cursorId) {
+    Long userId = authUtilsComponent.getAuthenticatedUserId();
+    Pageable pageable = PageRequest.of(0, size + 1);
+
+    List<ChannelMessage> messages =
+        cursor != null
+            ? channelMessageRepository.findMessagesByChannelIdAndUserIdBeforeCursor(
+                channelId, userId, cursor, cursorId, pageable)
+            : channelMessageRepository.findMessagesByChannelIdAndUserId(
+                channelId, userId, pageable);
+
+    boolean hasNext = messages.size() > size;
+
+    if (hasNext) {
+      messages = messages.subList(0, size);
+    }
+
+    List<MessageResponseV2> responseList =
+        messages.stream().map(MessageResponseV2::fromEntity).toList();
 
     Instant nextCursor = messages.isEmpty() ? null : messages.getLast().getCreatedAt();
     Long nextCursorId = messages.isEmpty() ? null : messages.getLast().getId();

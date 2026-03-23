@@ -36,4 +36,25 @@ public interface ChannelMessageRepository extends JpaRepository<ChannelMessage, 
       @Param("cursor") Instant cursor,
       @Param("cursorId") Long cursorId,
       Pageable pageable);
+
+  @Query(
+      """
+      SELECT m FROM ChannelMessage m JOIN CommunityMember cm ON m.channel.community.id = cm.community.id
+      WHERE m.channel.id = :channelId AND cm.user.id = :userId
+        AND (m.createdAt < :cursor OR (m.createdAt = :cursor AND m.id < :cursorId))
+      ORDER BY m.createdAt DESC, m.id DESC
+  """)
+  @EntityGraph(attributePaths = {"user", "channel"})
+  List<ChannelMessage> findMessagesByChannelIdAndUserIdBeforeCursor(
+      @Param("channelId") long channelId,
+      @Param("userId") Long userId,
+      @Param("cursor") Instant cursor,
+      @Param("cursorId") Long cursorId,
+      Pageable pageable);
+
+  @Query(
+      "SELECT m FROM ChannelMessage m JOIN CommunityMember cm ON m.channel.community.id = cm.community.id WHERE m.channel.id = :channelId AND cm.user.id = :userId ORDER BY m.createdAt DESC, m.id DESC")
+  @EntityGraph(attributePaths = {"user", "channel"})
+  List<ChannelMessage> findMessagesByChannelIdAndUserId(
+      @Param("channelId") long channelId, @Param("userId") Long userId, Pageable pageable);
 }
