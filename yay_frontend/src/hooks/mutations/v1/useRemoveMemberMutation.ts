@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_MEMBERS } from '../../../constants';
+import { API_MEMBERS_V1 } from '../../../constants';
 import { useUserInfoQuery } from '../../queries/v1/useUserInfoQuery';
 import { useRemoveCommunityOptimistically } from '../../cacheHelpers';
-import { queryKeys } from '../../queryKeys';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 type RemoveMemberInput = {
@@ -18,7 +18,7 @@ function useRemoveMemberMutation() {
 
   return useMutation<void, Error, RemoveMemberInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_MEMBERS, {
+      const response = await fetchWithAuth(API_MEMBERS_V1, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ function useRemoveMemberMutation() {
         removeCommunityOptimistically(variables.communityId);
       } else {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.communities.members.role(
+          queryKey: queryKeysV1.communities.members.role(
             variables.communityId,
             variables.userId,
           ),

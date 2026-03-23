@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '../../queryKeys';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
-import { API_COMMUNITIES } from '../../../constants';
+import { API_COMMUNITIES_V1 } from '../../../constants';
 
 type CommunityInviteSlug = {
   inviteSlug: string;
@@ -11,7 +11,7 @@ export function useCommunityInviteQuery(communityId: number | null) {
   const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<CommunityInviteSlug>({
-    queryKey: queryKeys.communities.invites.detail(communityId!),
+    queryKey: queryKeysV1.communities.invites.detail(communityId!),
     queryFn: () => getCommunityInvite(communityId!, fetchWithAuth),
     enabled: communityId !== null,
     staleTime: Infinity, // Consider seeding the cache for this in the future
@@ -26,7 +26,7 @@ async function getCommunityInvite(
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
 ) {
   const response = await fetchWithAuth(
-    `${API_COMMUNITIES}/${communityId}/invites`,
+    `${API_COMMUNITIES_V1}/${communityId}/invites`,
     {
       method: 'GET',
       headers: {

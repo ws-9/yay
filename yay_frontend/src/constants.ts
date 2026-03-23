@@ -1,17 +1,18 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
-export const API_REGISTER_URL = API_BASE_URL + '/auth/register';
-export const API_LOGIN_URL = API_BASE_URL + '/auth/login';
-export const API_REFRESH_URL = API_BASE_URL + '/auth/refresh';
-export const API_LOGOUT_URL = API_BASE_URL + '/auth/logout';
+const API_BASE_URL_v1 = 'http://localhost:8080/api/v1';
+export const API_REGISTER_URL_V1 = API_BASE_URL_v1 + '/auth/register';
+export const API_LOGIN_URL_V1 = API_BASE_URL_v1 + '/auth/login';
+export const API_REFRESH_URL_V1 = API_BASE_URL_v1 + '/auth/refresh';
+export const API_LOGOUT_URL_V1 = API_BASE_URL_v1 + '/auth/logout';
 
-export const API_BOOTSTRAP = API_BASE_URL + '/bootstrap';
-export const API_COMMUNITIES = API_BASE_URL + '/communities';
-export const API_MY_COMMUNITIES = API_BASE_URL + '/communities/my-communities';
-export const API_CHANNELS = API_BASE_URL + '/channels';
-export const API_MEMBERS = API_BASE_URL + '/members';
-export const API_MESSAGES = API_BASE_URL + '/messages';
-export const API_BANS = API_BASE_URL + '/bans';
-export const API_ME = API_BASE_URL + '/me';
+export const API_BOOTSTRAP_V1 = API_BASE_URL_v1 + '/bootstrap';
+export const API_COMMUNITIES_V1 = API_BASE_URL_v1 + '/communities';
+export const API_MY_COMMUNITIES_V1 =
+  API_BASE_URL_v1 + '/communities/my-communities';
+export const API_CHANNELS_V1 = API_BASE_URL_v1 + '/channels';
+export const API_MEMBERS_V1 = API_BASE_URL_v1 + '/members';
+export const API_MESSAGES_V1 = API_BASE_URL_v1 + '/messages';
+export const API_BANS_V1 = API_BASE_URL_v1 + '/bans';
+export const API_ME_V1 = API_BASE_URL_v1 + '/me';
 
 export const WS_BROKER = 'ws://localhost:8080/ws';
 

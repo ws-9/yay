@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import type { ChannelMessage } from '../../../types/v1/ChannelMessage';
-import { API_MESSAGES } from '../../../constants';
+import { API_MESSAGES_V1 } from '../../../constants';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 type CreateChannelMessageInput = {
@@ -13,7 +13,7 @@ function useCreateChannelMessageMutation() {
 
   return useMutation<ChannelMessage, Error, CreateChannelMessageInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_MESSAGES, {
+      const response = await fetchWithAuth(API_MESSAGES_V1, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

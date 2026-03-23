@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_COMMUNITIES } from '../../../constants';
+import { API_COMMUNITIES_V1 } from '../../../constants';
 import type { Community } from '../../../types/v1/Community';
-import { queryKeys } from '../../queryKeys';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export function useCommunityQuery(communityId: number | null) {
   const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<Community>({
-    queryKey: queryKeys.communities.detail(communityId!),
+    queryKey: queryKeysV1.communities.detail(communityId!),
     queryFn: () => getCommunity(communityId!, fetchWithAuth),
     enabled: communityId !== null,
     staleTime: Infinity, // Always use cache, never auto-refetch
@@ -26,7 +26,7 @@ async function getCommunity(
   communityId: number,
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
 ) {
-  const response = await fetchWithAuth(`${API_COMMUNITIES}/${communityId}`, {
+  const response = await fetchWithAuth(`${API_COMMUNITIES_V1}/${communityId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

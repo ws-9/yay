@@ -2,14 +2,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Community } from '../types/v1/Community';
 import type { BootstrapResponse } from './queries/v1/useBootstrapQuery';
 import type { Channel } from '../types/v1/Channel';
-import { queryKeys } from './queryKeys';
+import { queryKeysV1 } from './queryKeys';
 
 export function useCreateCommunityOptimistically() {
   const queryClient = useQueryClient();
   return function createCommunityOptimistically(newCommunity: Community) {
     // Update bootstrap cache
     queryClient.setQueryData(
-      queryKeys.bootstrap,
+      queryKeysV1.bootstrap,
       (old: BootstrapResponse | undefined) => {
         if (!old) {
           return {
@@ -28,12 +28,15 @@ export function useCreateCommunityOptimistically() {
     );
     // Set individual community cache
     queryClient.setQueryData(
-      queryKeys.communities.detail(newCommunity.id),
+      queryKeysV1.communities.detail(newCommunity.id),
       newCommunity,
     );
     // Set community role cache
     queryClient.setQueryData(
-      queryKeys.communities.members.role(newCommunity.id, newCommunity.ownerId),
+      queryKeysV1.communities.members.role(
+        newCommunity.id,
+        newCommunity.ownerId,
+      ),
       newCommunity.role,
     );
   };
@@ -44,7 +47,7 @@ export function useCreateChannelOptimistically() {
   return function createChannelOptimistically(newChannel: Channel) {
     // Update bootstrap cache
     queryClient.setQueryData(
-      queryKeys.bootstrap,
+      queryKeysV1.bootstrap,
       (old: BootstrapResponse | undefined) => {
         if (!old) {
           return old;
@@ -65,7 +68,7 @@ export function useCreateChannelOptimistically() {
     );
     // Update individual community cache
     queryClient.setQueryData(
-      queryKeys.communities.detail(newChannel.communityId),
+      queryKeysV1.communities.detail(newChannel.communityId),
       (old: Community | undefined) => {
         if (!old) {
           return old;
@@ -78,7 +81,7 @@ export function useCreateChannelOptimistically() {
     );
     // Set individual channel cache
     queryClient.setQueryData(
-      queryKeys.channels.detail(newChannel.id),
+      queryKeysV1.channels.detail(newChannel.id),
       newChannel,
     );
   };
@@ -88,7 +91,7 @@ export function useRemoveCommunityOptimistically() {
   const queryClient = useQueryClient();
   return function removeCommunityOptimistically(communityId: number) {
     queryClient.setQueryData(
-      queryKeys.bootstrap,
+      queryKeysV1.bootstrap,
       (old: BootstrapResponse | undefined) => {
         if (!old) {
           return old;

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAuthActions } from '../../../store/authStore';
-import { API_LOGIN_URL } from '../../../constants';
+import { API_LOGIN_URL_V1 } from '../../../constants';
 
 type LoginInput = {
   username: string;
@@ -14,7 +14,7 @@ type LoginResponse = {
 function useLoginMutation() {
   return useMutation<LoginResponse, Error, LoginInput>({
     mutationFn: async function (data) {
-      const response = await fetch(API_LOGIN_URL, {
+      const response = await fetch(API_LOGIN_URL_V1, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

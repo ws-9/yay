@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_ME } from '../../../constants';
-import { queryKeys } from '../../queryKeys';
+import { API_ME_V1 } from '../../../constants';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export type UserInfoResponse = {
@@ -12,7 +12,7 @@ export function useUserInfoQuery() {
   const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<UserInfoResponse>({
-    queryKey: queryKeys.me,
+    queryKey: queryKeysV1.me,
     queryFn: () => getMe(fetchWithAuth),
     staleTime: Infinity, // Always use cache, never auto-refetch
     gcTime: Infinity, // Keep cache permanently
@@ -24,7 +24,7 @@ export function useUserInfoQuery() {
 async function getMe(
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
 ) {
-  const response = await fetchWithAuth(API_ME, {
+  const response = await fetchWithAuth(API_ME_V1, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

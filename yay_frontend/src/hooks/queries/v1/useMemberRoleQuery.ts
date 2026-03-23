@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { create, windowScheduler } from '@yornaath/batshit';
-import { API_COMMUNITIES } from '../../../constants';
+import { API_COMMUNITIES_V1 } from '../../../constants';
 import { useUserInfoQuery } from './useUserInfoQuery';
 import type { CommunityRole } from '../../../types/v1/CommunityRole';
-import { queryKeys } from '../../queryKeys';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export type MemberRoleQuery = {
@@ -42,7 +42,7 @@ function createMemberRolesBatcher(
 
       for (const [communityId, userIds] of communityIdToUserIds) {
         const response = await fetchWithAuth(
-          `${API_COMMUNITIES}/${communityId}/members/roles`,
+          `${API_COMMUNITIES_V1}/${communityId}/members/roles`,
           {
             method: 'POST',
             headers: {
@@ -96,7 +96,7 @@ function useMemberRoleQuery(communityId: number | null, userId: number | null) {
   const memberRolesBatcher = createMemberRolesBatcher(fetchWithAuth);
 
   return useQuery<CommunityRole | null>({
-    queryKey: queryKeys.communities.members.role(communityId!, userId!),
+    queryKey: queryKeysV1.communities.members.role(communityId!, userId!),
     queryFn: async () => {
       return memberRolesBatcher.fetch({
         communityId: communityId!,

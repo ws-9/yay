@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useAuthActions } from '../../../store/authStore';
-import { API_LOGOUT_URL } from '../../../constants';
+import { API_LOGOUT_URL_V1 } from '../../../constants';
 
 function useLogoutMutation() {
   const { logout } = useAuthActions();
@@ -10,7 +10,7 @@ function useLogoutMutation() {
   return useMutation<void, Error, void>({
     mutationFn: async function () {
       console.log('Calling logout endpoint...');
-      const response = await fetch(API_LOGOUT_URL, {
+      const response = await fetch(API_LOGOUT_URL_V1, {
         method: 'POST',
         credentials: 'include', // Include cookies for logout
       });

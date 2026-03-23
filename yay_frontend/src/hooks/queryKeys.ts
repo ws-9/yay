@@ -1,4 +1,4 @@
-export const queryKeys = {
+export const queryKeysV1 = {
   bootstrap: ['bootstrap'] as const,
   me: ['me'] as const,
   communities: {

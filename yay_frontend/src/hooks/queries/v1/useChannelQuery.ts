@@ -1,16 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_CHANNELS } from '../../../constants';
+import { API_CHANNELS_V1 } from '../../../constants';
 import type { Channel } from '../../../types/v1/Channel';
-import { queryKeys } from '../../queryKeys';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export function useChannelQuery(channelId: number | null) {
   const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<Channel>({
-    queryKey: queryKeys.channels.detail(channelId!),
+    queryKey: queryKeysV1.channels.detail(channelId!),
     queryFn: async () => {
-      const response = await fetchWithAuth(`${API_CHANNELS}/${channelId}`, {
+      const response = await fetchWithAuth(`${API_CHANNELS_V1}/${channelId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

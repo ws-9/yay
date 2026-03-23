@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import type { CommunityRole } from '../../../types/v1/CommunityRole';
-import { API_COMMUNITIES } from '../../../constants';
+import { API_COMMUNITIES_V1 } from '../../../constants';
 import { useCreateCommunityOptimistically } from '../../cacheHelpers';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
@@ -22,7 +22,7 @@ function useCreateCommunityMutation() {
 
   return useMutation<CreateCommunityResponse, Error, CreateCommunityInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_COMMUNITIES, {
+      const response = await fetchWithAuth(API_COMMUNITIES_V1, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

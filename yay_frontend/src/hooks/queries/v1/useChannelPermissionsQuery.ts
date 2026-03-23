@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
-import { API_CHANNELS } from '../../../constants';
-import { queryKeys } from '../../queryKeys';
+import { API_CHANNELS_V1 } from '../../../constants';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export type ChannelPermission = {
@@ -22,10 +22,10 @@ export default function useChannelPermissionsQuery<
   const fetchWithAuth = useFetchWithAuth();
 
   return useQuery<Array<ChannelPermission>, Error, T>({
-    queryKey: queryKeys.channels.permissions(channelId!),
+    queryKey: queryKeysV1.channels.permissions(channelId!),
     queryFn: async () => {
       const response = await fetchWithAuth(
-        `${API_CHANNELS}/${channelId}/permissions`,
+        `${API_CHANNELS_V1}/${channelId}/permissions`,
         {
           method: 'GET',
           headers: {

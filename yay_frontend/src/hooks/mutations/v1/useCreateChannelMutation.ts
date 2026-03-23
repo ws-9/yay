@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { API_CHANNELS } from '../../../constants';
+import { API_CHANNELS_V1 } from '../../../constants';
 import { useCreateChannelOptimistically } from '../../cacheHelpers';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
@@ -21,7 +21,7 @@ function useCreateChannelMutation() {
 
   return useMutation<CreateChannelResponse, Error, CreateChannelInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_CHANNELS, {
+      const response = await fetchWithAuth(API_CHANNELS_V1, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { API_MESSAGES } from '../../../constants';
+import { API_MESSAGES_V1 } from '../../../constants';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 type DeleteChannelMessageInput = {
@@ -11,7 +11,7 @@ function useDeleteChannelMessageMutation() {
 
   return useMutation<void, Error, DeleteChannelMessageInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_MESSAGES, {
+      const response = await fetchWithAuth(API_MESSAGES_V1, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

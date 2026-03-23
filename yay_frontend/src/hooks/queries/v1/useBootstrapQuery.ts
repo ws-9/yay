@@ -3,11 +3,11 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from '@tanstack/react-query';
-import { API_BOOTSTRAP } from '../../../constants';
+import { API_BOOTSTRAP_V1 } from '../../../constants';
 import type { Community } from '../../../types/v1/Community';
 import type { UserInfoResponse } from '../useUserInfoQuery';
 import { useEffect } from 'react';
-import { queryKeys } from '../../queryKeys';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export type BootstrapResponse = {
@@ -34,7 +34,7 @@ export function useBootstrapQuery<T = BootstrapResponse>(
   const fetchWithAuth = useFetchWithAuth();
 
   const query = useQuery<BootstrapResponse, Error, T>({
-    queryKey: queryKeys.bootstrap,
+    queryKey: queryKeysV1.bootstrap,
     queryFn: () => getBootstrap(fetchWithAuth),
     refetchInterval: 30 * 1000, // Refetch every 30 seconds
     ...options,
@@ -46,20 +46,20 @@ export function useBootstrapQuery<T = BootstrapResponse>(
       const { communities, user } = query.data;
 
       // Seed the /me cache with user info
-      queryClient.setQueryData(queryKeys.me, user);
+      queryClient.setQueryData(queryKeysV1.me, user);
 
       // Seed individual community, channel, and member role caches
       communities.forEach((community: Community) => {
         // Seed individual community cache
         queryClient.setQueryData(
-          queryKeys.communities.detail(community.id),
+          queryKeysV1.communities.detail(community.id),
           community,
         );
 
         // Seed channel cache for each channel in the community
         community.channels?.forEach(channel => {
           queryClient.setQueryData(
-            queryKeys.channels.detail(channel.id),
+            queryKeysV1.channels.detail(channel.id),
             channel,
           );
         });
@@ -67,7 +67,7 @@ export function useBootstrapQuery<T = BootstrapResponse>(
         // Seed member role cache for current user in each community
         if (community.role) {
           queryClient.setQueryData(
-            queryKeys.communities.members.role(community.id, user.id),
+            queryKeysV1.communities.members.role(community.id, user.id),
             community.role,
           );
         }
@@ -81,7 +81,7 @@ export function useBootstrapQuery<T = BootstrapResponse>(
 async function getBootstrap(
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
 ) {
-  const response = await fetchWithAuth(API_BOOTSTRAP, {
+  const response = await fetchWithAuth(API_BOOTSTRAP_V1, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

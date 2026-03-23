@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_MEMBERS } from '../../../constants';
-import { queryKeys } from '../../queryKeys';
+import { API_MEMBERS_V1 } from '../../../constants';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 type JoinCommunityInput = {
@@ -19,7 +19,7 @@ function useJoinCommunityMutation() {
 
   return useMutation<JoinCommunityResponse, Error, JoinCommunityInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_MEMBERS, {
+      const response = await fetchWithAuth(API_MEMBERS_V1, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ function useJoinCommunityMutation() {
     onSuccess: async data => {
       if (data.isNewMember) {
         await queryClient.invalidateQueries({
-          queryKey: queryKeys.bootstrap,
+          queryKey: queryKeysV1.bootstrap,
         });
       }
     },

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_BANS } from '../../../constants';
-import { queryKeys } from '../../queryKeys';
+import { API_BANS_V1 } from '../../../constants';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 type BanMemberInput = {
@@ -21,7 +21,7 @@ function useBanMemberMutation() {
 
   return useMutation<BannedUserResponse, Error, BanMemberInput>({
     mutationFn: async function (data) {
-      const response = await fetchWithAuth(API_BANS, {
+      const response = await fetchWithAuth(API_BANS_V1, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ function useBanMemberMutation() {
     onSuccess: async (_, variables) => {
       // Optimistically set the banned user's role to null
       queryClient.setQueryData(
-        queryKeys.communities.members.role(
+        queryKeysV1.communities.members.role(
           variables.communityId,
           variables.userId,
         ),

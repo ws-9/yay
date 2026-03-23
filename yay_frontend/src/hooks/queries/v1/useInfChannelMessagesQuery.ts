@@ -1,8 +1,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import type { CursorPaginatedChannelMessages } from '../../../types/v1/CursorPaginatedChannelMessages';
 import type { ChannelMessagePageParam } from '../../../types/v1/ChannelMessagePageParam';
-import { API_CHANNELS, CHANNEL_MESSAGES_PAGE_SIZE } from '../../../constants';
-import { queryKeys } from '../../queryKeys';
+import {
+  API_CHANNELS_V1,
+  CHANNEL_MESSAGES_PAGE_SIZE,
+} from '../../../constants';
+import { queryKeysV1 } from '../../queryKeys';
 import useFetchWithAuth from '../../useFetchWithAuth';
 
 export function useInfChannelMessagesQuery(channelId: number) {
@@ -16,7 +19,7 @@ export function useInfChannelMessagesQuery(channelId: number) {
     fetchNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: queryKeys.channels.messages(channelId),
+    queryKey: queryKeysV1.channels.messages(channelId),
     queryFn: params => fetchMessages(params, fetchWithAuth),
     initialPageParam: {
       id: channelId,
@@ -72,7 +75,7 @@ async function fetchMessages(
   }
 
   const response = await fetchWithAuth(
-    `${API_CHANNELS}/${channelId}/messages?${params}`,
+    `${API_CHANNELS_V1}/${channelId}/messages?${params}`,
     {
       method: 'GET',
     },
