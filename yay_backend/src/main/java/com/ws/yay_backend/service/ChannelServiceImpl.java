@@ -23,10 +23,7 @@ import com.ws.yay_backend.entity.embedded.ChannelPermissionKey;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,23 +104,6 @@ public class ChannelServiceImpl implements ChannelService {
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public GetChannelResponse getChannel(long id) {
-    Channel channel =
-        channelRepository
-            .findById(id)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Channel not found with id: " + id));
-    return new GetChannelResponse(
-        channel.getId(),
-        channel.getName(),
-        channel.getCommunity().getId(),
-        channel.getCommunity().getName());
-  }
-
-  @Override
   @Transactional
   public ChannelPermissionResponse upsertChannelPermission(
       long channelId, CreateChannelPermissionRequest request) {
@@ -182,72 +162,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     return ChannelPermissionResponse.fromEntity(permission);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public List<ChannelPermissionResponse> getChannelPermissions(long channelId) {
-    Long userId = authUtilsComponent.getAuthenticatedUserId();
-
-    Channel channel =
-        channelRepository
-            .findWithCommunityById(channelId)
-            .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found"));
-
-    boolean isMember =
-        communityMemberRepository.existsById(
-            new CommunityMemberKey(channel.getCommunity().getId(), userId));
-    if (!isMember) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found");
-    }
-
-    // Get all roles for the community
-    List<CommunityRole> roles = communityRoleRepository.findAll();
-
-    List<ChannelPermission> channelPermissions =
-        channelPermissionRepository.findByKey_ChannelId(channelId);
-    Map<Long, ChannelPermission> roleToPermissionMap =
-        channelPermissions.stream()
-            .collect(Collectors.toMap(p -> p.getKey().getRoleId(), Function.identity()));
-
-    // For each role, get stored permission or return default
-    return roles.stream()
-        .map(
-            role -> {
-              ChannelPermission permission =
-                  roleToPermissionMap.getOrDefault(
-                      role.getId(), ChannelPermission.createDefault(channel, role));
-
-              return ChannelPermissionResponse.fromEntity(permission);
-            })
-        .toList();
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public ChannelPermissionResponse getChannelPermission(long channelId, long roleId) {
-    Long userId = authUtilsComponent.getAuthenticatedUserId();
-
-    Channel channel =
-        channelRepository
-            .findWithCommunityById(channelId)
-            .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found"));
-
-    boolean isMember =
-        communityMemberRepository.existsById(
-            new CommunityMemberKey(channel.getCommunity().getId(), userId));
-    if (!isMember) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Channel not found");
-    }
-
-    ChannelPermissionKey key = new ChannelPermissionKey(channelId, roleId);
-
-    return channelPermissionRepository
-        .findById(key)
-        .map(ChannelPermissionResponse::fromEntity)
-        .orElseGet(() -> new ChannelPermissionResponse(channelId, roleId, true, true));
   }
 
   @Override

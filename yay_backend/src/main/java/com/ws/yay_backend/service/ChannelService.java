@@ -13,14 +13,8 @@ import java.util.List;
 public interface ChannelService {
   GetChannelResponse createChannel(CreateChannelRequest request);
 
-  GetChannelResponse getChannel(long id);
-
   ChannelPermissionResponse upsertChannelPermission(
       long channelId, CreateChannelPermissionRequest request);
-
-  List<ChannelPermissionResponse> getChannelPermissions(long channelId);
-
-  ChannelPermissionResponse getChannelPermission(long channelId, long roleId);
 
   void deleteChannel(long channelId);
 

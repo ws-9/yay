@@ -10,7 +10,6 @@ import com.ws.yay_backend.dto.v1.request.RemoveMemberRequest;
 import com.ws.yay_backend.dto.v1.request.UpdateRoleRequest;
 import com.ws.yay_backend.dto.v1.response.CommunityRoleResponse;
 import com.ws.yay_backend.dto.v1.response.GetMemberResponse;
-import com.ws.yay_backend.dto.v1.response.GetMembersRolesResponse;
 import com.ws.yay_backend.dto.v1.response.JoinCommunityResponse;
 import com.ws.yay_backend.dto.v2.request.JoinCommunityRequestV2;
 import com.ws.yay_backend.dto.v2.request.UpdateMemberRoleRequestV2;
@@ -23,8 +22,6 @@ import com.ws.yay_backend.entity.User;
 import com.ws.yay_backend.entity.embedded.BannedUserKey;
 import com.ws.yay_backend.entity.embedded.CommunityMemberKey;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,43 +170,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     communityMemberRepository.delete(toBeRemovedMember);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public GetMembersRolesResponse getRolesByUserIds(Long communityId, List<Long> userIds) {
-    Long userId = authUtilsComponent.getAuthenticatedUserId();
-
-    boolean communityExists = communityRepository.existsById(communityId);
-    if (!communityExists) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "Community not found: " + communityId);
-    }
-
-    boolean isAdmin = authUtilsComponent.isCurrentUserAdmin();
-    boolean isMember =
-        communityMemberRepository.existsById(new CommunityMemberKey(communityId, userId));
-
-    if (!isAdmin && !isMember) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "Community not found: " + communityId);
-    }
-
-    List<CommunityMember> members =
-        communityMemberRepository.findAllWithRoleByKey_CommunityIdAndKey_UserIdIn(
-            communityId, userIds);
-
-    Map<Long, CommunityRoleResponse> rolesMap =
-        members.stream()
-            .collect(
-                Collectors.toMap(
-                    m -> m.getKey().getUserId(),
-                    m -> CommunityRoleResponse.fromEntity(m.getRole())));
-
-    // for not found users, set null
-    userIds.forEach(id -> rolesMap.putIfAbsent(id, null));
-
-    return new GetMembersRolesResponse(rolesMap);
   }
 
   @Override
