@@ -1,11 +1,11 @@
 package com.ws.yay_backend.entity;
 
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import java.util.Set;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.generator.EventType;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "communities")
@@ -29,7 +29,7 @@ public class Community {
       fetch = FetchType.LAZY)
   private Set<CommunityMember> members;
 
-  @Type(JsonBinaryType.class)
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
   private CommunitySettings settings;
 
