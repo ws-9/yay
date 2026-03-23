@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_CHANNEL_PERMISSIONS } from '../../constants';
 import useFetchWithAuth from '../useFetchWithAuth';
 import { queryKeysV2 } from '../queryKeys';
-import type { ChannelPermissionV2 } from '../../types/ChannelPermissionV2';
+import type { ChannelPermission } from '../../types/ChannelPermission';
 
 type ChannelPermissionInput = {
   roleId: number;
@@ -14,7 +14,7 @@ export default function useChannelPermissionMutation(channelId: number) {
   const fetchWithAuth = useFetchWithAuth();
   const queryClient = useQueryClient();
 
-  return useMutation<ChannelPermissionV2, Error, ChannelPermissionInput>({
+  return useMutation<ChannelPermission, Error, ChannelPermissionInput>({
     mutationFn: async function (request) {
       const response = await fetchWithAuth(API_CHANNEL_PERMISSIONS, {
         method: 'PUT',

@@ -1,5 +1,5 @@
-import { useCommunitiesV2Query } from '../../../../hooks/queries/useCommunitiesV2Query';
-import { useChannelsV2Query } from '../../../../hooks/queries/useChannelsV2Query';
+import { useCommunitiesQuery } from '../../../../hooks/queries/useCommunitiesQuery';
+import { useChannelsQuery } from '../../../../hooks/queries/useChannelsQuery';
 import { useWorkspaceActions } from '../../../../store/workspaceStore';
 import { Accordion } from '@base-ui/react/accordion';
 import { useEffect, useEffectEvent } from 'react';
@@ -10,10 +10,10 @@ export default function CommunityTabsList() {
     data: communities,
     isLoading: isLoadingCommunities,
     error: errorCommunities,
-  } = useCommunitiesV2Query();
+  } = useCommunitiesQuery();
   const communityIds = communities?.map(c => c.id) ?? [];
   const { data: channels, isLoading: isLoadingChannels } =
-    useChannelsV2Query(communityIds);
+    useChannelsQuery(communityIds);
 
   const { removeNodesNotInChannelList } = useWorkspaceActions();
 

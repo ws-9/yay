@@ -1,4 +1,4 @@
-import { useChannelV2Query } from '../../../../hooks/queries/useChannelV2Query';
+import { useChannelQuery } from '../../../../hooks/queries/useChannelQuery';
 import {
   getActivePaneId,
   useWorkspaceActions,
@@ -7,7 +7,7 @@ import ChannelMenu from '../ChannelMenu';
 
 export default function ChannelTab({ channelId }: { channelId: number }) {
   const { setChannel } = useWorkspaceActions();
-  const { data: channelData } = useChannelV2Query(channelId);
+  const { data: channelData } = useChannelQuery(channelId);
 
   if (!channelData) {
     return null;

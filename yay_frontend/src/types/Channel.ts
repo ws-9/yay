@@ -1,4 +1,4 @@
-export type ChannelV2 = {
+export type Channel = {
   id: number;
   name: string;
   communityId: number;

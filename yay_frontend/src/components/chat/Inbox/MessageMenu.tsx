@@ -1,16 +1,16 @@
 import { Menu } from '@base-ui/react/menu';
 import useDeleteChannelMessage from '../../../hooks/mutations/useDeleteChannelMessageMutation';
-import { useChannelV2Query } from '../../../hooks/queries/useChannelV2Query';
-import { useCommunityV2Query } from '../../../hooks/queries/useCommunityV2Query';
-import { useMemberV2Query } from '../../../hooks/queries/useMemberV2Query';
-import { useRolesV2Query } from '../../../hooks/queries/useRolesV2Query';
+import { useChannelQuery } from '../../../hooks/queries/useChannelQuery';
+import { useCommunityQuery } from '../../../hooks/queries/useCommunityQuery';
+import { useMemberQuery } from '../../../hooks/queries/useMemberQuery';
+import { useRolesQuery } from '../../../hooks/queries/useRolesQuery';
 import useRemoveMemberMutation from '../../../hooks/mutations/useRemoveMemberMutation';
 import useBanMember from '../../../hooks/mutations/useBanMemberMutation';
-import type { MessageV2, RoleV2 } from '../../../types';
-import { useMeV2Query } from '../../../hooks/queries/useMeV2Query';
+import type { Message, Role } from '../../../types';
+import { useMeQuery } from '../../../hooks/queries/useMeQuery';
 
 type MessageMenuProps = {
-  message: MessageV2;
+  message: Message;
   channelId: number;
   onEdit?: () => void;
 };
@@ -20,10 +20,10 @@ export default function MessageMenu({
   channelId,
   onEdit,
 }: MessageMenuProps) {
-  const { data: userInfo } = useMeV2Query();
-  const { data: channel } = useChannelV2Query(channelId);
-  const { data: community } = useCommunityV2Query(channel?.communityId ?? null);
-  const { data: roles } = useRolesV2Query();
+  const { data: userInfo } = useMeQuery();
+  const { data: channel } = useChannelQuery(channelId);
+  const { data: community } = useCommunityQuery(channel?.communityId ?? null);
+  const { data: roles } = useRolesQuery();
 
   const deleteMutation = useDeleteChannelMessage();
   const kickMutation = useRemoveMemberMutation();
@@ -34,7 +34,7 @@ export default function MessageMenu({
   const isTargetOwner = message.userId === community?.ownerId;
 
   // Get current user's membership and role
-  const { data: currentUserMemberships } = useMemberV2Query(
+  const { data: currentUserMemberships } = useMemberQuery(
     communityId ?? 0,
     userInfo?.id ?? 0,
   );
@@ -43,7 +43,7 @@ export default function MessageMenu({
   );
 
   // Get message author's membership and role
-  const { data: authorMemberships } = useMemberV2Query(
+  const { data: authorMemberships } = useMemberQuery(
     communityId ?? 0,
     message.userId,
   );
@@ -150,9 +150,9 @@ export default function MessageMenu({
 
 function canUserDeleteMessage(
   currentUserId: number | undefined,
-  currentUserRole: RoleV2 | null | undefined,
+  currentUserRole: Role | null | undefined,
   messageUserId: number,
-  authorRole: RoleV2 | null | undefined,
+  authorRole: Role | null | undefined,
   isCurrentUserOwner: boolean,
   isDeleted: boolean,
 ): boolean {
@@ -191,9 +191,9 @@ function canUserDeleteMessage(
 
 function canUserBanMember(
   currentUserId: number | undefined,
-  currentUserRole: RoleV2 | null | undefined,
+  currentUserRole: Role | null | undefined,
   targetUserId: number,
-  targetRole: RoleV2 | null | undefined,
+  targetRole: Role | null | undefined,
   isCurrentUserOwner: boolean,
   isTargetOwner: boolean,
 ): boolean {

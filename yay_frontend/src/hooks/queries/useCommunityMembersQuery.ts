@@ -2,12 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { API_MEMBERS } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { MemberV2 } from '../../types';
+import type { Member } from '../../types';
 
-export function useCommunityMembersV2Query(communityId: number) {
+export function useCommunityMembersQuery(communityId: number) {
   const fetchWithAuth = useFetchWithAuth();
 
-  return useQuery<MemberV2[]>({
+  return useQuery<Member[]>({
     queryKey: queryKeysV2.members.byCommunity(communityId),
     queryFn: () => getCommunityMembers(fetchWithAuth, communityId),
     enabled: !!communityId,

@@ -2,12 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { API_INVITES } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { InviteResponseV2 } from '../../types';
+import type { InviteResponse } from '../../types';
 
-export function useInviteV2Query(communityId: number | null) {
+export function useInviteQuery(communityId: number | null) {
   const fetchWithAuth = useFetchWithAuth();
 
-  return useQuery<InviteResponseV2>({
+  return useQuery<InviteResponse>({
     queryKey: queryKeysV2.invites.byCommunity(communityId as number),
     queryFn: () => getInvite(fetchWithAuth, communityId as number),
     enabled: !!communityId,

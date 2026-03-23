@@ -2,12 +2,12 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { API_MESSAGES, CHANNEL_MESSAGES_PAGE_SIZE } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { MessageV2, CursorPaginatedResponseV2 } from '../../types';
+import type { Message, CursorPaginatedResponse } from '../../types';
 
-export function useInfChannelMessagesV2Query(channelId: number) {
+export function useInfChannelMessagesQuery(channelId: number) {
   const fetchWithAuth = useFetchWithAuth();
 
-  return useInfiniteQuery<CursorPaginatedResponseV2<MessageV2>>({
+  return useInfiniteQuery<CursorPaginatedResponse<Message>>({
     queryKey: queryKeysV2.messages.byChannel(channelId),
     queryFn: ({ pageParam }) =>
       getChannelMessages(fetchWithAuth, channelId, pageParam as any),

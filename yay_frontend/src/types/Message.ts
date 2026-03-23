@@ -1,4 +1,4 @@
-export type MessageV2 = {
+export type Message = {
   id: number;
   message: string;
   userId: number;

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_CHANNELS } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { ChannelV2 } from '../../types/ChannelV2';
+import type { Channel } from '../../types/Channel';
 
 type CreateChannelInput = {
   communityId: number;
@@ -13,7 +13,7 @@ function useCreateChannelMutation() {
   const fetchWithAuth = useFetchWithAuth();
   const queryClient = useQueryClient();
 
-  return useMutation<ChannelV2, Error, CreateChannelInput>({
+  return useMutation<Channel, Error, CreateChannelInput>({
     mutationFn: async function (data) {
       const response = await fetchWithAuth(API_CHANNELS, {
         method: 'POST',

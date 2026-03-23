@@ -1,4 +1,4 @@
-export type ChannelPermissionV2 = {
+export type ChannelPermission = {
   channelId: number;
   roleId: number;
   canRead: boolean;

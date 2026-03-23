@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_MEMBERS } from '../../constants';
-import { useMeV2Query } from '../queries/useMeV2Query';
+import { useMeQuery } from '../queries/useMeQuery';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
 
@@ -12,7 +12,7 @@ type RemoveMemberInput = {
 function useRemoveMemberMutation() {
   const fetchWithAuth = useFetchWithAuth();
   const queryClient = useQueryClient();
-  const { data: userInfo } = useMeV2Query();
+  const { data: userInfo } = useMeQuery();
 
   return useMutation<void, Error, RemoveMemberInput>({
     mutationFn: async function (data) {

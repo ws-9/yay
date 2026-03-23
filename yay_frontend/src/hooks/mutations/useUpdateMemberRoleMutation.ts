@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { MemberV2 } from '../../types/MemberV2';
+import type { Member } from '../../types/Member';
 import { API_MEMBERS } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 
@@ -14,7 +14,7 @@ export function useUpdateMemberRoleMutation() {
   const fetchWithAuth = useFetchWithAuth();
   const queryClient = useQueryClient();
 
-  return useMutation<MemberV2, Error, UpdateMemberRoleInput>({
+  return useMutation<Member, Error, UpdateMemberRoleInput>({
     mutationFn: async request => {
       const response = await fetchWithAuth(
         `${API_MEMBERS}/${request.communityId}/${request.userId}`,

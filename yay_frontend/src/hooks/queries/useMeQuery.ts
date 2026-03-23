@@ -2,12 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { API_ME } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { UserV2 } from '../../types';
+import type { User } from '../../types';
 
-export function useMeV2Query() {
+export function useMeQuery() {
   const fetchWithAuth = useFetchWithAuth();
 
-  return useQuery<UserV2>({
+  return useQuery<User>({
     queryKey: queryKeysV2.me,
     queryFn: () => getMe(fetchWithAuth),
     staleTime: Infinity,

@@ -2,12 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { API_CHANNELS } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { ChannelV2 } from '../../types';
+import type { Channel } from '../../types';
 
-export function useChannelsV2Query(communityIds: number[]) {
+export function useChannelsQuery(communityIds: number[]) {
   const fetchWithAuth = useFetchWithAuth();
 
-  return useQuery<ChannelV2[]>({
+  return useQuery<Channel[]>({
     queryKey: queryKeysV2.channels.byCommunity(communityIds),
     queryFn: () => getChannelsByCommunities(fetchWithAuth, communityIds),
     enabled: communityIds.length > 0,

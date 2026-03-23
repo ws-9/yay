@@ -1,4 +1,4 @@
-export type InviteResponseV2 = {
+export type InviteResponse = {
   communityId: number;
   inviteSlug: string;
 };

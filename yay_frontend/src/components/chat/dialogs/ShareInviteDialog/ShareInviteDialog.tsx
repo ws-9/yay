@@ -3,12 +3,12 @@ import {
   useShareInviteDialog,
   useUiStoreActions,
 } from '../../../../store/uiStore';
-import { useInviteV2Query } from '../../../../hooks/queries/useInviteV2Query';
+import { useInviteQuery } from '../../../../hooks/queries/useInviteQuery';
 
 export default function ShareInviteDialog() {
   const { communityId, isOpen } = useShareInviteDialog();
   const { closeShareInviteDialog } = useUiStoreActions();
-  const { data } = useInviteV2Query(communityId);
+  const { data } = useInviteQuery(communityId);
 
   return (
     <Dialog.Root

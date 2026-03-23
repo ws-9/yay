@@ -1,6 +1,6 @@
 import { Separator } from '@base-ui/react/separator';
 import { Tabs } from '@base-ui/react/tabs';
-import { useChannelV2Query } from '../../../../hooks/queries/useChannelV2Query';
+import { useChannelQuery } from '../../../../hooks/queries/useChannelQuery';
 import PermissionsPanel from './PermissionsPanel';
 
 export default function ChannelSettingsTabs({
@@ -8,7 +8,7 @@ export default function ChannelSettingsTabs({
 }: {
   channelId: number | null;
 }) {
-  const { data } = useChannelV2Query(channelId ?? 0);
+  const { data } = useChannelQuery(channelId ?? 0);
 
   if (!channelId || !data) {
     return null;

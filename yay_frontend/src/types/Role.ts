@@ -1,4 +1,4 @@
-export type RoleV2 = {
+export type Role = {
   id: number;
   name: string;
   hierarchyLevel: number;

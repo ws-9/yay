@@ -1,4 +1,4 @@
-export type CommunityV2 = {
+export type Community = {
   id: number;
   name: string;
   ownerId: number;

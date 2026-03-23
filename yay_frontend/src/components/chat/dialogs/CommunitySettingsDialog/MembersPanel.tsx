@@ -1,13 +1,13 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { Select } from '@base-ui/react/select';
-import { useCommunityV2Query } from '../../../../hooks/queries/useCommunityV2Query';
-import { useCommunityMembersV2Query } from '../../../../hooks/queries/useCommunityMembersV2Query';
-import { useRolesV2Query } from '../../../../hooks/queries/useRolesV2Query';
-import { useUserV2Query } from '../../../../hooks/queries/useUsersV2Query';
-import { useMemberV2Query } from '../../../../hooks/queries/useMemberV2Query';
+import { useCommunityQuery } from '../../../../hooks/queries/useCommunityQuery';
+import { useCommunityMembersQuery } from '../../../../hooks/queries/useCommunityMembersQuery';
+import { useRolesQuery } from '../../../../hooks/queries/useRolesQuery';
+import { useUserQuery } from '../../../../hooks/queries/useUsersQuery';
+import { useMemberQuery } from '../../../../hooks/queries/useMemberQuery';
 import { useUpdateMemberRoleMutation } from '../../../../hooks/mutations/useUpdateMemberRoleMutation';
-import { useMeV2Query } from '../../../../hooks/queries/useMeV2Query';
-import type { MemberV2, RoleV2 } from '../../../../types';
+import { useMeQuery } from '../../../../hooks/queries/useMeQuery';
+import type { Member, Role } from '../../../../types';
 
 const roles = [
   { label: 'Admin', value: 'Admin' },
@@ -16,12 +16,12 @@ const roles = [
 ];
 
 export default function MembersPanel({ communityId }: { communityId: number }) {
-  const userInfoQuery = useMeV2Query();
-  const communityQuery = useCommunityV2Query(communityId);
-  const membersQuery = useCommunityMembersV2Query(communityId);
-  const rolesQuery = useRolesV2Query();
+  const userInfoQuery = useMeQuery();
+  const communityQuery = useCommunityQuery(communityId);
+  const membersQuery = useCommunityMembersQuery(communityId);
+  const rolesQuery = useRolesQuery();
 
-  const myMemberQuery = useMemberV2Query(
+  const myMemberQuery = useMemberQuery(
     communityId,
     userInfoQuery.data?.id ?? null,
   );
@@ -76,14 +76,14 @@ function MemberRow({
   communityId,
   allRoles,
 }: {
-  member: MemberV2;
-  userRole: RoleV2;
+  member: Member;
+  userRole: Role;
   ownerId: number;
   userId: number;
   communityId: number;
-  allRoles: RoleV2[];
+  allRoles: Role[];
 }) {
-  const userQuery = useUserV2Query(member.userId);
+  const userQuery = useUserQuery(member.userId);
   const memberRole = allRoles.find(r => r.id === member.roleId)!;
 
   if (userQuery.isLoading) {
@@ -118,13 +118,13 @@ function RoleSelector({
   allRoles,
 }: {
   roleName: string;
-  userRole: RoleV2;
-  targetRole: RoleV2;
+  userRole: Role;
+  targetRole: Role;
   memberId: number;
   ownerId: number;
   userId: number;
   communityId: number;
-  allRoles: RoleV2[];
+  allRoles: Role[];
 }) {
   const updateRoleMutation = useUpdateMemberRoleMutation();
 
@@ -271,7 +271,7 @@ function canSelectItem(
   userId: number,
   canManageRoles: boolean,
   ownerId: number,
-  allRoles: RoleV2[],
+  allRoles: Role[],
 ): boolean {
   const itemRole = allRoles.find(r => r.name === itemValue);
   if (!itemRole) return false;

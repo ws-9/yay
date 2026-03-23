@@ -1,10 +1,10 @@
 import { Accordion } from '@base-ui/react/accordion';
 import CommunityMenu from '../CommunityMenu';
 import ChannelTab from './ChannelTab';
-import { useChannelsV2Query } from '../../../../hooks/queries/useChannelsV2Query';
-import { useMemberV2Query } from '../../../../hooks/queries/useMemberV2Query';
-import { useRolesV2Query } from '../../../../hooks/queries/useRolesV2Query';
-import { useMeV2Query } from '../../../../hooks/queries/useMeV2Query';
+import { useChannelsQuery } from '../../../../hooks/queries/useChannelsQuery';
+import { useMemberQuery } from '../../../../hooks/queries/useMemberQuery';
+import { useRolesQuery } from '../../../../hooks/queries/useRolesQuery';
+import { useMeQuery } from '../../../../hooks/queries/useMeQuery';
 
 export default function CommunityTab({
   name,
@@ -13,13 +13,10 @@ export default function CommunityTab({
   name: string;
   communityId: number;
 }) {
-  const { data: user } = useMeV2Query();
-  const { data: channels } = useChannelsV2Query([communityId]);
-  const { data: memberships } = useMemberV2Query(
-    communityId,
-    user?.id as number,
-  );
-  const { data: roles } = useRolesV2Query();
+  const { data: user } = useMeQuery();
+  const { data: channels } = useChannelsQuery([communityId]);
+  const { data: memberships } = useMemberQuery(communityId, user?.id as number);
+  const { data: roles } = useRolesQuery();
 
   const myMembership = memberships?.[0];
   const myRole = roles?.find(r => r.id === myMembership?.roleId);

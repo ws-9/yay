@@ -1,5 +1,5 @@
-import { useChannelV2Query } from '../../../hooks/queries/useChannelV2Query';
-import { useCommunityV2Query } from '../../../hooks/queries/useCommunityV2Query';
+import { useChannelQuery } from '../../../hooks/queries/useChannelQuery';
+import { useCommunityQuery } from '../../../hooks/queries/useCommunityQuery';
 import {
   useIsActivePane,
   useWorkspaceActions,
@@ -19,11 +19,12 @@ export default function PaneHeader({
   dropZonesRef: React.RefObject<DropZonesHandle>;
   mode: 'single' | 'multi';
 }) {
-  const { data: channel, isLoading: isLoadingChannel } = useChannelV2Query(
+  const { data: channel, isLoading: isLoadingChannel } = useChannelQuery(
     channelId as number,
   );
-  const { data: community, isLoading: isLoadingCommunity } =
-    useCommunityV2Query(channel?.communityId ?? null);
+  const { data: community, isLoading: isLoadingCommunity } = useCommunityQuery(
+    channel?.communityId ?? null,
+  );
 
   const isActive = useIsActivePane(nodeId);
   const isLoading = isLoadingChannel || isLoadingCommunity;

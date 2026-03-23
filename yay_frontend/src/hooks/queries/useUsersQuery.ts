@@ -3,7 +3,7 @@ import { create, windowScheduler } from '@yornaath/batshit';
 import { API_USERS } from '../../constants';
 import { queryKeysV2 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { UserV2 } from '../../types';
+import type { User } from '../../types';
 
 function createUsersBatcher(
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>,
@@ -19,7 +19,7 @@ function createUsersBatcher(
       if (!response.ok) throw new Error('Failed to batch fetch users');
       return response.json();
     },
-    resolver: (items: UserV2[], queryId) =>
+    resolver: (items: User[], queryId) =>
       items.find(user => user.id === queryId) || null,
     scheduler: windowScheduler(50),
   });
@@ -29,11 +29,11 @@ function createUsersBatcher(
  * Hook to fetch a single user's public info via the V2 batch API.
  * Uses 'batshit' to aggregate multiple calls into a single /batch request.
  */
-export function useUserV2Query(userId: number) {
+export function useUserQuery(userId: number) {
   const fetchWithAuth = useFetchWithAuth();
   const batcher = createUsersBatcher(fetchWithAuth);
 
-  return useQuery<UserV2 | null>({
+  return useQuery<User | null>({
     queryKey: queryKeysV2.users.detail(userId),
     queryFn: () => batcher.fetch(userId),
     enabled: !!userId,

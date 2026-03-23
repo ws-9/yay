@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_BANS } from '../../constants';
-import { queryKeysV1 } from '../queryKeys';
 import useFetchWithAuth from '../useFetchWithAuth';
 
 type BanMemberInput = {
@@ -41,13 +40,6 @@ function useBanMemberMutation() {
     },
     onSuccess: async (_, variables) => {
       // Optimistically set the banned user's role to null
-      queryClient.setQueryData(
-        queryKeysV1.communities.members.role(
-          variables.communityId,
-          variables.userId,
-        ),
-        null,
-      );
     },
   });
 }

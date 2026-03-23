@@ -4,18 +4,18 @@ import { format } from 'date-fns';
 import MessageMenu from './MessageMenu';
 import useEditChannelMessage from '../../../hooks/mutations/useEditChannelMessageMutation';
 import { useInlineEdit } from '../../../hooks/useInlineEdit';
-import type { MessageV2 } from '../../../types';
-import { useUserV2Query } from '../../../hooks/queries/useUsersV2Query';
+import type { Message } from '../../../types';
+import { useUserQuery } from '../../../hooks/queries/useUsersQuery';
 
 export function MessageRender({
   message,
   channelId,
 }: {
-  message: MessageV2;
+  message: Message;
   channelId: number;
 }) {
   const editMutation = useEditChannelMessage();
-  const { data: userData, isLoading: isLoadingUser } = useUserV2Query(
+  const { data: userData, isLoading: isLoadingUser } = useUserQuery(
     message.userId,
   );
   const username = userData?.username || `User ${message.userId}`;

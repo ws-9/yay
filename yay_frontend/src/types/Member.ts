@@ -1,4 +1,4 @@
-export type MemberV2 = {
+export type Member = {
   userId: number;
   communityId: number;
   roleId: number;

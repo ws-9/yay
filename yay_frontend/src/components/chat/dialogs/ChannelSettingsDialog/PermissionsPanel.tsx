@@ -1,13 +1,13 @@
 import { Tabs } from '@base-ui/react/tabs';
-import { useRolesV2Query } from '../../../../hooks/queries/useRolesV2Query';
-import { useChannelV2Query } from '../../../../hooks/queries/useChannelV2Query';
-import { useChannelPermissionsV2Query } from '../../../../hooks/queries/useChannelPermissionsV2Query';
-import { useMemberV2Query } from '../../../../hooks/queries/useMemberV2Query';
+import { useRolesQuery } from '../../../../hooks/queries/useRolesQuery';
+import { useChannelQuery } from '../../../../hooks/queries/useChannelQuery';
+import { useChannelPermissionsQuery } from '../../../../hooks/queries/useChannelPermissionsQuery';
+import { useMemberQuery } from '../../../../hooks/queries/useMemberQuery';
 import { Select } from '@base-ui/react/select';
 import useChannelPermissionMutation from '../../../../hooks/mutations/useChannelPermissionMutation';
 import { useState } from 'react';
-import { useMeV2Query } from '../../../../hooks/queries/useMeV2Query';
-import type { RoleV2 } from '../../../../types';
+import { useMeQuery } from '../../../../hooks/queries/useMeQuery';
+import type { Role } from '../../../../types';
 
 const accessOptions = [
   { label: 'Can read', value: 'read' },
@@ -16,16 +16,16 @@ const accessOptions = [
 ];
 
 export default function PermissionsPanel({ channelId }: { channelId: number }) {
-  const userInfoQuery = useMeV2Query();
-  const channelQuery = useChannelV2Query(channelId);
-  const rolesQuery = useRolesV2Query();
+  const userInfoQuery = useMeQuery();
+  const channelQuery = useChannelQuery(channelId);
+  const rolesQuery = useRolesQuery();
 
   const communityId = channelQuery.data?.communityId;
-  const permissionsQuery = useChannelPermissionsV2Query(
+  const permissionsQuery = useChannelPermissionsQuery(
     communityId ? [communityId] : [],
   );
 
-  const myMemberQuery = useMemberV2Query(
+  const myMemberQuery = useMemberQuery(
     communityId ?? null,
     userInfoQuery.data?.id ?? null,
   );
@@ -83,10 +83,10 @@ function PermissionRow({
   userRole,
 }: {
   channelId: number;
-  role: RoleV2;
+  role: Role;
   canRead: boolean;
   canWrite: boolean;
-  userRole: RoleV2;
+  userRole: Role;
 }) {
   return (
     <div className="flex items-center justify-between">
@@ -112,8 +112,8 @@ function AccessSelector({
   channelId: number;
   canRead: boolean;
   canWrite: boolean;
-  role: RoleV2;
-  userRole: RoleV2;
+  role: Role;
+  userRole: Role;
 }) {
   const { mutate } = useChannelPermissionMutation(channelId);
   const [value, setValue] = useState(toAccessOption(canRead, canWrite));

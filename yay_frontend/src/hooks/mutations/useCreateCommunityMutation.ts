@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { API_COMMUNITIES } from '../../constants';
 import { useInvalidateBootstrap } from '../cacheHelpers';
 import useFetchWithAuth from '../useFetchWithAuth';
-import type { CommunityV2 } from '../../types/CommunityV2';
+import type { Community } from '../../types/Community';
 
 type CreateCommunityInput = {
   name: string;
@@ -12,7 +12,7 @@ function useCreateCommunityMutation() {
   const fetchWithAuth = useFetchWithAuth();
   const invalidateBootstrap = useInvalidateBootstrap();
 
-  return useMutation<CommunityV2, Error, CreateCommunityInput>({
+  return useMutation<Community, Error, CreateCommunityInput>({
     mutationFn: async function (data) {
       const response = await fetchWithAuth(API_COMMUNITIES, {
         method: 'POST',

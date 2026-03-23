@@ -8,7 +8,7 @@ import {
 import { useIsActivePane } from '../../../store/workspaceStore';
 import useCreateChannelMessage from '../../../hooks/mutations/useCreateChannelMessageMutation';
 import { Toast } from '@base-ui/react/toast';
-import { useChannelPermissionsV2 } from '../../../hooks/queries/useChannelPermissionsV2';
+import { useChannelPermissions } from '../../../hooks/queries/useChannelPermissions';
 
 export default function MessageField({
   channelId,
@@ -23,7 +23,7 @@ export default function MessageField({
   const isActive = useIsActivePane(nodeId);
   const { mutate, isPending, error } = useCreateChannelMessage();
   const { canWrite, isLoading: isLoadingPermissions } =
-    useChannelPermissionsV2(channelId);
+    useChannelPermissions(channelId);
   const toastManager = Toast.useToastManager();
 
   // reset message on channel switch
