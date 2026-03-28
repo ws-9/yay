@@ -9,17 +9,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_DB: yay
       POSTGRES_PASSWORD: postgres
-  backend:
-    build:
-      context: ./yay_backend/
-      dockerfile: Dockerfile
-    depends_on:
-      - postgres
-    ports:
-      - "8080:8080"
-    volumes:
-      - m2-cache:/root/.m2
-      - ./yay_backend:/app:Z
+    labels:
+      - "org.springframework.boot.service-connection=postgres"
   frontend:
     build:
       context: ./yay_frontend
@@ -27,7 +18,4 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - ./yay_frontend/src:/app/src:Z
-
-volumes:
-  m2-cache:
+      - ./yay_frontend/src:/app/src
